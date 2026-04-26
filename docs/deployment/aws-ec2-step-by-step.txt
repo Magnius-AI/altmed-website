@@ -1,0 +1,494 @@
+AWS Deployment Guide For This Project
+Project: Altmed website monorepo
+Stack detected in this repo:
+- Frontend: Next.js 14 (`frontend/`)
+- Backend: NestJS 10 (`backend/`)
+- Database: PostgreSQL
+- Reverse proxy: Nginx
+- Production runtime already provided: `docker-compose.prod.yml`
+
+Recommended first AWS deployment:
+- 1 Ubuntu EC2 server
+- 1 Elastic IP
+- 1 subdomain such as `app.yourdomain.com`
+- Docker + Docker Compose
+- DNS record pointing the subdomain to the EC2 Elastic IP
+- HTTPS using Certbot + Let's Encrypt
+
+Why this path:
+- It matches the current repo structure.
+- It is the simplest AWS setup for a beginner.
+- You can move to ECS/RDS later after the first successful launch.
+
+==================================================
+STEP 0 - Choose your deployment values
+==================================================
+
+Pick these before you start:
+
+1. AWS Region
+   Example: `us-east-1`
+
+2. EC2 instance type
+   Start with `t3.small` or `t3.medium`
+   If budget is tight, `t3.small` is the minimum I would recommend for frontend + backend + postgres on one box.
+
+3. Subdomain
+   Example: `app.altmedfirst.com`
+
+4. SSH key name
+   Example: `altmed-prod-key`
+
+5. Security group name
+   Example: `altmed-prod-sg`
+
+6. Server folder
+   Example: `/opt/altmed-website`
+
+==================================================
+STEP 1 - Launch an Ubuntu EC2 instance
+==================================================
+
+Use the AWS Console for your first launch because it is easier when you are new.
+
+In AWS Console:
+1. Open `EC2`
+2. Click `Launch instance`
+3. Name: `altmed-prod`
+4. AMI: `Ubuntu Server 24.04 LTS`
+5. Instance type: `t3.small` or `t3.medium`
+6. Create or select a key pair
+7. Network settings:
+   - Allow `SSH` from your IP only
+   - Allow `HTTP` from anywhere
+   - Allow `HTTPS` from anywhere
+8. Storage:
+   - Use at least `20 GB`
+9. Launch the instance
+
+Important:
+- Keep the `.pem` key file safe.
+- Do not open port `5432` to the internet.
+
+==================================================
+STEP 2 - Allocate and attach an Elastic IP
+==================================================
+
+You want a fixed public IP so your subdomain does not break when the instance restarts.
+
+In AWS Console:
+1. Go to `EC2 > Elastic IPs`
+2. Click `Allocate Elastic IP address`
+3. After it is created, select it
+4. Click `Associate Elastic IP address`
+5. Associate it with your new EC2 instance
+
+Write down:
+- `Elastic IP`
+
+Optional AWS CLI:
+`aws ec2 allocate-address --domain vpc`
+
+==================================================
+STEP 3 - Point your subdomain to the Elastic IP
+==================================================
+
+If your DNS is already managed in Route 53:
+1. Open `Route 53`
+2. Open your hosted zone for the parent domain
+3. Create a new record:
+   - Record type: `A`
+   - Record name: your subdomain only
+     Example: if your full domain is `app.altmedfirst.com`, the record name is `app`
+   - Value: your Elastic IP
+   - TTL: `300`
+
+If your DNS is NOT in Route 53:
+1. Log in to your domain registrar or DNS provider
+2. Create the same `A` record there
+3. Point it to the Elastic IP
+
+Test DNS:
+`dig +short app.altmedfirst.com`
+
+It should return your Elastic IP.
+
+==================================================
+STEP 4 - SSH into the server
+==================================================
+
+On your computer:
+
+`chmod 400 /path/to/altmed-prod-key.pem`
+
+`ssh -i /path/to/altmed-prod-key.pem ubuntu@YOUR_ELASTIC_IP`
+
+If that works, continue on the server.
+
+==================================================
+STEP 5 - Install Docker and Docker Compose
+==================================================
+
+Run these on the EC2 server:
+
+`sudo apt update`
+
+`sudo apt install -y ca-certificates curl gnupg`
+
+`sudo install -m 0755 -d /etc/apt/keyrings`
+
+`curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg`
+
+`sudo chmod a+r /etc/apt/keyrings/docker.gpg`
+
+`echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null`
+
+`sudo apt update`
+
+`sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin`
+
+`sudo systemctl enable docker`
+`sudo systemctl start docker`
+
+Optional so you can run Docker without `sudo`:
+`sudo usermod -aG docker ubuntu`
+
+Then log out and SSH back in.
+
+Check versions:
+`docker --version`
+`docker compose version`
+
+==================================================
+STEP 6 - Copy the project to the server
+==================================================
+
+Option A - easiest if your code is already on GitHub:
+1. SSH into the server
+2. Install git if needed:
+   `sudo apt install -y git`
+3. Clone your repo:
+   `sudo mkdir -p /opt`
+   `cd /opt`
+   `sudo git clone YOUR_GIT_REPO_URL altmed-website`
+   `sudo chown -R ubuntu:ubuntu /opt/altmed-website`
+
+Option B - copy the local project directly:
+From your computer:
+`scp -i /path/to/altmed-prod-key.pem -r /Users/sandesh/Projects/Altmed_System/altmed-website ubuntu@YOUR_ELASTIC_IP:/home/ubuntu/`
+
+Then on the server:
+`sudo mv /home/ubuntu/altmed-website /opt/altmed-website`
+`sudo chown -R ubuntu:ubuntu /opt/altmed-website`
+
+Go into the project:
+`cd /opt/altmed-website`
+
+==================================================
+STEP 7 - Create the production .env file
+==================================================
+
+This repo's production compose file expects a root `.env` file.
+
+Create it:
+`nano /opt/altmed-website/.env`
+
+Use this template and replace every placeholder:
+
+--------------------------------------------------
+NODE_ENV=production
+
+PORT=3001
+
+DATABASE_HOST=postgres
+DATABASE_PORT=5432
+DATABASE_NAME=altmed
+DATABASE_USER=altmed
+DATABASE_PASSWORD=CHANGE_THIS_TO_A_LONG_RANDOM_PASSWORD
+
+JWT_SECRET=CHANGE_THIS_TO_A_LONG_RANDOM_SECRET
+JWT_EXPIRES_IN=15m
+JWT_REFRESH_SECRET=CHANGE_THIS_TO_ANOTHER_LONG_RANDOM_SECRET
+JWT_REFRESH_EXPIRES_IN=30d
+
+FRONTEND_URL=https://app.altmedfirst.com
+
+API_URL_INTERNAL=http://backend:3001
+NEXT_PUBLIC_API_URL=https://app.altmedfirst.com
+
+RECAPTCHA_SECRET_KEY=YOUR_RECAPTCHA_SECRET
+
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=info@altmedfirst.com
+EMAIL_PASS=YOUR_EMAIL_APP_PASSWORD
+
+CONTACT_FORM_RECIPIENT=info@altmedfirst.com
+ADMIN_ALERT_EMAIL=admin@altmedfirst.com
+--------------------------------------------------
+
+Notes:
+- `DATABASE_HOST=postgres` is correct because Compose names the database service `postgres`.
+- `API_URL_INTERNAL=http://backend:3001` is important for the Next.js app inside Docker.
+- `NEXT_PUBLIC_API_URL=https://app.altmedfirst.com` is the public browser-facing API base.
+- Make sure `FRONTEND_URL` matches the final HTTPS subdomain exactly.
+
+Generate strong secrets locally if needed:
+`openssl rand -hex 32`
+
+==================================================
+STEP 8 - Start the app with Docker Compose
+==================================================
+
+From `/opt/altmed-website`:
+
+`docker compose -f docker-compose.prod.yml --env-file .env up -d --build`
+
+Watch containers:
+`docker compose -f docker-compose.prod.yml ps`
+
+See logs:
+`docker compose -f docker-compose.prod.yml logs -f`
+
+If it starts correctly, test:
+`curl http://localhost`
+`curl http://localhost/api/health`
+
+Expected:
+- Home page HTML should come back from `/`
+- Health endpoint should respond from `/api/health`
+
+==================================================
+STEP 9 - Seed the database
+==================================================
+
+This repo includes seed data.
+
+Run:
+`docker compose -f docker-compose.prod.yml exec backend npm run seed`
+
+If the backend container name is not obvious, first run:
+`docker compose -f docker-compose.prod.yml ps`
+
+==================================================
+STEP 10 - Enable HTTPS with Certbot
+==================================================
+
+You should only do this after the subdomain already points to the server and `http://your-subdomain` is loading.
+
+Install nginx and certbot on the host server:
+`sudo apt install -y nginx certbot python3-certbot-nginx`
+
+Stop host nginx if it auto-started:
+`sudo systemctl stop nginx`
+`sudo systemctl disable nginx`
+
+Why:
+- Your app already uses nginx inside Docker on port 80.
+- Certbot's standalone mode needs port 80 temporarily.
+
+Stop the Docker stack briefly:
+`cd /opt/altmed-website`
+`docker compose -f docker-compose.prod.yml down`
+
+Request the certificate:
+`sudo certbot certonly --standalone -d app.altmedfirst.com`
+
+When that succeeds, start the Docker stack again:
+`docker compose -f docker-compose.prod.yml up -d`
+
+==================================================
+STEP 11 - Add HTTPS support to nginx config in this repo
+==================================================
+
+Your current repo nginx config only serves HTTP.
+For HTTPS, update `nginx/default.conf` so nginx inside Docker:
+- listens on `443 ssl`
+- uses the Let's Encrypt certificate files
+- redirects HTTP to HTTPS
+
+Certificate paths on the host will look like:
+- `/etc/letsencrypt/live/app.altmedfirst.com/fullchain.pem`
+- `/etc/letsencrypt/live/app.altmedfirst.com/privkey.pem`
+
+Because nginx is running inside Docker, you also need to mount the certificate folder into the nginx container.
+
+You will need these changes in `docker-compose.prod.yml`:
+- expose port `443:443`
+- mount `/etc/letsencrypt:/etc/letsencrypt:ro`
+
+Suggested next change set:
+1. Update `nginx/default.conf` for both `80` and `443`
+2. Update `docker-compose.prod.yml` nginx service volumes and ports
+3. Rebuild the stack
+
+After that:
+`docker compose -f docker-compose.prod.yml up -d --build`
+
+Then test:
+`curl -I https://app.altmedfirst.com`
+
+==================================================
+STEP 12 - Make sure certificate renewal keeps working
+==================================================
+
+Test renewal:
+`sudo certbot renew --dry-run`
+
+Important:
+- Renewal needs port 80 reachable from the internet.
+- If you continue using `--standalone`, the nginx container may need to be stopped briefly during renewal.
+
+For a first deployment, manual renewal checks are acceptable.
+For a better long-term setup, later switch to:
+- host nginx terminating SSL and proxying to Docker
+or
+- an AWS load balancer with ACM certificates
+
+==================================================
+STEP 13 - Verify the public site
+==================================================
+
+Open these in the browser:
+- `https://app.altmedfirst.com`
+- `https://app.altmedfirst.com/admin/login`
+- `https://app.altmedfirst.com/api/health`
+- `https://app.altmedfirst.com/api/docs`
+
+Also test:
+- contact form
+- admin login
+- blog pages
+- service pages
+- any upload flow
+
+==================================================
+STEP 14 - Useful Docker commands
+==================================================
+
+Start:
+`docker compose -f docker-compose.prod.yml up -d`
+
+Rebuild after code changes:
+`docker compose -f docker-compose.prod.yml up -d --build`
+
+Stop:
+`docker compose -f docker-compose.prod.yml down`
+
+Restart one service:
+`docker compose -f docker-compose.prod.yml restart backend`
+
+View logs:
+`docker compose -f docker-compose.prod.yml logs -f backend`
+`docker compose -f docker-compose.prod.yml logs -f frontend`
+`docker compose -f docker-compose.prod.yml logs -f nginx`
+
+==================================================
+STEP 15 - Recommended follow-up hardening
+==================================================
+
+After the first deployment works, do these next:
+
+1. Move PostgreSQL to Amazon RDS
+   This is safer than keeping the database inside the same EC2 server.
+
+2. Back up the database
+   At minimum, schedule regular `pg_dump` backups.
+
+3. Tighten SSH access
+   Keep SSH open only to your IP.
+
+4. Set secure cookies in production
+   I noticed admin auth cookies in the frontend are currently created with `secure: false`.
+   They will still work, but for production HTTPS this should be changed to `secure: true` when `NODE_ENV=production`.
+
+5. Add a deployment process
+   Example: GitHub push -> SSH -> `git pull` -> `docker compose up -d --build`
+
+6. Add monitoring
+   Use CloudWatch basic monitoring at minimum.
+
+==================================================
+STEP 16 - If DNS is not resolving
+==================================================
+
+Check:
+`dig +short app.altmedfirst.com`
+
+If empty:
+- your A record is missing
+- the record points to the wrong IP
+- DNS has not propagated yet
+
+==================================================
+STEP 17 - If the site is up but API calls fail
+==================================================
+
+Check these values inside `.env`:
+- `FRONTEND_URL=https://app.altmedfirst.com`
+- `API_URL_INTERNAL=http://backend:3001`
+- `NEXT_PUBLIC_API_URL=https://app.altmedfirst.com`
+
+Then rebuild:
+`docker compose -f docker-compose.prod.yml up -d --build`
+
+==================================================
+STEP 18 - If the backend fails to boot
+==================================================
+
+Check:
+`docker compose -f docker-compose.prod.yml logs -f backend`
+
+Common causes:
+- wrong database password
+- seed not run yet
+- missing email or captcha env values
+- wrong `FRONTEND_URL`
+
+==================================================
+STEP 19 - Fastest beginner path summary
+==================================================
+
+The shortest version is:
+1. Launch Ubuntu EC2
+2. Attach Elastic IP
+3. Point `app.yourdomain.com` to the Elastic IP
+4. SSH in
+5. Install Docker + Compose
+6. Copy repo to `/opt/altmed-website`
+7. Create `.env`
+8. Run `docker compose -f docker-compose.prod.yml --env-file .env up -d --build`
+9. Run seed
+10. Add HTTPS
+
+==================================================
+OFFICIAL REFERENCES USED
+==================================================
+
+AWS:
+- EC2 key pairs: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/create-key-pairs.html
+- EC2 security groups: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-security-group.html
+- Elastic IP CLI reference: https://docs.aws.amazon.com/cli/latest/reference/ec2/allocate-address.html
+- Route 53 subdomain guidance: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html
+- ACM domain validation: https://docs.aws.amazon.com/acm/latest/userguide/domain-ownership-validation.html
+
+Docker:
+- Docker Engine on Ubuntu: https://docs.docker.com/engine/install/ubuntu/
+- Docker Compose plugin on Linux: https://docs.docker.com/compose/install/linux/
+
+Certbot:
+- Intro: https://eff-certbot.readthedocs.io/en/stable/intro.html
+- Usage: https://eff-certbot.readthedocs.io/en/stable/using.html
+- Interactive instructions: https://certbot.eff.org/instructions?os=ubuntufocal&ws=nginx
+
+==================================================
+MY RECOMMENDATION FOR YOU
+==================================================
+
+Start with this exact subdomain pattern:
+- `app.altmedfirst.com` for the website/admin
+
+Once this works, we can do a second pass together to:
+- move PostgreSQL to RDS
+- make HTTPS cleaner
+- make deployment one-command

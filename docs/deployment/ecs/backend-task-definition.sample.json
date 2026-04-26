@@ -1,0 +1,130 @@
+{
+  "family": "altmed-backend",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "runtimePlatform": {
+    "operatingSystemFamily": "LINUX",
+    "cpuArchitecture": "X86_64"
+  },
+  "executionRoleArn": "arn:aws:iam::245324547486:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "backend",
+      "image": "245324547486.dkr.ecr.us-east-1.amazonaws.com/altmed-website-backend:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3001,
+          "hostPort": 3001,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "name": "PORT",
+          "value": "3001"
+        },
+        {
+          "name": "DATABASE_HOST",
+          "value": "altmed-website.coz6iqcc0evw.us-east-1.rds.amazonaws.com"
+        },
+        {
+          "name": "DATABASE_PORT",
+          "value": "5432"
+        },
+        {
+          "name": "DATABASE_NAME",
+          "value": "altmed"
+        },
+        {
+          "name": "DATABASE_USER",
+          "value": "altmed"
+        },
+        {
+          "name": "JWT_EXPIRES_IN",
+          "value": "15m"
+        },
+        {
+          "name": "JWT_REFRESH_EXPIRES_IN",
+          "value": "30d"
+        },
+        {
+          "name": "FRONTEND_URL",
+          "value": "https://PUBLIC_APP_URL"
+        },
+        {
+          "name": "AWS_REGION",
+          "value": "us-east-1"
+        },
+        {
+          "name": "AWS_S3_BUCKET",
+          "value": "altmed-uploads-prod"
+        },
+        {
+          "name": "AWS_S3_UPLOAD_PREFIX",
+          "value": "uploads"
+        },
+        {
+          "name": "AWS_S3_PUBLIC_BASE_URL",
+          "value": "https://altmed-uploads-prod.s3.us-east-1.amazonaws.com"
+        },
+        {
+          "name": "EMAIL_HOST",
+          "value": "smtp.gmail.com"
+        },
+        {
+          "name": "EMAIL_PORT",
+          "value": "587"
+        },
+        {
+          "name": "EMAIL_USER",
+          "value": "info@altmedfirst.com"
+        },
+        {
+          "name": "CONTACT_FORM_RECIPIENT",
+          "value": "info@altmedfirst.com"
+        },
+        {
+          "name": "ADMIN_ALERT_EMAIL",
+          "value": "admin@altmedfirst.com"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "DATABASE_PASSWORD",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:245324547486:secret:altmed/database-password"
+        },
+        {
+          "name": "JWT_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:245324547486:secret:altmed/jwt-secret"
+        },
+        {
+          "name": "JWT_REFRESH_SECRET",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:245324547486:secret:altmed/jwt-refresh-secret"
+        },
+        {
+          "name": "RECAPTCHA_SECRET_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:245324547486:secret:altmed/recaptcha-secret"
+        },
+        {
+          "name": "EMAIL_PASS",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:245324547486:secret:altmed/email-pass"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/altmed-backend",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}

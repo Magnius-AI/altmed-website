@@ -1,16 +1,56 @@
-# React + Vite
+# Altmed Medical Center Monorepo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository contains the Altmed Medical Center website and admin platform refactored into:
 
-Currently, two official plugins are available:
+- `backend/`: NestJS 10 API with PostgreSQL, JWT auth, CRUD modules, SEO endpoints, analytics, uploads, and seed data.
+- `frontend/`: Next.js 14 App Router application with public pages, protected admin routes, and typed API integration.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Workspace
 
-## React Compiler
+```bash
+npm install
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Local development
 
-## Expanding the ESLint configuration
+Start PostgreSQL first, then run the apps:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+docker compose up -d postgres
+npm run dev:backend
+npm run dev:frontend
+```
+
+Or run both from the root:
+
+```bash
+npm run dev
+```
+
+If you prefer Docker for the full dev stack:
+
+```bash
+docker compose up --build
+```
+
+If you want seed data after the database is up:
+
+```bash
+npm run seed
+```
+
+## Apps
+
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:3001`
+
+Nginx is only used in production via `docker-compose.prod.yml`.
+
+## Seeded defaults
+
+- 1 admin user
+- 8 service pages
+- FAQs
+- 3 blog posts
+- 1 active announcement
+- Site settings and provider profile
