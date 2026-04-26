@@ -1,0 +1,774 @@
+AWS ECS Fargate + RDS Deployment Guide
+Project: Altmed website monorepo
+Date checked against AWS docs: April 21, 2026
+
+Detected stack in this repo:
+- Frontend: Next.js 14 (`frontend/`)
+- Backend: NestJS 10 (`backend/`)
+- Database: PostgreSQL
+- Images available to build now:
+  - `frontend/Dockerfile`
+  - `backend/Dockerfile`
+
+Recommended AWS architecture for this repo:
+- 1 Application Load Balancer (ALB)
+- 2 ECS Fargate services
+  - frontend service
+  - backend service
+- 1 Amazon RDS PostgreSQL instance
+- 1 Amazon S3 bucket for uploaded images
+- 2 Amazon ECR repositories
+  - frontend image
+  - backend image
+- 1 ACM certificate for your subdomain
+- 1 Route 53 alias record for the subdomain
+
+Beginner-friendly note:
+- This guide uses Fargate tasks in public subnets with tightly scoped security groups.
+- That avoids NAT Gateway cost and keeps the setup simpler.
+- RDS will still stay private in database subnets.
+- After your first successful launch, you can move ECS tasks to private subnets later.
+
+==================================================
+ARCHITECTURE
+==================================================
+
+Traffic flow:
+1. Browser opens `app.yourdomain.com`
+2. Route 53 sends traffic to the ALB
+3. ALB HTTPS listener terminates TLS with ACM
+4. ALB routes:
+   - `/api/*` -> backend target group
+   - everything else -> frontend target group
+5. Backend connects to RDS PostgreSQL on port `5432`
+
+Important repo-specific notes:
+1. This repo works best with one public domain for both frontend and backend.
+   Use:
+   - `NEXT_PUBLIC_API_URL=https://app.yourdomain.com`
+   - `API_URL_INTERNAL=https://app.yourdomain.com`
+   - `FRONTEND_URL=https://app.yourdomain.com`
+
+Future-safe domain strategy:
+- Start with `app.altmedfirst.com` now if that is easier.
+- Later, if you want the main site on `altmedfirst.com`, keep the same ECS, ALB, RDS, and S3 setup.
+- Only the certificate, DNS target, and app URL env values need to change.
+- Treat all public URL settings as one value:
+  - `PUBLIC_APP_URL`
+  - today: `app.altmedfirst.com`
+  - later: `altmedfirst.com`
+
+2. Uploaded admin images should use S3 in production.
+   This repo now supports S3-backed uploads when the S3 env vars are set.
+   If those env vars are missing, it falls back to local `/uploads` storage for local development.
+
+3. I added a production seed command for ECS:
+   - `npm run seed:prod`
+
+==================================================
+STEP 0 - Pick your values
+==================================================
+
+Example values:
+- AWS Region: `us-east-1`
+- Subdomain: `app.altmedfirst.com`
+- S3 uploads bucket: `altmed-uploads-prod`
+- ECR frontend repo: `altmed/frontend`
+- ECR backend repo: `altmed/backend`
+- ECS cluster: `altmed-cluster`
+- ECS frontend service: `altmed-frontend`
+- ECS backend service: `altmed-backend`
+- RDS instance identifier: `altmed-postgres`
+- DB name: `altmed`
+- DB user: `altmed`
+
+==================================================
+STEP 1 - Create or verify your VPC
+==================================================
+
+Use the default VPC if you are brand new to AWS and want the fastest path.
+
+You need:
+- at least 2 public subnets in different Availability Zones for the ALB
+- at least 2 subnets for RDS DB subnet group
+
+Simplest path:
+1. Go to `VPC`
+2. Verify the default VPC exists
+3. Note the VPC ID
+4. Note at least 2 public subnets in different AZs
+
+For RDS:
+- you can use private DB subnets if already available
+- if you only have the default VPC, AWS can still help you create the DB subnet group from available subnets
+
+==================================================
+STEP 2 - Create security groups
+==================================================
+
+Create these 4 security groups:
+
+1. `altmed-alb-sg`
+   Inbound:
+   - 80 from `0.0.0.0/0`
+   - 443 from `0.0.0.0/0`
+   Outbound:
+   - all
+
+2. `altmed-frontend-sg`
+   Inbound:
+   - 3000 from `altmed-alb-sg`
+   Outbound:
+   - all
+
+3. `altmed-backend-sg`
+   Inbound:
+   - 3001 from `altmed-alb-sg`
+   Outbound:
+   - all
+
+4. `altmed-rds-sg`
+   Inbound:
+   - 5432 from `altmed-backend-sg`
+   Outbound:
+   - all
+
+Do not open port `5432` to the public internet.
+
+==================================================
+STEP 3 - Create the RDS PostgreSQL database
+==================================================
+
+In AWS Console:
+1. Open `RDS`
+2. Click `Create database`
+3. Choose `Standard create`
+4. Engine: `PostgreSQL`
+5. Template:
+   - use `Free tier` if available
+   - otherwise choose the lowest-cost dev/test option you are comfortable with
+6. DB instance identifier: `altmed-postgres`
+7. Master username: `altmed`
+8. Set a strong password
+9. Instance class:
+   - start with something small like `db.t3.micro` if available for your account/region
+10. Storage:
+   - start around `20 GB`
+11. Connectivity:
+   - choose your VPC
+   - create or choose a DB subnet group
+   - Public access: `No`
+   - VPC security group: `altmed-rds-sg`
+12. Additional configuration:
+   - Initial database name: `altmed`
+13. Create database
+
+Wait until status becomes `Available`.
+
+Write down:
+- DB endpoint
+- DB port
+
+Example:
+- endpoint: `altmed-postgres.abc123xyz.us-east-1.rds.amazonaws.com`
+- port: `5432`
+
+==================================================
+STEP 4 - Create the S3 uploads bucket
+==================================================
+
+Create a bucket for uploaded admin images.
+
+Suggested name:
+- `altmed-uploads-prod`
+
+Recommended setup:
+1. Create the bucket in the same region as ECS
+2. Use a folder prefix like `uploads/`
+3. Decide how browsers will read the images:
+   - simplest: a dedicated bucket or prefix that is public-read
+   - better long term: CloudFront in front of the bucket
+
+If you use direct S3 image URLs with this repo, set:
+- `AWS_S3_PUBLIC_BASE_URL`
+- example: `https://altmed-uploads-prod.s3.us-east-1.amazonaws.com`
+
+The backend role that talks to S3 needs:
+- `s3:PutObject`
+- `s3:DeleteObject`
+
+==================================================
+STEP 5 - Create two ECR repositories
+==================================================
+
+You need one image repo for each service.
+
+In AWS Console:
+1. Open `ECR`
+2. Create private repository `altmed/frontend`
+3. Create private repository `altmed/backend`
+
+Or with CLI:
+`aws ecr create-repository --repository-name altmed/frontend --region us-east-1`
+`aws ecr create-repository --repository-name altmed/backend --region us-east-1`
+
+==================================================
+STEP 6 - Log Docker into ECR
+==================================================
+
+On your machine:
+
+`aws configure`
+
+`aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin YOUR_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com`
+
+Replace:
+- `YOUR_ACCOUNT_ID`
+- `us-east-1`
+
+==================================================
+STEP 7 - Build and push the frontend image
+==================================================
+
+From the repo root:
+
+`docker build -t altmed-frontend:latest ./frontend`
+
+`docker tag altmed-frontend:latest YOUR_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/altmed/frontend:latest`
+
+`docker push YOUR_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/altmed/frontend:latest`
+
+==================================================
+STEP 8 - Build and push the backend image
+==================================================
+
+From the repo root:
+
+`docker build -t altmed-backend:latest ./backend`
+
+`docker tag altmed-backend:latest YOUR_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/altmed/backend:latest`
+
+`docker push YOUR_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/altmed/backend:latest`
+
+==================================================
+STEP 9 - Create CloudWatch log groups
+==================================================
+
+Create:
+- `/ecs/altmed-frontend`
+- `/ecs/altmed-backend`
+
+In Console:
+1. Open `CloudWatch`
+2. Go to `Log groups`
+3. Create both groups
+
+==================================================
+STEP 10 - Create ECS cluster
+==================================================
+
+In AWS Console:
+1. Open `ECS`
+2. Create cluster
+3. Choose `Networking only` or the current Fargate cluster flow
+4. Cluster name: `altmed-cluster`
+5. Create
+
+AWS docs note:
+- the console automatically associates Fargate capacity providers with the cluster
+
+==================================================
+STEP 11 - Create IAM roles for ECS
+==================================================
+
+You need:
+1. ECS task execution role
+   Use the managed policy that lets ECS pull from ECR and write logs.
+   In many accounts AWS creates `ecsTaskExecutionRole` for you.
+   If you use Secrets Manager values in the task definition, this role also needs permission to read those secrets.
+
+2. Optional task role
+   If later you use S3, SES, or Secrets Manager from app code, give that access here.
+
+For a first deployment:
+- execution role is required
+- task role can be minimal or reused if you do not yet call other AWS APIs from code
+
+If you use the sample backend task definition in this repo:
+- the execution role must be allowed to call `secretsmanager:GetSecretValue`
+- if your secrets use a customer-managed KMS key, also allow `kms:Decrypt`
+- for S3-backed uploads, the role used by the backend container also needs `s3:PutObject` and `s3:DeleteObject` on the uploads bucket/prefix
+
+==================================================
+STEP 12 - Store app secrets
+==================================================
+
+Best practice:
+- store sensitive values in AWS Secrets Manager
+
+Create secrets for:
+- database password
+- JWT secret
+- JWT refresh secret
+- email password
+- recaptcha secret
+
+You can use Systems Manager Parameter Store too, but Secrets Manager is easier to reason about for app secrets.
+
+For your first launch, these are the core values you need:
+- `NODE_ENV=production`
+- `PORT=3001` for backend
+- `DATABASE_HOST=<your-rds-endpoint>`
+- `DATABASE_PORT=5432`
+- `DATABASE_NAME=altmed`
+- `DATABASE_USER=altmed`
+- `DATABASE_PASSWORD=<from secret>`
+- `JWT_SECRET=<from secret>`
+- `JWT_REFRESH_SECRET=<from secret>`
+- `JWT_EXPIRES_IN=15m`
+- `JWT_REFRESH_EXPIRES_IN=30d`
+- `FRONTEND_URL=https://app.altmedfirst.com`
+- `RECAPTCHA_SECRET_KEY=<from secret>`
+- `EMAIL_HOST=smtp.gmail.com`
+- `EMAIL_PORT=587`
+- `EMAIL_USER=info@altmedfirst.com`
+- `EMAIL_PASS=<from secret>`
+- `CONTACT_FORM_RECIPIENT=info@altmedfirst.com`
+- `ADMIN_ALERT_EMAIL=admin@altmedfirst.com`
+
+Frontend env vars:
+- `NODE_ENV=production`
+- `API_URL_INTERNAL=https://app.altmedfirst.com`
+- `NEXT_PUBLIC_API_URL=https://app.altmedfirst.com`
+
+Backend storage env vars:
+- `AWS_REGION=us-east-1`
+- `AWS_S3_BUCKET=altmed-uploads-prod`
+- `AWS_S3_UPLOAD_PREFIX=uploads`
+- `AWS_S3_PUBLIC_BASE_URL=https://altmed-uploads-prod.s3.us-east-1.amazonaws.com`
+
+Domain env strategy:
+- deploy now with:
+  - `PUBLIC_APP_URL=app.altmedfirst.com`
+  - `FRONTEND_URL=https://app.altmedfirst.com`
+  - `API_URL_INTERNAL=https://app.altmedfirst.com`
+  - `NEXT_PUBLIC_API_URL=https://app.altmedfirst.com`
+- switch later with:
+  - `PUBLIC_APP_URL=altmedfirst.com`
+  - `FRONTEND_URL=https://altmedfirst.com`
+  - `API_URL_INTERNAL=https://altmedfirst.com`
+  - `NEXT_PUBLIC_API_URL=https://altmedfirst.com`
+
+Why set both frontend API URLs to the public subdomain:
+- this repo routes API calls through the same domain
+- the ALB will forward `/api/*` to the backend
+- this avoids needing internal service discovery on day one
+
+==================================================
+STEP 13 - Create the frontend task definition
+==================================================
+
+Create a Fargate task definition:
+- family: `altmed-frontend`
+- launch type compatibility: `FARGATE`
+- network mode: `awsvpc`
+- OS: `LINUX`
+- CPU: `512`
+- Memory: `1024`
+- execution role: your ECS execution role
+- image: your frontend ECR image
+- container port: `3000`
+- log group: `/ecs/altmed-frontend`
+
+Use the sample file in this repo:
+- `docs/deployment/ecs/frontend-task-definition.sample.json`
+
+Health check:
+- container port `3000`
+- ALB target group health path `/`
+
+==================================================
+STEP 14 - Create the backend task definition
+==================================================
+
+Create a Fargate task definition:
+- family: `altmed-backend`
+- launch type compatibility: `FARGATE`
+- network mode: `awsvpc`
+- OS: `LINUX`
+- CPU: `512`
+- Memory: `1024`
+- execution role: your ECS execution role
+- image: your backend ECR image
+- container port: `3001`
+- log group: `/ecs/altmed-backend`
+
+Use the sample file in this repo:
+- `docs/deployment/ecs/backend-task-definition.sample.json`
+
+Health check:
+- container port `3001`
+- ALB target group health path `/api/health`
+
+==================================================
+STEP 15 - Create the Application Load Balancer
+==================================================
+
+In AWS Console:
+1. Open `EC2 > Load Balancers`
+2. Create `Application Load Balancer`
+3. Name: `altmed-alb`
+4. Scheme: `Internet-facing`
+5. IP type: `IPv4`
+6. Select your VPC
+7. Select at least 2 public subnets in different AZs
+8. Security group: `altmed-alb-sg`
+
+Do not finish listeners until you have:
+- ACM certificate
+- target groups
+
+==================================================
+STEP 16 - Request ACM certificate for your subdomain
+==================================================
+
+In AWS Console:
+1. Open `Certificate Manager`
+2. Request a public certificate
+3. Domain name:
+   - `app.altmedfirst.com`
+4. Validation method:
+   - `DNS validation`
+5. If your DNS is in Route 53, let ACM create the validation record
+6. Wait for certificate status `Issued`
+
+==================================================
+STEP 17 - Create target groups
+==================================================
+
+Create 2 target groups:
+
+1. Frontend target group
+   - Type: `IP`
+   - Protocol: `HTTP`
+   - Port: `3000`
+   - VPC: your VPC
+   - Health check path: `/`
+   - Name example: `altmed-frontend-tg`
+
+2. Backend target group
+   - Type: `IP`
+   - Protocol: `HTTP`
+   - Port: `3001`
+   - VPC: your VPC
+   - Health check path: `/api/health`
+   - Name example: `altmed-backend-tg`
+
+Use target type `IP` because ECS Fargate tasks use `awsvpc` networking.
+
+==================================================
+STEP 18 - Finish ALB listeners and rules
+==================================================
+
+Create listeners:
+
+1. HTTP listener on port `80`
+   Action:
+   - redirect to HTTPS `443`
+
+2. HTTPS listener on port `443`
+   Certificate:
+   - select the ACM certificate for `app.altmedfirst.com`
+   Default action:
+   - forward to frontend target group
+
+Add HTTPS listener rules:
+1. Rule for `/api`
+   Forward to backend target group
+
+2. Rule for `/api/*`
+   Forward to backend target group
+
+Default:
+- frontend target group
+
+==================================================
+STEP 19 - Create the frontend ECS service
+==================================================
+
+In ECS Console:
+1. Open cluster `altmed-cluster`
+2. Create service
+3. Launch type: `Fargate`
+4. Task definition: `altmed-frontend`
+5. Service name: `altmed-frontend`
+6. Desired tasks: `1`
+7. Networking:
+   - choose the same VPC
+   - choose public subnets
+   - Security group: `altmed-frontend-sg`
+   - Assign public IP: `Enabled`
+8. Load balancing:
+   - attach to the frontend target group
+   - container: frontend
+   - port: `3000`
+9. Create service
+
+==================================================
+STEP 20 - Create the backend ECS service
+==================================================
+
+In ECS Console:
+1. Create another service in the same cluster
+2. Launch type: `Fargate`
+3. Task definition: `altmed-backend`
+4. Service name: `altmed-backend`
+5. Desired tasks: `1`
+6. Networking:
+   - choose the same VPC
+   - choose public subnets
+   - Security group: `altmed-backend-sg`
+   - Assign public IP: `Enabled`
+7. Load balancing:
+   - attach to backend target group
+   - container: backend
+   - port: `3001`
+8. Create service
+
+Why public IP enabled here:
+- it avoids NAT gateway cost for your first deployment
+- inbound traffic is still controlled by security groups
+- backend is not directly exposed because only the ALB security group can reach port `3001`
+
+==================================================
+STEP 21 - Seed the RDS database
+==================================================
+
+This repo now supports a production seed command:
+- `npm run seed:prod`
+
+Run it once as an ECS task:
+1. In ECS, choose the backend task definition
+2. Click `Run task`
+3. Use Fargate
+4. Same VPC, subnets, and backend security group
+5. Override the backend container command to:
+   `npm run seed:prod`
+6. Run task
+7. Watch logs in CloudWatch
+
+If successful, the seed creates:
+- admin user
+- service pages
+- FAQs
+- blog seed data
+- site settings
+
+Default seeded admin:
+- email: `admin@altmedfirst.com`
+- password: `CHANGE_ME_ON_FIRST_LOGIN`
+
+Change that immediately after deployment.
+
+==================================================
+STEP 22 - Point the subdomain to the ALB
+==================================================
+
+If DNS is in Route 53:
+1. Open your hosted zone
+2. Create a new record
+3. Record name:
+   - `app`
+4. Record type:
+   - `A`
+5. Alias:
+   - `Yes`
+6. Route traffic to:
+   - your ALB
+
+If DNS is outside Route 53:
+- create a `CNAME` for the subdomain pointing to the ALB DNS name
+
+Example:
+- `app.altmedfirst.com` -> `altmed-alb-123456.us-east-1.elb.amazonaws.com`
+
+==================================================
+STEP 23 - Verify the deployment
+==================================================
+
+Check:
+- `https://app.altmedfirst.com`
+- `https://app.altmedfirst.com/api/health`
+- `https://app.altmedfirst.com/api/docs`
+- `https://app.altmedfirst.com/admin/login`
+
+If the backend health endpoint works but the site does not:
+- check frontend target group health
+- check frontend task logs
+
+If the site works but API fails:
+- check backend target group health
+- check backend task logs
+- verify RDS endpoint and password
+
+==================================================
+STEP 24 - Update images on future deploys
+==================================================
+
+Your normal future deploy flow:
+1. Build frontend image
+2. Push frontend image to ECR
+3. Build backend image
+4. Push backend image to ECR
+5. Register new task definition revisions
+6. Update ECS services to the new revisions
+
+Common commands:
+
+Frontend:
+`docker build -t altmed-frontend:latest ./frontend`
+`docker tag altmed-frontend:latest YOUR_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/altmed/frontend:latest`
+`docker push YOUR_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/altmed/frontend:latest`
+
+Backend:
+`docker build -t altmed-backend:latest ./backend`
+`docker tag altmed-backend:latest YOUR_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/altmed/backend:latest`
+`docker push YOUR_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/altmed/backend:latest`
+
+Then in ECS:
+- create new task definition revision
+- update the service to use it
+
+==================================================
+STEP 25 - Add auto scaling after launch
+==================================================
+
+Start simple:
+- desired count: `1`
+- min: `1`
+- max: `2`
+
+Add target tracking:
+- CPU target around `60%`
+or
+- Memory target around `70%`
+
+Do this separately for:
+- frontend service
+- backend service
+
+==================================================
+STEP 26 - Recommended next improvements
+==================================================
+
+After the first successful deployment, do these next:
+
+1. Move ECS tasks to private subnets
+   Then add:
+   - NAT gateway
+   or
+   - VPC endpoints for ECR, CloudWatch Logs, and related services
+
+2. Put secrets fully in Secrets Manager
+   Avoid plain environment strings in task definitions.
+
+3. Put CloudFront in front of the uploads bucket
+   This gives cleaner public image URLs and better caching.
+
+4. Set up a CI/CD pipeline
+   Example:
+   - GitHub Actions builds images
+   - pushes to ECR
+   - updates ECS services
+
+5. Enable RDS backups and tune retention
+
+==================================================
+PROJECT-SPECIFIC RISKS TO KNOW
+==================================================
+
+1. If you do not set the S3 env vars, uploads fall back to local container storage
+   That is fine for local development but not reliable for Fargate production.
+
+2. Seed task is separate from app task
+   This is normal in ECS.
+   Run the seed task once after the backend image is deployed and the DB is reachable.
+
+3. Cookie security
+   I updated the frontend auth cookie handling so cookies become `secure` in production.
+
+==================================================
+FILES IN THIS REPO TO USE
+==================================================
+
+Guide:
+- `docs/deployment/aws-ecs-fargate-rds-step-by-step.txt`
+
+Sample task definitions:
+- `docs/deployment/ecs/frontend-task-definition.sample.json`
+- `docs/deployment/ecs/backend-task-definition.sample.json`
+
+==================================================
+OFFICIAL SOURCES USED
+==================================================
+
+AWS sources:
+- RDS create DB instance:
+  https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CreateDBInstance.html
+- RDS PostgreSQL:
+  https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html
+- ECR create repository:
+  https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-create.html
+- ECR push image:
+  https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-push.html
+- ECS Fargate task definition requirements:
+  https://docs.aws.amazon.com/AmazonECS/latest/userguide/task_definition_parameters.html
+- ECS Fargate cluster creation:
+  https://docs.aws.amazon.com/AmazonECS/latest/developerguide/create-cluster-console-v2.html
+- ECS service auto scaling:
+  https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-autoscaling-targettracking.html
+- ALB creation:
+  https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-application-load-balancer.html
+- ALB target groups:
+  https://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-target-group.html
+- ACM DNS validation:
+  https://docs.aws.amazon.com/acm/latest/userguide/domain-ownership-validation.html
+- Route 53 alias to ELB:
+  https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-to-elb-load-balancer.html
+
+==================================================
+MY RECOMMENDED FIRST PRODUCTION DOMAIN
+==================================================
+
+Use:
+- `app.altmedfirst.com`
+
+Then set:
+- frontend URL = `https://app.altmedfirst.com`
+- public API URL = `https://app.altmedfirst.com`
+- internal API URL = `https://app.altmedfirst.com`
+
+==================================================
+LATER ROOT-DOMAIN CUTOVER
+==================================================
+
+When you are ready to move from `app.altmedfirst.com` to `altmedfirst.com`:
+
+1. Request or expand the ACM certificate to cover:
+   - `altmedfirst.com`
+   - optional `www.altmedfirst.com`
+
+2. Update the ALB HTTPS listener to use that certificate.
+
+3. In Route 53, create an alias `A` record for the root domain pointing to the ALB.
+
+4. Update ECS env values:
+   - `FRONTEND_URL=https://altmedfirst.com`
+   - `API_URL_INTERNAL=https://altmedfirst.com`
+   - `NEXT_PUBLIC_API_URL=https://altmedfirst.com`
+
+5. Register new frontend and backend task definition revisions and deploy them.
+
+6. Optional cleanup:
+   - keep `app.altmedfirst.com` and redirect it to `altmedfirst.com`
+   - or retire the subdomain after verification

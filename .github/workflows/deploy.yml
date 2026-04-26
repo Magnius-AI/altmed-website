@@ -1,0 +1,262 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REGISTRY: 245324547486.dkr.ecr.us-east-1.amazonaws.com
+  BACKEND_IMAGE: altmed-website-backend
+  FRONTEND_IMAGE: altmed-website-frontend
+  ECS_CLUSTER: altmed-website-cluster
+
+jobs:
+  # ─────────────────────────────────────────
+  # JOB 1: TEST BACKEND
+  # ─────────────────────────────────────────
+  test-backend:
+    name: Test Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: altmed_test
+          POSTGRES_USER: altmed
+          POSTGRES_PASSWORD: altmed_test_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: test
+      DATABASE_HOST: localhost
+      DATABASE_PORT: 5432
+      DATABASE_NAME: altmed_test
+      DATABASE_USER: altmed
+      DATABASE_PASSWORD: altmed_test_password
+      JWT_SECRET: test_jwt_secret_for_ci
+      JWT_EXPIRES_IN: 7d
+      JWT_REFRESH_SECRET: test_refresh_secret_for_ci
+      JWT_REFRESH_EXPIRES_IN: 30d
+      FRONTEND_URL: http://localhost:3000
+      EMAIL_HOST: smtp.gmail.com
+      EMAIL_PORT: 587
+      EMAIL_USER: test@test.com
+      EMAIL_PASS: test
+      CONTACT_FORM_RECIPIENT: test@test.com
+      ADMIN_ALERT_EMAIL: test@test.com
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run lint
+
+      - name: Run unit tests
+        run: npm test --if-present
+
+      - name: Run e2e tests
+        run: npm run test:e2e --if-present
+
+  # ─────────────────────────────────────────
+  # JOB 2: TEST FRONTEND
+  # ─────────────────────────────────────────
+  test-frontend:
+    name: Test Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    env:
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      NEXTAUTH_SECRET: test_nextauth_secret_for_ci
+      NEXTAUTH_URL: http://localhost:3000
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint check
+        run: npm run lint
+
+      - name: Build check
+        run: npm run build
+
+  # ─────────────────────────────────────────
+  # JOB 3: DEPLOY (only on push to main)
+  # ─────────────────────────────────────────
+  deploy:
+    name: Deploy to AWS
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # ── Build & Push Backend ──
+      - name: Build and push backend image
+        run: |
+          docker buildx create --use
+          docker buildx build \
+            --platform linux/amd64 \
+            --target production \
+            -t $ECR_REGISTRY/$BACKEND_IMAGE:latest \
+            -t $ECR_REGISTRY/$BACKEND_IMAGE:${{ github.sha }} \
+            --push \
+            ./backend
+          echo "✅ Backend image pushed"
+
+      # ── Build & Push Frontend ──
+      - name: Build and push frontend image
+        run: |
+          docker buildx build \
+            --platform linux/amd64 \
+            --target production \
+            -t $ECR_REGISTRY/$FRONTEND_IMAGE:latest \
+            -t $ECR_REGISTRY/$FRONTEND_IMAGE:${{ github.sha }} \
+            --push \
+            ./frontend
+          echo "✅ Frontend image pushed"
+
+      # ── Run DB Migrations ──
+      - name: Run database migrations
+        run: |
+          echo "Running migrations via ECS one-off task..."
+          TASK_ARN=$(aws ecs run-task \
+            --cluster $ECS_CLUSTER \
+            --launch-type FARGATE \
+            --network-configuration "awsvpcConfiguration={subnets=[subnet-0819b59c7f9236f30],securityGroups=[sg-0c28a8d9c7d185090],assignPublicIp=ENABLED}" \
+            --overrides '{
+              "containerOverrides": [{
+                "name": "altmed-website-backend",
+                "command": ["node", "dist/database/migrate.js"]
+              }]
+            }' \
+            --task-definition altmed-website-backend:latest \
+            --query 'tasks[0].taskArn' \
+            --output text)
+
+          echo "Migration task ARN: $TASK_ARN"
+
+          # Wait for migration task to complete
+          aws ecs wait tasks-stopped \
+            --cluster $ECS_CLUSTER \
+            --tasks $TASK_ARN
+
+          # Check exit code
+          EXIT_CODE=$(aws ecs describe-tasks \
+            --cluster $ECS_CLUSTER \
+            --tasks $TASK_ARN \
+            --query 'tasks[0].containers[0].exitCode' \
+            --output text)
+
+          if [ "$EXIT_CODE" != "0" ]; then
+            echo "❌ Migration failed with exit code $EXIT_CODE"
+            exit 1
+          fi
+
+          echo "✅ Migrations completed successfully"
+
+      # ── Deploy Backend ──
+      - name: Deploy backend to ECS
+        run: |
+          aws ecs update-service \
+            --cluster $ECS_CLUSTER \
+            --service altmed-website-backend \
+            --force-new-deployment
+          echo "✅ Backend deployment triggered"
+
+      # ── Deploy Frontend ──
+      - name: Deploy frontend to ECS
+        run: |
+          aws ecs update-service \
+            --cluster $ECS_CLUSTER \
+            --service altmed-website-frontend \
+            --force-new-deployment
+          echo "✅ Frontend deployment triggered"
+
+      # ── Wait for deployments ──
+      - name: Wait for backend to be stable
+        run: |
+          echo "Waiting for backend deployment..."
+          aws ecs wait services-stable \
+            --cluster $ECS_CLUSTER \
+            --services altmed-website-backend
+          echo "✅ Backend is stable"
+
+      - name: Wait for frontend to be stable
+        run: |
+          echo "Waiting for frontend deployment..."
+          aws ecs wait services-stable \
+            --cluster $ECS_CLUSTER \
+            --services altmed-website-frontend
+          echo "✅ Frontend is stable"
+
+      # ── Verify deployment ──
+      - name: Verify deployment
+        run: |
+          sleep 10
+          HEALTH=$(curl -sf http://altmed-website-frontend-alb-1517886270.us-east-1.elb.amazonaws.com/api/health)
+          echo "Health check response: $HEALTH"
+
+          if echo $HEALTH | grep -q '"status":"ok"'; then
+            echo "✅ Deployment verified successfully!"
+          else
+            echo "❌ Health check failed!"
+            exit 1
+          fi
+
+      # ── Notify on failure ──
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed for commit ${{ github.sha }}"
+          echo "Branch: ${{ github.ref }}"
+          echo "Author: ${{ github.actor }}"

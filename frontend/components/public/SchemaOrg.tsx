@@ -1,0 +1,12 @@
+type Props = {
+  schema: Record<string, unknown>;
+};
+
+export function SchemaOrg({ schema }: Props) {
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
