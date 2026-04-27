@@ -169,6 +169,19 @@ jobs:
       - name: Run database migrations
         run: |
           echo "Running migrations via ECS one-off task..."
+          BACKEND_TASK_DEFINITION=$(aws ecs describe-services \
+            --cluster $ECS_CLUSTER \
+            --services altmed-website-backend \
+            --query 'services[0].taskDefinition' \
+            --output text)
+
+          if [ -z "$BACKEND_TASK_DEFINITION" ] || [ "$BACKEND_TASK_DEFINITION" = "None" ]; then
+            echo "❌ Could not resolve backend task definition"
+            exit 1
+          fi
+
+          echo "Using backend task definition: $BACKEND_TASK_DEFINITION"
+
           TASK_ARN=$(aws ecs run-task \
             --cluster $ECS_CLUSTER \
             --launch-type FARGATE \
@@ -179,7 +192,7 @@ jobs:
                 "command": ["node", "dist/database/migrate.js"]
               }]
             }' \
-            --task-definition altmed-website-backend:latest \
+            --task-definition "$BACKEND_TASK_DEFINITION" \
             --query 'tasks[0].taskArn' \
             --output text)
 
