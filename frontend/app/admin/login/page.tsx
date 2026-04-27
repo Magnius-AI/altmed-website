@@ -16,7 +16,7 @@ const errorMessages: Record<string, string> = {
 };
 
 export default function AdminLoginPage({ searchParams }: AdminLoginPageProps) {
-  const email = searchParams?.email ?? "admin@altmedfirst.com";
+  const email = searchParams?.email ?? "";
   const error = searchParams?.error ? errorMessages[searchParams.error] ?? errorMessages.invalid : "";
 
   return (

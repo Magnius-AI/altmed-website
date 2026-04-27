@@ -37,6 +37,9 @@ services:
       FRONTEND_URL: http://localhost:3000
     volumes:
       - ./backend/src:/app/src
+      - ./backend/tsconfig.json:/app/tsconfig.json:ro
+      - ./backend/package.json:/app/package.json:ro
+      - ./backend/package-lock.json:/app/package-lock.json:ro
       - ./backend/uploads:/app/uploads
     ports:
       - "3001:3001"
@@ -59,6 +62,8 @@ services:
       - ./frontend/components:/app/components
       - ./frontend/public:/app/public
       - ./frontend/lib:/app/lib
+      - ./frontend/package.json:/app/package.json:ro
+      - ./frontend/package-lock.json:/app/package-lock.json:ro
       - ./frontend/next.config.js:/app/next.config.js:ro
       - ./frontend/tsconfig.json:/app/tsconfig.json:ro
     ports:
