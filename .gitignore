@@ -2,7 +2,7 @@ node_modules
 .next
 dist
 coverage
-uploads
+/uploads
 .env
 .DS_Store
 frontend/.next
@@ -10,4 +10,3 @@ backend/dist
 backend/uploads/*
 !backend/uploads/.gitkeep
 aws.conf.txt
-
