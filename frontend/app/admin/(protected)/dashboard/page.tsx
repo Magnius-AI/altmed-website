@@ -3,6 +3,8 @@ import Link from "next/link";
 import {
   Activity,
   Bell,
+  ClipboardList,
+  DollarSign,
   FileText,
   Inbox,
   MessageCircleQuestion,
@@ -11,6 +13,7 @@ import {
   Users
 } from "lucide-react";
 import { getAdminDashboardData } from "@/lib/api";
+import { updateTreatmentPlansVisibilityAction } from "./actions";
 
 const quickLinks: Array<{
   href: Route;
@@ -33,6 +36,21 @@ const quickLinks: Array<{
     description: "Review new messages and bot-filtered submissions."
   },
   {
+    href: "/admin/treatment-plans" as Route,
+    label: "Treatment Plans",
+    description: "Manage public plans, pricing, and patient enrollment links."
+  },
+  {
+    href: "/admin/treatment-plans/cash-inflow" as Route,
+    label: "Cash Inflow",
+    description: "Review collected patient payments, refunds, and pending checkout value."
+  },
+  {
+    href: "/admin/treatment-plans/payments" as Route,
+    label: "Payment Settings",
+    description: "Update Stripe keys, webhook secret, and payment mode."
+  },
+  {
     href: "/admin/site-settings" as Route,
     label: "Site Settings",
     description: "Update NAP, hours, social links, and SEO defaults."
@@ -43,6 +61,10 @@ function formatNumber(value: number) {
   return new Intl.NumberFormat("en-US").format(value);
 }
 
+function formatMoney(cents: number) {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(cents / 100);
+}
+
 export default async function AdminDashboardPage() {
   const data = await getAdminDashboardData();
   const publishedPosts = data.blogPosts.filter((post) => post.published).length;
@@ -51,8 +73,29 @@ export default async function AdminDashboardPage() {
   const activeProviders = data.providers.filter((provider) => provider.isActive !== false).length;
   const unreadMessages = data.contactStats.unreviewed;
   const botBlocked = data.contactStats.botBlocked;
+  const planMetrics = data.treatmentPlanMetrics;
+  const featuresSetting = data.settings.find((setting) => setting.key === "features");
+  const treatmentPlansEnabled = featuresSetting?.value?.treatmentPlansEnabled !== false;
 
   const stats = [
+    {
+      label: "Active Plans",
+      value: planMetrics.activePlans,
+      detail: "Public treatment plans accepting enrollment",
+      icon: ClipboardList
+    },
+    {
+      label: "Total Enrolled",
+      value: planMetrics.totalEnrolled,
+      detail: "Paid, active, or completed enrollments",
+      icon: Users
+    },
+    {
+      label: "Active Members",
+      value: planMetrics.activeMembers,
+      detail: `${formatMoney(planMetrics.revenueMtdCents)} revenue this month`,
+      icon: DollarSign
+    },
     {
       label: "Published Posts",
       value: publishedPosts,
@@ -91,7 +134,7 @@ export default async function AdminDashboardPage() {
             <h2 className="mt-3 text-3xl text-neutral-900">Welcome{data.user?.name ? `, ${data.user.name}` : ""}</h2>
             <p className="mt-2 max-w-3xl text-sm leading-7 text-neutral-600">
               Your admin session is authenticated with signed access and refresh tokens. Use this
-              overview to jump into publishing, SEO, provider, and operations work.
+              overview to jump into patient payments, publishing, SEO, provider, and operations work.
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-3 lg:min-w-[30rem]">
@@ -132,6 +175,30 @@ export default async function AdminDashboardPage() {
             </div>
           );
         })}
+      </section>
+
+      <section className="admin-card p-5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <div className="admin-label">Public Treatment Plans</div>
+            <h3 className="mt-2 text-xl font-semibold text-neutral-900">
+              {treatmentPlansEnabled ? "Treatment plans are visible" : "Treatment plans are hidden"}
+            </h3>
+            <p className="mt-1 max-w-3xl text-sm leading-6 text-neutral-600">
+              Turn this on to show a Treatment Plans link in the public navigation and make the plan pages available.
+              If there are no active plans, the public page will show a not-available message.
+            </p>
+          </div>
+          <form action={updateTreatmentPlansVisibilityAction} className="flex items-center gap-3">
+            <label className="flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-3 text-sm font-semibold text-neutral-700">
+              <input type="checkbox" name="treatmentPlansEnabled" defaultChecked={treatmentPlansEnabled} />
+              Show plans
+            </label>
+            <button type="submit" className="btn btn-primary">
+              Save
+            </button>
+          </form>
+        </div>
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[1fr_0.9fr]">

@@ -9,11 +9,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: "#117C7A",
-        "primary-dark": "#0C6160",
-        "primary-light": "#E6F5F3",
-        accent: "#FF7A45",
-        "accent-dark": "#E45E31",
+        primary: "#32c36c",
+        "primary-dark": "#229653",
+        "primary-light": "#EAFAF1",
+        accent: "#32c36c",
+        "accent-dark": "#229653",
         secondary: "#7B61C9",
         neutral: {
           50: "#F7FAFC",

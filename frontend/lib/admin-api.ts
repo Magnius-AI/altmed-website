@@ -3,15 +3,41 @@ import "server-only";
 import { cookies } from "next/headers";
 
 const API_URL =
+  process.env.BACKEND_URL_INTERNAL ??
   process.env.API_URL_INTERNAL ??
   process.env.NEXT_PUBLIC_API_URL ??
   "http://localhost:3001";
 
+function formatErrorMessage(value: unknown): string {
+  if (!value) {
+    return "Request failed";
+  }
+
+  if (typeof value === "string") {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(formatErrorMessage).join("; ");
+  }
+
+  if (typeof value === "object") {
+    const record = value as { message?: unknown; error?: unknown; statusCode?: unknown };
+    const details = record.message ?? record.error;
+    if (details) {
+      return formatErrorMessage(details);
+    }
+    return JSON.stringify(value);
+  }
+
+  return String(value);
+}
+
 async function parseResponse<T>(response: Response): Promise<T> {
-  const payload = (await response.json().catch(() => null)) as { data?: T; message?: string } | null;
+  const payload = (await response.json().catch(() => null)) as { data?: T; message?: unknown; error?: unknown } | null;
 
   if (!response.ok) {
-    throw new Error(payload?.message ?? "Request failed");
+    throw new Error(formatErrorMessage(payload?.message ?? payload?.error ?? payload));
   }
 
   return payload?.data ?? (payload as T);

@@ -2,11 +2,15 @@ import { Footer } from "@/components/public/Footer";
 import { AnnouncementBanner } from "@/components/public/AnnouncementBanner";
 import { Navbar } from "@/components/public/Navbar";
 import { SchemaOrg } from "@/components/public/SchemaOrg";
-import { getAnnouncementBanner } from "@/lib/api";
+import { getAnnouncementBanner, getNavigationMenu, getPublicFeatures } from "@/lib/api";
 import { buildClinicSchema, buildWebsiteSchema } from "@/lib/schema";
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  const announcement = await getAnnouncementBanner();
+  const [announcement, navigationMenu, features] = await Promise.all([
+    getAnnouncementBanner(),
+    getNavigationMenu(),
+    getPublicFeatures()
+  ]);
 
   return (
     <>
@@ -15,7 +19,7 @@ export default async function PublicLayout({ children }: { children: React.React
       </a>
       <SchemaOrg schema={buildClinicSchema()} />
       <SchemaOrg schema={buildWebsiteSchema()} />
-      <Navbar />
+      <Navbar menu={navigationMenu} showTreatmentPlans={features.treatmentPlansEnabled} />
       <AnnouncementBanner announcement={announcement} />
       <div id="main-content">{children}</div>
       <Footer />

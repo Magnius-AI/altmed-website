@@ -19,7 +19,15 @@ export const metadata: Metadata = {
     url: "https://altmedfirst.com",
     siteName: "Altmed Medical Center",
     locale: "en_US",
-    type: "website"
+    type: "website",
+    images: ["/legacy-assets/homepage/clinic-front-view.jpg"]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Altmed Medical Center | Walk-In Clinic Manassas VA",
+    description:
+      "Walk-in urgent care, primary care, DOT physicals, telehealth, occupational health, and weight loss services in Manassas, Virginia.",
+    images: ["/legacy-assets/homepage/clinic-front-view.jpg"]
   }
 };
 

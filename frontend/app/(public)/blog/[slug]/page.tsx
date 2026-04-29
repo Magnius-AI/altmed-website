@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { FAQAccordion } from "@/components/public/FAQAccordion";
 import { SchemaOrg } from "@/components/public/SchemaOrg";
 import { getBlogPost, getBlogPosts } from "@/lib/api";
 import { buildBreadcrumbSchema } from "@/lib/schema";
@@ -23,6 +24,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
   const [post, posts] = await Promise.all([getBlogPost(params.slug), getBlogPosts()]);
   const related = posts.filter((entry: { slug: string }) => entry.slug !== post.slug).slice(0, 3);
   const headings = Array.from(post.body.matchAll(/<h2>(.*?)<\/h2>/g)).map((match) => match[1]);
+  const blogFaqs = (post.faqs ?? []).filter((faq) => faq.question && faq.answer);
 
   return (
     <main className="container-shell py-16">
@@ -33,12 +35,28 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
           { name: post.title, item: `https://altmedfirst.com${publicRoutes.blogPost(post.slug)}` }
         ])}
       />
+      {blogFaqs.length ? (
+        <SchemaOrg
+          schema={{
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: blogFaqs.map((faq) => ({
+              "@type": "Question",
+              name: faq.question,
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: faq.answer
+              }
+            }))
+          }}
+        />
+      ) : null}
       <section className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
         <div>
           <div className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
             {post.category ?? "Health Article"}
           </div>
-          <h1 className="mt-4 text-4xl font-semibold text-neutral-900 md:text-[3rem]">{post.title}</h1>
+          <h1 className="mt-4 text-4xl font-semibold leading-[1.14] text-neutral-900 md:text-[3rem]">{post.title}</h1>
           <p className="mt-5 max-w-3xl text-lg leading-8 text-neutral-700">{post.excerpt}</p>
           <div className="mt-6 text-xs uppercase tracking-[0.14em] text-neutral-400">
             {post.author ? `${post.author} • ` : ""}
@@ -52,7 +70,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         <div className="relative min-h-[340px] overflow-hidden rounded-[2rem] border border-slate-200">
           <Image
             src={post.featuredImage ?? "/legacy-assets/homepage/clinic-front-view.jpg"}
-            alt={post.title}
+            alt={post.featuredImageAlt ?? post.title}
             fill
             className="object-cover"
           />
@@ -94,6 +112,19 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
           </div>
         </aside>
       </section>
+      {blogFaqs.length ? (
+        <section className="mt-12 rounded-[1rem] border border-slate-200 bg-white p-6 md:p-8">
+          <div className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
+            Article FAQ
+          </div>
+          <h2 className="mt-3 text-2xl font-semibold leading-tight text-neutral-900">
+            Questions related to this article
+          </h2>
+          <div className="mt-6">
+            <FAQAccordion items={blogFaqs} />
+          </div>
+        </section>
+      ) : null}
       <section className="mt-12">
         <h2 className="text-2xl font-semibold text-neutral-900">Related Posts</h2>
         <div className="mt-6 grid gap-4 md:grid-cols-3">

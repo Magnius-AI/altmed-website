@@ -17,7 +17,7 @@ function normalizeRouteSegment(value: string | undefined, fallback: string): str
 }
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { rawBody: true });
   const reflector = app.get(Reflector);
   const configService = app.get(ConfigService);
   const apiPrefix = normalizeRouteSegment(configService.get<string>("app.apiPrefix"), "api");

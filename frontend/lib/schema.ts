@@ -32,7 +32,17 @@ export function buildClinicSchema() {
         closes: "17:00"
       }
     ],
-    areaServed: ["Manassas", "Prince William County", "Northern Virginia"],
+    areaServed: [
+      "Manassas, VA",
+      "Gainesville, VA",
+      "Haymarket, VA",
+      "Bristow, VA",
+      "Woodbridge, VA",
+      "Centreville, VA",
+      "Dale City, VA",
+      "Prince William County, VA",
+      "Northern Virginia"
+    ],
     availableLanguage: clinic.languages,
     medicalSpecialty: [
       "Urgent Care",

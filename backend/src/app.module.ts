@@ -15,10 +15,15 @@ import { SeoModule } from "./modules/seo/seo.module";
 import { AnalyticsModule } from "./modules/analytics/analytics.module";
 import { UploadsModule } from "./modules/uploads/uploads.module";
 import { HealthModule } from "./modules/health/health.module";
+import { TreatmentPlansModule } from "./modules/treatment-plans/treatment-plans.module";
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [".env", "../.env", "backend/.env"],
+      load: [configuration]
+    }),
     ThrottlerModule.forRoot([
       {
         ttl: 60_000,
@@ -37,7 +42,8 @@ import { HealthModule } from "./modules/health/health.module";
     SeoModule,
     AnalyticsModule,
     UploadsModule,
-    HealthModule
+    HealthModule,
+    TreatmentPlansModule
   ]
 })
 export class AppModule {}

@@ -28,6 +28,25 @@ function toMultiStringArray(formData: FormData, name: string) {
   return toStringArray(formData.get(`${name}Csv`));
 }
 
+function parseBlogFaqs(formData: FormData) {
+  const rawFaqs = String(formData.get("faqsJson") ?? "").trim();
+  if (!rawFaqs) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(rawFaqs) as Array<{ question?: string; answer?: string }>;
+    return parsed
+      .map((faq) => ({
+        question: String(faq.question ?? "").trim(),
+        answer: String(faq.answer ?? "").trim()
+      }))
+      .filter((faq) => faq.question && faq.answer);
+  } catch {
+    return [];
+  }
+}
+
 async function resolveImageUrl(formData: FormData) {
   const uploaded = await uploadAdminImage(formData.get("imageFile") as File | null);
   return uploaded?.url ?? (String(formData.get("featuredImage") ?? "").trim() || undefined);
@@ -51,6 +70,7 @@ function buildBlogPayload(formData: FormData, featuredImage?: string) {
     metaKeywords: String(formData.get("metaKeywords") ?? "").trim() || undefined,
     canonicalUrl: String(formData.get("canonicalUrl") ?? "").trim() || undefined,
     tags: toMultiStringArray(formData, "tags"),
+    faqs: parseBlogFaqs(formData),
     featured: toBoolean(formData.get("featured")),
     published,
     publishedAt: publishedAtValue ? new Date(publishedAtValue).toISOString() : undefined

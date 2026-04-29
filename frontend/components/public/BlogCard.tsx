@@ -41,7 +41,7 @@ export function BlogCard({ post }: Props) {
         </div>
       </div>
       <div className="p-7">
-        <h3 className="mt-3 text-[29px] font-semibold leading-[1.14] text-[var(--color-text-dark)]">{post.title}</h3>
+        <h3 className="mt-3 text-[1.55rem] font-semibold leading-[1.18] text-[var(--color-text-dark)]">{post.title}</h3>
         <p className="mt-4 text-base leading-7 text-[var(--color-text-muted)]">{post.excerpt}</p>
         <div className="mt-5 text-xs uppercase tracking-[0.14em] text-[rgba(82,102,121,0.75)]">
           {post.author ? `${post.author} • ` : ""}

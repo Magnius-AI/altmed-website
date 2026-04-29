@@ -16,7 +16,7 @@ export function ImageUpload({
   label = "Featured image"
 }: Props) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5">
+    <div className="rounded-[14px] border border-slate-200 bg-white p-5">
       <div className="text-sm font-semibold text-neutral-900">{label}</div>
       <p className="mt-1 text-sm text-neutral-500">
         Upload an image file or keep a hosted image URL.
@@ -28,7 +28,7 @@ export function ImageUpload({
             type="file"
             name={fileInputName}
             accept="image/png,image/jpeg,image/webp,image/gif"
-            className="focus-ring block w-full rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3 text-sm text-neutral-600"
+            className="focus-ring block w-full rounded-lg border border-dashed border-slate-300 bg-slate-50 p-3 text-sm text-neutral-600"
           />
         </label>
         <label className="block">
@@ -37,7 +37,7 @@ export function ImageUpload({
             type="text"
             name={urlInputName}
             defaultValue={defaultUrl ?? ""}
-            className="focus-ring w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-neutral-700"
+            className="focus-ring w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-neutral-700"
             placeholder="/uploads/example.webp"
           />
         </label>
@@ -47,12 +47,12 @@ export function ImageUpload({
             type="text"
             name={altInputName}
             defaultValue={defaultAlt ?? ""}
-            className="focus-ring w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-neutral-700"
+            className="focus-ring w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-neutral-700"
             placeholder="Describe the image for accessibility and SEO"
           />
         </label>
         {defaultUrl ? (
-          <div className="rounded-xl bg-slate-50 p-3 text-sm text-neutral-600">
+          <div className="rounded-lg bg-slate-50 p-3 text-sm text-neutral-600">
             Current image: <span className="font-mono text-xs">{defaultUrl}</span>
           </div>
         ) : null}

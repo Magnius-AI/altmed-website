@@ -49,6 +49,21 @@ const pageTitles: Array<{ match: (pathname: string) => boolean; title: string; d
     match: (pathname) => pathname.startsWith("/admin/seo-settings"),
     title: "SEO Settings",
     description: "Monitor crawl controls, redirects, and site-wide search metadata."
+  },
+  {
+    match: (pathname) => pathname.startsWith("/admin/treatment-plans/payments"),
+    title: "Payment Settings",
+    description: "Configure Stripe checkout keys and webhook details."
+  },
+  {
+    match: (pathname) => pathname.startsWith("/admin/treatment-plans/enrollments"),
+    title: "Plan Enrollments",
+    description: "Review patient enrollment status, payment details, and program timelines."
+  },
+  {
+    match: (pathname) => pathname.startsWith("/admin/treatment-plans"),
+    title: "Treatment Plans",
+    description: "Manage treatment plan catalog, prices, durations, and public enrollment links."
   }
 ];
 
@@ -63,7 +78,7 @@ export function AdminTopbar() {
   const page = pageTitles.find((item) => item.match(pathname)) ?? pageTitles[0];
 
   return (
-    <div className="sticky top-0 z-20 border-b border-slate-200 bg-white px-6 py-5">
+    <div className="sticky top-0 z-20 border-b border-slate-200 bg-white px-5 py-4">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div>
           <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
@@ -72,23 +87,23 @@ export function AdminTopbar() {
           <h1 className="mt-2 text-3xl text-neutral-900">{page.title}</h1>
           <p className="mt-1 max-w-2xl text-sm text-neutral-500">{page.description}</p>
         </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="flex items-center gap-3 rounded-full border border-slate-200 bg-[var(--color-bg-gray)] px-4 py-3 text-sm text-neutral-500">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="flex h-10 min-w-0 items-center gap-2 rounded-md border border-slate-200 bg-[var(--color-bg-gray)] px-3 text-sm text-neutral-500 xl:w-[26rem]">
             <Search className="h-4 w-4 text-slate-400" />
-            <span>Search content, slugs, categories, or providers</span>
+            <span className="truncate">Search content, slugs, categories, or providers</span>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-neutral-700">
+          <div className="flex items-center gap-2">
+            <div className="flex h-10 items-center rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-neutral-700">
               {today}
             </div>
             <button
               type="button"
-              className="focus-ring flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-neutral-600"
+              className="focus-ring flex h-10 w-10 items-center justify-center rounded-md border border-slate-200 bg-white text-neutral-600"
               aria-label="Notifications"
             >
               <Bell className="h-4 w-4" />
             </button>
-            <Link href="/" className="btn-primary">
+            <Link href="/" className="btn-primary h-10">
               View Site
               <ExternalLink className="h-4 w-4" />
             </Link>

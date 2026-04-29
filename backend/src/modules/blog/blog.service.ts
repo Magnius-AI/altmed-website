@@ -62,6 +62,7 @@ export class BlogService {
       this.repository.create({
         ...dto,
         tags: this.normalizeTags(dto.tags),
+        faqs: this.normalizeFaqs(dto.faqs),
         publishedAt: dto.publishedAt ? new Date(dto.publishedAt) : null
       })
     );
@@ -76,6 +77,7 @@ export class BlogService {
 
     Object.assign(post, dto, {
       tags: dto.tags !== undefined ? this.normalizeTags(dto.tags) : post.tags,
+      faqs: dto.faqs !== undefined ? this.normalizeFaqs(dto.faqs) : post.faqs,
       publishedAt: dto.publishedAt ? new Date(dto.publishedAt) : post.publishedAt
     });
 
@@ -290,6 +292,15 @@ export class BlogService {
       .map((tag) => tag.trim())
       .filter(Boolean)
       .filter((tag, index, values) => values.indexOf(tag) === index);
+  }
+
+  private normalizeFaqs(faqs?: Array<{ question: string; answer: string }>) {
+    return (faqs ?? [])
+      .map((faq) => ({
+        question: String(faq.question ?? "").trim(),
+        answer: String(faq.answer ?? "").trim()
+      }))
+      .filter((faq) => faq.question && faq.answer);
   }
 
   private resolveSlug(dto: CreateBlogTaxonomyDto | UpdateBlogTaxonomyDto) {

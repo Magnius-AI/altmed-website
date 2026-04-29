@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { create } from "xmlbuilder2";
 import { Repository } from "typeorm";
-import { BlogPost, ServicePage, SiteSettings } from "../../database/entities";
+import { BlogPost, ServicePage, SiteSettings, TreatmentPlan } from "../../database/entities";
 
 @Injectable()
 export class SeoService {
@@ -11,16 +11,20 @@ export class SeoService {
     @InjectRepository(ServicePage)
     private readonly servicesRepository: Repository<ServicePage>,
     @InjectRepository(SiteSettings)
-    private readonly settingsRepository: Repository<SiteSettings>
+    private readonly settingsRepository: Repository<SiteSettings>,
+    @InjectRepository(TreatmentPlan)
+    private readonly treatmentPlansRepository: Repository<TreatmentPlan>
   ) {}
 
   async sitemapXml() {
     const baseUrl = "https://altmedfirst.com";
     const blogPosts = await this.blogRepository.find({ where: { published: true } });
     const servicePages = await this.servicesRepository.find({ where: { isActive: true } });
+    const treatmentPlans = await this.treatmentPlansRepository.find({ where: { isActive: true } });
     const staticPaths = [
       { path: "", priority: "1.0" },
       { path: "/services", priority: "0.9" },
+      { path: "/plans", priority: "0.9" },
       { path: "/health-blogs", priority: "0.7" },
       { path: "/faqs", priority: "0.6" },
       { path: "/contact-us", priority: "0.6" },
@@ -51,6 +55,16 @@ export class SeoService {
         .txt("0.7");
     });
 
+    treatmentPlans.forEach((plan) => {
+      doc
+        .ele("url")
+        .ele("loc")
+        .txt(`${baseUrl}/plans/${plan.slug}`)
+        .up()
+        .ele("priority")
+        .txt("0.8");
+    });
+
     return doc.end({ prettyPrint: true });
   }
 
@@ -59,6 +73,8 @@ export class SeoService {
 Allow: /
 Disallow: /admin
 Disallow: /admin/*
+Disallow: /dashboard/
+Disallow: /login
 Disallow: /api/
 Sitemap: https://altmedfirst.com/sitemap.xml`;
   }

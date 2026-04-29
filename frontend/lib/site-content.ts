@@ -77,6 +77,7 @@ export const publicRoutes = {
   home: "/",
   about: "/about-us",
   services: "/services",
+  plans: "/plans",
   departments: "/services",
   appointment: "/appointment",
   blog: "/health-blogs",
@@ -1711,6 +1712,11 @@ export const defaultNavigationMenu: NavigationMenuItem[] = [
     href: "/patient-forms"
   },
   {
+    id: "plans",
+    label: "Plans",
+    href: "/plans"
+  },
+  {
     id: "blog",
     label: "Blog",
     href: "/health-blogs"
@@ -1751,13 +1757,18 @@ export const adminNav: AdminNavGroup[] = [
   {
     label: "Configuration",
     items: [
-      { href: "/admin/menus", label: "Menus" },
       { href: "/admin/site-settings", label: "Settings" },
       { href: "/admin/seo-settings", label: "SEO" }
     ]
   },
   {
     label: "Operations",
-    items: [{ href: "/admin/contact-submissions", label: "Contact Inbox" }]
+    items: [
+      { href: "/admin/treatment-plans", label: "Treatment Plans" },
+      { href: "/admin/treatment-plans/cash-inflow", label: "Cash Inflow" },
+      { href: "/admin/treatment-plans/enrollments", label: "Enrollments" },
+      { href: "/admin/treatment-plans/payments", label: "Payments" },
+      { href: "/admin/contact-submissions", label: "Contact Inbox" }
+    ]
   }
 ];

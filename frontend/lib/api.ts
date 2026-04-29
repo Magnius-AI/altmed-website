@@ -11,6 +11,7 @@ import {
 import { cookies } from "next/headers";
 
 const API_URL =
+  process.env.BACKEND_URL_INTERNAL ??
   process.env.API_URL_INTERNAL ??
   process.env.NEXT_PUBLIC_API_URL ??
   "http://localhost:3001";
@@ -45,6 +46,7 @@ export type BlogPost = {
   featuredImageAlt?: string | null;
   canonicalUrl?: string | null;
   tags?: string[] | null;
+  faqs?: Array<{ question: string; answer: string }> | null;
   featured?: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -104,6 +106,13 @@ export type AnalyticsSummary = {
   byName: Record<string, number>;
 };
 
+export type TreatmentPlanMetrics = {
+  activePlans: number;
+  totalEnrolled: number;
+  revenueMtdCents: number;
+  activeMembers: number;
+};
+
 export type AdminUser = {
   id: string;
   email: string;
@@ -122,6 +131,7 @@ export type AdminDashboardData = {
   servicePages: ServicePage[];
   settings: SiteSetting[];
   analytics: AnalyticsSummary;
+  treatmentPlanMetrics: TreatmentPlanMetrics;
   routeAudit: typeof reconstructedLegacyRoutes;
 };
 
@@ -149,6 +159,58 @@ export type ServicePage = {
   metaKeywords: string;
   featuredImage: string;
   isActive?: boolean;
+};
+
+export type TreatmentPlan = {
+  id: string;
+  name: string;
+  slug: string;
+  category?: string | null;
+  description?: string | null;
+  durationLabel?: string | null;
+  durationDays?: number | null;
+  priceCents: number;
+  currency: string;
+  checklist?: string[] | null;
+  isActive: boolean;
+  stripePriceId?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  summary?: {
+    planId: string;
+    enrollmentCount: number;
+    revenueCents: number;
+  };
+};
+
+export type PlanEnrollment = {
+  id: string;
+  planId: string;
+  patientName?: string | null;
+  patientEmail: string;
+  patientPhone?: string | null;
+  stripeSessionId?: string | null;
+  stripePaymentIntent?: string | null;
+  status: string;
+  amountPaidCents?: number | null;
+  enrolledAt?: string | null;
+  startsAt?: string | null;
+  endsAt?: string | null;
+  notes?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  plan?: TreatmentPlan | null;
+};
+
+export type StripeSettingsSummary = {
+  stripePublishableKey: string;
+  stripeSecretKeyLast4: string;
+  stripeWebhookSecretLast4: string;
+  isLiveMode: boolean;
+};
+
+export type PublicFeatures = {
+  treatmentPlansEnabled: boolean;
 };
 
 function normalizeAssetPath(path?: string | null) {
@@ -377,6 +439,48 @@ export async function getAdminBlogTags() {
   return safeAdminFetch<BlogTaxonomy[]>("/api/blog/admin/tags", []);
 }
 
+export async function getTreatmentPlans() {
+  return safeFetch<TreatmentPlan[]>("/api/treatment-plans", []);
+}
+
+export async function getTreatmentPlan(slug: string) {
+  return safeFetch<TreatmentPlan | null>(`/api/treatment-plans/${slug}`, null);
+}
+
+export async function getAdminTreatmentPlans() {
+  return safeAdminFetch<TreatmentPlan[]>("/api/treatment-plans/admin", []);
+}
+
+export async function getAdminPlanEnrollments(filters?: { planId?: string; status?: string }) {
+  const params = new URLSearchParams();
+  if (filters?.planId && filters.planId !== "all") {
+    params.set("planId", filters.planId);
+  }
+  if (filters?.status && filters.status !== "all") {
+    params.set("status", filters.status);
+  }
+  const suffix = params.toString() ? `?${params.toString()}` : "";
+  return safeAdminFetch<PlanEnrollment[]>(`/api/treatment-plans/admin/enrollments${suffix}`, []);
+}
+
+export async function getTreatmentPlanMetrics() {
+  return safeAdminFetch<TreatmentPlanMetrics>("/api/treatment-plans/admin/metrics", {
+    activePlans: 0,
+    totalEnrolled: 0,
+    revenueMtdCents: 0,
+    activeMembers: 0
+  });
+}
+
+export async function getStripeSettingsSummary() {
+  return safeAdminFetch<StripeSettingsSummary>("/api/treatment-plans/admin/stripe-settings", {
+    stripePublishableKey: "",
+    stripeSecretKeyLast4: "",
+    stripeWebhookSecretLast4: "",
+    isLiveMode: false
+  });
+}
+
 export async function getAdminFaqs() {
   return safeAdminFetch<FaqItem[]>("/api/faq/admin", []);
 }
@@ -429,6 +533,13 @@ export async function getNavigationMenu(): Promise<NavigationMenuItem[]> {
   return menu as NavigationMenuItem[];
 }
 
+export async function getPublicFeatures(): Promise<PublicFeatures> {
+  const setting = await getSiteSetting("features");
+  return {
+    treatmentPlansEnabled: setting?.value?.treatmentPlansEnabled !== false
+  };
+}
+
 export async function getAdminDashboardData(): Promise<AdminDashboardData> {
   const [
     user,
@@ -440,7 +551,8 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
     providers,
     servicePages,
     settings,
-    analytics
+    analytics,
+    treatmentPlanMetrics
   ] = await Promise.all([
     getAdminUser(),
     getAdminBlogPosts(),
@@ -451,7 +563,8 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
     getAdminProviders(),
     safeFetch<ServicePage[]>("/api/services-pages", []),
     getAdminSiteSettings(),
-    getAdminAnalyticsSummary()
+    getAdminAnalyticsSummary(),
+    getTreatmentPlanMetrics()
   ]);
 
   return {
@@ -465,6 +578,7 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
     servicePages: servicePages.map(normalizeServicePage),
     settings,
     analytics,
+    treatmentPlanMetrics,
     routeAudit: reconstructedLegacyRoutes
   };
 }
