@@ -7,7 +7,7 @@ export function LoginSubmitButton() {
 
   return (
     <button
-      className="admin-action min-h-[52px] w-full justify-center disabled:opacity-70"
+      className="admin-action min-h-[42px] w-full justify-center disabled:opacity-70"
       disabled={pending}
       type="submit"
     >

@@ -167,10 +167,10 @@ export default async function HomePage() {
               <Link href={buildBookingUrl("home_hero", "book-appointment") as Route} className="btn-primary">
                 Book Appointment
               </Link>
-              <Link href={publicRoutes.services as Route} className="btn-secondary">
+              <Link href={publicRoutes.services as Route} className="btn border-white bg-white text-[var(--color-text-dark)] hover:bg-[var(--color-primary-light)]">
                 Explore Services
               </Link>
-              <a href={`tel:${clinic.phone}`} className="btn-secondary">
+              <a href={`tel:${clinic.phone}`} className="btn border-white/80 bg-slate-950/75 text-white hover:bg-slate-900">
                 Call {clinic.phone}
               </a>
             </div>

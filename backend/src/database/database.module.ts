@@ -12,6 +12,9 @@ import {
   Provider,
   ServicePage,
   SiteSettings,
+  PlanEnrollment,
+  StripeSettings,
+  TreatmentPlan,
   User
 } from "./entities";
 
@@ -41,7 +44,10 @@ import {
           ServicePage,
           Provider,
           SiteSettings,
-          AnalyticsEvent
+          AnalyticsEvent,
+          TreatmentPlan,
+          PlanEnrollment,
+          StripeSettings
         ],
         synchronize: true
       })

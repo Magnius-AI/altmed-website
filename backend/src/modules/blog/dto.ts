@@ -66,6 +66,10 @@ export class CreateBlogPostDto {
   published?: boolean;
 
   @IsOptional()
+  @IsArray()
+  faqs?: Array<{ question: string; answer: string }>;
+
+  @IsOptional()
   @IsDateString()
   publishedAt?: string;
 }

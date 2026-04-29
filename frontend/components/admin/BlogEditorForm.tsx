@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BlogFaqEditor } from "@/components/admin/BlogFaqEditor";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { SEOFieldset } from "@/components/admin/SEOFieldset";
@@ -35,13 +36,13 @@ export function BlogEditorForm({
   tags = []
 }: Props) {
   return (
-    <form action={action} className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-      <div className="space-y-6">
-        <section className="admin-card p-6">
+    <form action={action} className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="space-y-5">
+        <section className="admin-card p-5">
           <div className="admin-label">Blog Editor</div>
           <h2 className="mt-2 text-2xl font-semibold text-neutral-900">{title}</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-7 text-neutral-600">{description}</p>
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
+          <p className="mt-1 max-w-3xl text-sm leading-6 text-neutral-600">{description}</p>
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
             <label className="block">
               <span className="mb-2 block text-sm font-medium text-neutral-700">Title</span>
               <input
@@ -49,7 +50,7 @@ export function BlogEditorForm({
                 name="title"
                 required
                 defaultValue={post?.title ?? ""}
-                className="focus-ring w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-neutral-700"
+                className="focus-ring w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-neutral-700"
               />
             </label>
             <label className="block">
@@ -59,7 +60,7 @@ export function BlogEditorForm({
                 name="slug"
                 required
                 defaultValue={post?.slug ?? ""}
-                className="focus-ring w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-neutral-700"
+                className="focus-ring w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-neutral-700"
               />
             </label>
             <label className="block">
@@ -67,7 +68,7 @@ export function BlogEditorForm({
               <select
                 name="category"
                 defaultValue={post?.category ?? ""}
-                className="focus-ring w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-neutral-700"
+                className="focus-ring w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-neutral-700"
               >
                 <option value="">Select a category</option>
                 {categories.map((category) => (
@@ -77,7 +78,7 @@ export function BlogEditorForm({
                 ))}
               </select>
               <Link href="/admin/blog/categories" className="mt-2 inline-block text-xs font-semibold text-primary">
-                Manage categories →
+                Manage categories
               </Link>
             </label>
             <label className="block">
@@ -86,7 +87,7 @@ export function BlogEditorForm({
                 type="text"
                 name="author"
                 defaultValue={post?.author ?? ""}
-                className="focus-ring w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-neutral-700"
+                className="focus-ring w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-neutral-700"
               />
             </label>
           </div>
@@ -97,7 +98,7 @@ export function BlogEditorForm({
                 name="excerpt"
                 rows={4}
                 defaultValue={post?.excerpt ?? ""}
-                className="focus-ring w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-neutral-700"
+                className="focus-ring w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-neutral-700"
               />
             </label>
             <label className="block">
@@ -106,7 +107,7 @@ export function BlogEditorForm({
                 name="tags"
                 multiple
                 defaultValue={post?.tags ?? []}
-                className="focus-ring min-h-[140px] w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-neutral-700"
+                className="focus-ring min-h-[120px] w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-neutral-700"
               >
                 {tags.map((tag) => (
                   <option key={tag.id} value={tag.name}>
@@ -119,16 +120,16 @@ export function BlogEditorForm({
                 Hold Command/Ctrl to select multiple tags.
               </p>
               <Link href="/admin/blog/tags" className="mt-2 inline-block text-xs font-semibold text-primary">
-                Manage tags →
+                Manage tags
               </Link>
             </label>
           </div>
           <div className="mt-4 grid gap-4 md:grid-cols-2">
-            <label className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3">
+            <label className="flex items-center gap-3 rounded-lg border border-slate-200 px-3 py-2.5">
               <input type="checkbox" name="featured" defaultChecked={post?.featured ?? false} />
               <span className="text-sm font-medium text-neutral-700">Featured post</span>
             </label>
-            <label className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3">
+            <label className="flex items-center gap-3 rounded-lg border border-slate-200 px-3 py-2.5">
               <input type="checkbox" name="published" defaultChecked={post?.published ?? false} />
               <span className="text-sm font-medium text-neutral-700">Published</span>
             </label>
@@ -140,14 +141,14 @@ export function BlogEditorForm({
                 type="datetime-local"
                 name="publishedAt"
                 defaultValue={toDateTimeLocal(post?.publishedAt)}
-                className="focus-ring w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-neutral-700"
+                className="focus-ring w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-neutral-700"
               />
             </label>
           </div>
           <input type="hidden" name="existingFeaturedImage" value={post?.featuredImage ?? ""} />
         </section>
 
-        <section className="admin-card p-6">
+        <section className="admin-card p-5">
           <RichTextEditor
             name="body"
             label="Article body"
@@ -156,9 +157,11 @@ export function BlogEditorForm({
             placeholder="Write the full article body in HTML or rich text-friendly markup."
           />
         </section>
+
+        <BlogFaqEditor defaultFaqs={post?.faqs} />
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-5">
         <ImageUpload
           fileInputName="imageFile"
           urlInputName="featuredImage"

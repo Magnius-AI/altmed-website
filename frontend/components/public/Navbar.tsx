@@ -4,8 +4,13 @@ import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Mail, MapPin, Menu, Phone, X } from "lucide-react";
-import { useEffect, useState } from "react";
-import { buildBookingUrl, clinic, legacyAssets, publicRoutes, serviceCards } from "@/lib/site-content";
+import { useEffect, useRef, useState } from "react";
+import { buildBookingUrl, clinic, legacyAssets, publicRoutes, serviceCards, type NavigationMenuItem } from "@/lib/site-content";
+
+type Props = {
+  menu: NavigationMenuItem[];
+  showTreatmentPlans?: boolean;
+};
 
 const navLinks = [
   { href: publicRoutes.faq, label: "FAQ" },
@@ -15,9 +20,18 @@ const navLinks = [
   { href: publicRoutes.contact, label: "Contact Us" }
 ] as const;
 
-export function Navbar() {
+export function Navbar({ menu, showTreatmentPlans = true }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const servicesMenuRef = useRef<HTMLDivElement>(null);
+  const visibleNavLinks = showTreatmentPlans
+    ? [
+        ...navLinks.slice(0, 2),
+        { href: publicRoutes.plans, label: "Treatment Plans" },
+        ...navLinks.slice(2)
+      ]
+    : navLinks;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -34,6 +48,34 @@ export function Navbar() {
       document.body.style.overflow = "";
     };
   }, [mobileOpen]);
+
+  useEffect(() => {
+    if (!servicesOpen) {
+      return;
+    }
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (!servicesMenuRef.current?.contains(event.target as Node)) {
+        setServicesOpen(false);
+      }
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setServicesOpen(false);
+      }
+    };
+    const onResize = () => setServicesOpen(false);
+
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [servicesOpen]);
 
   return (
     <header className="sticky top-0 z-40">
@@ -90,12 +132,22 @@ export function Navbar() {
           </Link>
 
           <nav className="hidden items-center justify-center gap-7 lg:flex">
-            <details className="group relative">
-              <summary className="focus-ring inline-flex cursor-pointer list-none items-center gap-1 px-1.5 py-1 text-[15px] font-semibold tracking-[-0.01em] text-[var(--color-text-dark)] hover:text-[var(--color-primary)]">
+            <div ref={servicesMenuRef} className="relative">
+              <button
+                type="button"
+                aria-expanded={servicesOpen}
+                aria-haspopup="true"
+                onClick={() => setServicesOpen((value) => !value)}
+                className="focus-ring inline-flex cursor-pointer list-none items-center gap-1 px-1.5 py-1 text-[15px] font-semibold tracking-[-0.01em] text-[var(--color-text-dark)] hover:text-[var(--color-primary)]"
+              >
                 Services
-                <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
-              </summary>
-              <div className="absolute left-1/2 top-full mt-5 hidden w-[720px] -translate-x-1/2 rounded-[18px] border border-[color:rgba(18,52,77,0.08)] bg-white p-6 shadow-[0_22px_60px_rgba(18,52,77,0.16)] group-open:block">
+                <ChevronDown className={`h-4 w-4 transition ${servicesOpen ? "rotate-180" : ""}`} />
+              </button>
+              <div
+                className={`absolute left-0 top-full z-50 mt-5 max-h-[min(72vh,680px)] w-[min(720px,calc(100vw-2rem))] overflow-y-auto rounded-[18px] border border-[color:rgba(18,52,77,0.08)] bg-white p-6 shadow-[0_22px_60px_rgba(18,52,77,0.16)] ${
+                  servicesOpen ? "block" : "hidden"
+                }`}
+              >
                 <div className="mb-4 flex items-center justify-between">
                   <div>
                     <div className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-primary)]">
@@ -107,16 +159,18 @@ export function Navbar() {
                   </div>
                   <Link
                     href={publicRoutes.services as Route}
+                    onClick={() => setServicesOpen(false)}
                     className="focus-ring text-sm font-semibold text-[var(--color-primary)] underline-offset-4 hover:underline"
                   >
                     View all services
                   </Link>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid gap-3 sm:grid-cols-2">
                   {serviceCards.slice(0, 10).map((service) => (
                     <Link
                       key={service.slug}
                       href={publicRoutes.service(service.slug) as Route}
+                      onClick={() => setServicesOpen(false)}
                       className="focus-ring rounded-[10px] border border-[color:rgba(44,44,44,0.07)] px-4 py-3 text-sm text-[var(--color-text-muted)] transition hover:border-[color:rgba(46,125,107,0.2)] hover:bg-[var(--color-bg-gray)] hover:text-[var(--color-text-dark)]"
                     >
                       <span className="block font-semibold text-[var(--color-text-dark)]">{service.title}</span>
@@ -125,9 +179,9 @@ export function Navbar() {
                   ))}
                 </div>
               </div>
-            </details>
+            </div>
 
-            {navLinks.filter((item) => item.href !== publicRoutes.services).map((item) => (
+            {visibleNavLinks.filter((item) => item.href !== publicRoutes.services).map((item) => (
               <Link
                 key={item.href}
                 href={item.href as Route}
@@ -216,7 +270,7 @@ export function Navbar() {
             >
               Services
             </Link>
-            {navLinks.filter((item) => item.href !== publicRoutes.services).map((item) => (
+            {visibleNavLinks.filter((item) => item.href !== publicRoutes.services).map((item) => (
               <Link
                 key={item.href}
                 href={item.href as Route}

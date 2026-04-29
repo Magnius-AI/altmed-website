@@ -7,6 +7,15 @@ const nextConfig = {
   experimental: {
     typedRoutes: true
   },
+  images: {
+    unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**"
+      }
+    ]
+  },
   webpack(config) {
     config.resolve.alias = {
       ...config.resolve.alias,
@@ -17,6 +26,18 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      { source: "/dashboard", destination: "/admin/dashboard", permanent: false },
+      { source: "/dashboard/treatment-plans", destination: "/admin/treatment-plans", permanent: false },
+      {
+        source: "/dashboard/treatment-plans/enrollments",
+        destination: "/admin/treatment-plans/enrollments",
+        permanent: false
+      },
+      {
+        source: "/dashboard/settings/payments",
+        destination: "/admin/treatment-plans/payments",
+        permanent: false
+      },
       { source: "/blog", destination: "/health-blogs", permanent: true },
       { source: "/blogs", destination: "/health-blogs", permanent: true },
       { source: "/blogs/:slug", destination: "/health-blogs/:slug", permanent: true },

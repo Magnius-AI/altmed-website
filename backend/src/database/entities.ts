@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from "typeorm";
@@ -83,6 +84,9 @@ export class BlogPost {
   @Column({ default: false })
   published!: boolean;
 
+  @Column({ type: "jsonb", nullable: true })
+  faqs!: Array<{ question: string; answer: string }> | null;
+
   @Column({ nullable: true, type: "timestamp" })
   publishedAt!: Date | null;
 
@@ -163,6 +167,124 @@ export class FAQ {
 
   @CreateDateColumn()
   createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
+}
+
+@Entity("treatment_plans")
+export class TreatmentPlan {
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
+
+  @Column()
+  name!: string;
+
+  @Column({ unique: true })
+  slug!: string;
+
+  @Column({ type: "varchar", nullable: true })
+  category!: string | null;
+
+  @Column("text", { nullable: true })
+  description!: string | null;
+
+  @Column({ type: "varchar", nullable: true })
+  durationLabel!: string | null;
+
+  @Column({ type: "integer", nullable: true })
+  durationDays!: number | null;
+
+  @Column({ type: "integer" })
+  priceCents!: number;
+
+  @Column({ type: "varchar", default: "usd" })
+  currency!: string;
+
+  @Column({ type: "jsonb", nullable: true })
+  checklist!: string[] | null;
+
+  @Column({ default: true })
+  isActive!: boolean;
+
+  @Column({ type: "varchar", nullable: true })
+  stripePriceId!: string | null;
+
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
+}
+
+@Entity("plan_enrollments")
+export class PlanEnrollment {
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
+
+  @Index()
+  @Column({ type: "uuid" })
+  planId!: string;
+
+  @Column({ type: "varchar", nullable: true })
+  patientName!: string | null;
+
+  @Column()
+  patientEmail!: string;
+
+  @Column({ type: "varchar", nullable: true })
+  patientPhone!: string | null;
+
+  @Column({ type: "varchar", unique: true, nullable: true })
+  stripeSessionId!: string | null;
+
+  @Column({ type: "varchar", nullable: true })
+  stripePaymentIntent!: string | null;
+
+  @Column({ type: "varchar", default: "pending" })
+  status!: string;
+
+  @Column({ type: "integer", nullable: true })
+  amountPaidCents!: number | null;
+
+  @Column({ nullable: true, type: "timestamp" })
+  enrolledAt!: Date | null;
+
+  @Column({ nullable: true, type: "timestamp" })
+  startsAt!: Date | null;
+
+  @Column({ nullable: true, type: "timestamp" })
+  endsAt!: Date | null;
+
+  @Column("text", { nullable: true })
+  notes!: string | null;
+
+  @Column({ nullable: true, type: "timestamp" })
+  confirmationEmailSentAt!: Date | null;
+
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
+}
+
+@Entity("stripe_settings")
+export class StripeSettings {
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
+
+  @Column("text", { nullable: true })
+  stripePublishableKey!: string | null;
+
+  @Column("text", { nullable: true })
+  stripeSecretKeyEnc!: string | null;
+
+  @Column("text", { nullable: true })
+  stripeWebhookSecretEnc!: string | null;
+
+  @Column({ default: false })
+  isLiveMode!: boolean;
 
   @UpdateDateColumn()
   updatedAt!: Date;

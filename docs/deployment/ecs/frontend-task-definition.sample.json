@@ -27,6 +27,10 @@
           "value": "production"
         },
         {
+          "name": "BACKEND_URL_INTERNAL",
+          "value": "http://BACKEND_SERVICE_OR_INTERNAL_ALB:3001"
+        },
+        {
           "name": "API_URL_INTERNAL",
           "value": "https://PUBLIC_APP_URL"
         },

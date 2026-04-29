@@ -28,7 +28,7 @@ export default async function BlogPage() {
         <div className="inline-flex rounded-full bg-[#eef4fb] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           Health Education
         </div>
-        <h1 className="mt-5 text-4xl font-bold text-neutral-900">Health Insights from Your Manassas Medical Team</h1>
+        <h1 className="mt-5 text-4xl font-bold leading-[1.14] text-neutral-900">Health Insights from Your Manassas Medical Team</h1>
         <p className="mt-4 text-lg leading-8 text-neutral-700">
           Explore educational articles on urgent care, primary care, DOT health, weight loss,
           occupational medicine, addiction management, telehealth, and preventive wellness from Altmed Medical Center.
@@ -40,7 +40,7 @@ export default async function BlogPage() {
             <div className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
               Featured Article
             </div>
-            <h2 className="mt-3 text-4xl font-semibold text-neutral-900">{featured.title}</h2>
+            <h2 className="mt-3 text-3xl font-semibold leading-[1.16] text-neutral-900 md:text-4xl">{featured.title}</h2>
             <p className="mt-4 text-base leading-8 text-neutral-700">{featured.excerpt}</p>
             <div className="mt-5 text-xs uppercase tracking-[0.14em] text-neutral-400">
               {featured.category} • {featured.author} • {featured.publishedAt ? new Date(featured.publishedAt).toLocaleDateString("en-US", {

@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 :root {
-  --color-primary: #00a6a6;
-  --color-primary-dark: #008b8b;
-  --color-primary-light: #e8f6f5;
+  --color-primary: #32c36c;
+  --color-primary-dark: #229653;
+  --color-primary-light: #eafaf1;
   --color-accent: #32c36c;
-  --color-accent-dark: #23aa59;
+  --color-accent-dark: #229653;
   --color-bg-white: #ffffff;
   --color-bg-gray: #f6f9fb;
   --color-text-dark: #12344d;
@@ -15,6 +15,20 @@
   --color-footer-bg: #0f3044;
   --color-white: #ffffff;
   --color-danger: #bf3a2b;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 2rem;
+  --text-4xl: 2.5rem;
+  --font-normal: 400;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --leading-tight: 1.25;
+  --leading-normal: 1.6;
+  --leading-loose: 1.75;
 }
 
 html {
@@ -25,9 +39,9 @@ body {
   font-family: "Avenir Next", "Nunito Sans", "Helvetica Neue", "Segoe UI", Arial, sans-serif;
   background: var(--color-bg-white);
   color: var(--color-text-muted);
-  font-size: 16px;
-  line-height: 1.74;
-  letter-spacing: -0.01em;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  letter-spacing: 0;
   text-wrap: pretty;
 }
 
@@ -44,15 +58,32 @@ h5,
 h6 {
   color: var(--color-text-dark);
   font-family: "Avenir Next", "Nunito Sans", "Helvetica Neue", "Segoe UI", Arial, sans-serif;
-  font-weight: 700;
-  letter-spacing: -0.04em;
-  line-height: 1.02;
+  font-weight: var(--font-bold);
+  letter-spacing: 0;
+  line-height: 1.12;
   text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+main h1 {
+  /* TYPOGRAPHY FIX: Enforces a site-wide H1 cap so long local-service headings wrap instead of colliding. */
+  font-size: clamp(2rem, 3.8vw, 2.5rem) !important;
+  line-height: 1.2 !important;
+}
+
+main h2 {
+  font-size: clamp(1.5rem, 2.5vw, 1.75rem) !important;
+  line-height: 1.3 !important;
+}
+
+button.rounded-full,
+a.rounded-full {
+  border-radius: 6px !important;
 }
 
 p {
-  max-width: 68ch;
-  line-height: 1.78;
+  max-width: 70ch;
+  line-height: var(--leading-normal);
 }
 
 a {
@@ -70,7 +101,7 @@ a {
 }
 
 .skip-link {
-  @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--color-text-dark)];
+  @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--color-text-dark)];
 }
 
 .focus-ring {
@@ -98,27 +129,59 @@ a {
   box-shadow: 0 1px 2px rgba(18, 52, 77, 0.04);
 }
 
+.btn {
+  @apply focus-ring inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-md border border-transparent px-4 py-[0.45rem] text-sm font-medium no-underline transition-colors;
+  line-height: 1.25;
+}
+
 .btn-primary {
-  @apply focus-ring inline-flex items-center gap-2 rounded-[14px] px-5 py-2.5 text-sm font-semibold text-white;
-  background: var(--color-accent);
+  @apply btn text-white;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .btn-primary:hover {
-  background: var(--color-accent-dark);
+  background: var(--color-primary-dark);
 }
 
 .btn-secondary {
-  @apply focus-ring inline-flex items-center gap-2 rounded-[14px] border px-5 py-2.5 text-sm font-semibold;
-  border-color: rgba(250, 250, 247, 0.62);
-  color: var(--color-bg-white);
+  @apply btn bg-transparent;
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
 }
 
 .btn-secondary:hover {
-  background: rgba(250, 250, 247, 0.08);
+  background: #f0f7f4;
+}
+
+.btn-danger {
+  @apply btn bg-transparent;
+  color: #b91c1c;
+  border-color: #b91c1c;
+}
+
+.btn-danger:hover {
+  background: #fef2f2;
+}
+
+.btn-ghost {
+  @apply btn bg-transparent text-neutral-700;
+}
+
+.btn-ghost:hover {
+  background: #f3f4f6;
+}
+
+.btn-sm {
+  @apply px-3 py-1.5 text-[0.8rem];
+}
+
+.btn-lg {
+  @apply px-5 py-2.5 text-base;
 }
 
 .btn-outline-dark {
-  @apply focus-ring inline-flex items-center gap-2 rounded-[14px] border px-5 py-2.5 text-sm font-semibold;
+  @apply btn bg-transparent;
   border-color: rgba(18, 52, 77, 0.14);
   color: var(--color-text-dark);
 }
@@ -129,7 +192,7 @@ a {
 }
 
 .pill-tag {
-  @apply focus-ring inline-flex rounded-[12px] border px-4 py-2.5 text-sm font-semibold;
+  @apply focus-ring inline-flex rounded-md border px-3 py-2 text-sm font-semibold;
   border-color: rgba(44, 44, 44, 0.08);
   background: var(--color-bg-white);
   color: var(--color-text-dark);
@@ -145,24 +208,24 @@ a {
 }
 
 .prose-lite h1 {
-  @apply text-[2.65rem] md:text-[3.7rem];
-  line-height: 1.01;
+  @apply text-[2rem] md:text-[2.5rem];
+  line-height: 1.2;
 }
 
 .prose-lite h2 {
-  @apply mt-14 text-[2rem] md:text-[2.55rem];
-  line-height: 1.06;
+  @apply mt-10 text-[1.5rem] md:text-[1.75rem];
+  line-height: 1.3;
 }
 
 .prose-lite h3 {
-  @apply mt-9 text-[1.45rem] md:text-[1.85rem];
-  line-height: 1.12;
+  @apply mt-7 text-[1.125rem] md:text-[1.25rem];
+  line-height: 1.4;
 }
 
 .prose-lite p,
 .prose-lite li {
-  @apply mt-5 text-[1.05rem] font-normal text-[color:var(--color-text-dark)] md:text-[1.08rem];
-  line-height: 1.84;
+  @apply mt-5 text-base font-normal text-[color:var(--color-text-dark)];
+  line-height: 1.6;
 }
 
 .prose-lite ul {
@@ -191,10 +254,23 @@ a {
   text-decoration: underline;
 }
 
+.prose-lite img {
+  @apply my-8 max-w-full rounded-xl border border-slate-200;
+}
+
+.prose-lite blockquote {
+  @apply my-8 border-l-4 pl-5 text-[1.05rem] font-semibold;
+  border-color: var(--color-primary);
+  color: var(--color-text-dark);
+}
+
+.rich-editor:empty::before {
+  content: attr(data-placeholder);
+  color: rgba(82, 102, 121, 0.58);
+}
+
 .admin-card {
-  @apply rounded-[24px] border bg-white;
-  border-color: rgba(18, 52, 77, 0.08);
-  box-shadow: 0 18px 50px rgba(18, 52, 77, 0.08);
+  @apply rounded-lg border border-slate-200 bg-white;
 }
 
 .admin-label {
@@ -206,8 +282,9 @@ a {
 }
 
 .admin-action {
-  @apply focus-ring inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white;
-  background: var(--color-accent);
+  @apply focus-ring inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-md border px-4 py-[0.45rem] text-sm font-medium text-white no-underline transition-colors;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .admin-action:hover {
@@ -215,10 +292,9 @@ a {
 }
 
 .admin-secondary-action {
-  @apply focus-ring inline-flex items-center gap-2 rounded-full border px-5 py-3 text-sm font-semibold;
+  @apply focus-ring inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-md border px-4 py-[0.45rem] text-sm font-medium no-underline transition-colors;
   border-color: rgba(18, 52, 77, 0.12);
   color: var(--color-text-dark);
-  background: #fff;
 }
 
 .admin-secondary-action:hover {
@@ -227,7 +303,77 @@ a {
 }
 
 .admin-pill {
-  @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold;
+  @apply inline-flex items-center rounded-md px-2.5 py-1 text-xs font-semibold;
   background: rgba(0, 166, 166, 0.1);
   color: var(--color-text-dark);
+}
+
+.input {
+  @apply w-full rounded-md border border-gray-300 bg-white px-3 py-[0.45rem] text-sm text-gray-900 outline-none transition;
+  line-height: 1.5;
+}
+
+.input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(26, 95, 63, 0.12);
+}
+
+.input::placeholder {
+  color: #9ca3af;
+}
+
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.65rem center;
+  padding-right: 2rem;
+}
+
+.search-wrapper {
+  @apply relative flex items-center;
+}
+
+.search-wrapper .search-icon {
+  @apply pointer-events-none absolute left-3 h-3.5 w-3.5 text-gray-400;
+}
+
+.search-wrapper .input {
+  padding-left: 2.1rem;
+}
+
+.card {
+  @apply rounded-lg border border-gray-200 bg-white p-5;
+}
+
+.card-elevated {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.card-stat {
+  @apply rounded-lg border border-gray-200 bg-white px-5 py-4;
+}
+
+.stat-label {
+  @apply text-xs font-medium uppercase tracking-[0.05em] text-gray-500;
+}
+
+.stat-value {
+  @apply mt-1 text-2xl font-semibold text-gray-900;
+}
+
+.eyebrow {
+  @apply inline-flex rounded-md bg-[var(--color-primary-light)] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.05em] text-[var(--color-primary)];
+}
+
+.text-page-title {
+  font-size: clamp(2rem, 3.8vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.text-section-title {
+  font-size: clamp(1.5rem, 2.5vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.3;
 }

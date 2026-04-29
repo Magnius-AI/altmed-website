@@ -14,9 +14,5 @@ export async function updateNavigationMenuAction(formData: FormData) {
   });
 
   revalidatePath("/admin/menus");
-  revalidatePath("/");
-  revalidatePath("/about");
-  revalidatePath("/services");
-  revalidatePath("/faq");
-  revalidatePath("/contact");
+  revalidatePath("/", "layout");
 }

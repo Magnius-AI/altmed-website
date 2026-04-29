@@ -39,6 +39,7 @@ Traffic flow:
 3. ALB HTTPS listener terminates TLS with ACM
 4. ALB routes:
    - `/api/*` -> backend target group
+   - `/uploads/*` -> backend target group if you use local uploads fallback
    - everything else -> frontend target group
 5. Backend connects to RDS PostgreSQL on port `5432`
 
@@ -47,6 +48,7 @@ Important repo-specific notes:
    Use:
    - `NEXT_PUBLIC_API_URL=https://app.yourdomain.com`
    - `API_URL_INTERNAL=https://app.yourdomain.com`
+   - optional `BACKEND_URL_INTERNAL=<backend service URL>` for frontend server-side upload proxy calls
    - `FRONTEND_URL=https://app.yourdomain.com`
 
 Future-safe domain strategy:
@@ -338,6 +340,7 @@ For your first launch, these are the core values you need:
 
 Frontend env vars:
 - `NODE_ENV=production`
+- `BACKEND_URL_INTERNAL=http://<backend-service-or-internal-alb>:3001`
 - `API_URL_INTERNAL=https://app.altmedfirst.com`
 - `NEXT_PUBLIC_API_URL=https://app.altmedfirst.com`
 
@@ -351,11 +354,13 @@ Domain env strategy:
 - deploy now with:
   - `PUBLIC_APP_URL=app.altmedfirst.com`
   - `FRONTEND_URL=https://app.altmedfirst.com`
+  - `BACKEND_URL_INTERNAL=http://<backend-service-or-internal-alb>:3001`
   - `API_URL_INTERNAL=https://app.altmedfirst.com`
   - `NEXT_PUBLIC_API_URL=https://app.altmedfirst.com`
 - switch later with:
   - `PUBLIC_APP_URL=altmedfirst.com`
   - `FRONTEND_URL=https://altmedfirst.com`
+  - `BACKEND_URL_INTERNAL=http://<backend-service-or-internal-alb>:3001`
   - `API_URL_INTERNAL=https://altmedfirst.com`
   - `NEXT_PUBLIC_API_URL=https://altmedfirst.com`
 

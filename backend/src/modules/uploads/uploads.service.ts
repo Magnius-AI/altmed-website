@@ -1,10 +1,11 @@
 import { DeleteObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, Logger } from "@nestjs/common";
 import { promises as fs } from "fs";
 import { basename, extname, join } from "path";
 
 @Injectable()
 export class UploadsService {
+  private readonly logger = new Logger(UploadsService.name);
   private readonly uploadsDir = join(process.cwd(), "uploads");
   private readonly region = process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? "";
   private readonly bucket = process.env.AWS_S3_BUCKET?.trim() ?? "";
@@ -19,7 +20,12 @@ export class UploadsService {
   private readonly s3Client = this.bucket && this.region ? new S3Client({ region: this.region }) : null;
 
   async register(file: Express.Multer.File) {
-    return this.s3Client ? this.uploadToS3(file) : this.saveLocally(file);
+    if (this.s3Client) {
+      return this.uploadToS3(file);
+    }
+
+    this.logger.warn("S3 upload env vars are missing. Saving upload to local container disk.");
+    return this.saveLocally(file);
   }
 
   async remove(filenameOrUrl: string) {

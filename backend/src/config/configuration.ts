@@ -34,5 +34,9 @@ export default () => ({
     bucket: process.env.AWS_S3_BUCKET ?? "",
     uploadPrefix: process.env.AWS_S3_UPLOAD_PREFIX ?? "uploads",
     publicBaseUrl: process.env.AWS_S3_PUBLIC_BASE_URL ?? ""
+  },
+  payments: {
+    baseUrl: process.env.BASE_URL ?? process.env.FRONTEND_URL ?? "http://localhost:3000",
+    encryptionKey: process.env.PAYMENTS_ENCRYPTION_KEY ?? process.env.JWT_SECRET ?? "dev_payment_key_change_in_prod"
   }
 });
