@@ -55,7 +55,7 @@ export default function MedicalRecordRequestPage() {
             href="https://docs.google.com/forms/d/e/1FAIpQLSdnGRWIJxEQIHbIawYUjs_o3A5p2mzBNRjhzGXBnvK2nL7GOQ/viewform"
             target="_blank"
             rel="noreferrer"
-            className="rounded-full bg-accent px-5 py-3 font-semibold text-white transition hover:bg-accent-dark"
+            className="rounded-md border border-primary px-5 py-3 font-semibold text-primary transition hover:bg-[var(--color-surface-alt)]"
           >
             Open Request Form
           </a>

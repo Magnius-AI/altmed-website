@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { AdminSubmitButton } from "@/components/admin/AdminSubmitButton";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { SEOFieldset } from "@/components/admin/SEOFieldset";
@@ -74,12 +75,12 @@ export default async function AdminServicePageEditor({ params }: Props) {
           metaDescription={page.metaDescription}
           metaKeywords={page.metaKeywords}
         />
-        <button
-          type="submit"
+        <AdminSubmitButton
           className="focus-ring w-full rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white"
+          pendingLabel="Saving page..."
         >
           Save service page
-        </button>
+        </AdminSubmitButton>
       </div>
     </form>
   );

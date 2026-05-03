@@ -26,7 +26,7 @@ export class ServicesPagesService {
   }
 
   async update(slug: string, dto: UpdateServicePageDto) {
-    const page = await this.findBySlug(slug);
+    const page = (await this.repository.findOne({ where: { slug } })) ?? this.repository.create({ slug });
     Object.assign(page, dto);
     return this.repository.save(page);
   }

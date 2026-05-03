@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { adminJsonRequest, uploadAdminImage } from "@/lib/admin-api";
 
 export async function updateServicePageAction(slug: string, formData: FormData) {
@@ -23,6 +24,8 @@ export async function updateServicePageAction(slug: string, formData: FormData) 
   });
 
   revalidatePath(`/admin/services-pages/${slug}`);
+  revalidatePath("/admin/services-pages");
   revalidatePath(`/services/${slug}`);
   revalidatePath("/services");
+  redirect(`/admin/services-pages?updated=${encodeURIComponent(slug)}`);
 }

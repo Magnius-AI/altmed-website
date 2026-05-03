@@ -206,6 +206,7 @@ export type StripeSettingsSummary = {
   stripePublishableKey: string;
   stripeSecretKeyLast4: string;
   stripeWebhookSecretLast4: string;
+  stripeWebhookEndpointUrl: string;
   isLiveMode: boolean;
 };
 
@@ -477,6 +478,7 @@ export async function getStripeSettingsSummary() {
     stripePublishableKey: "",
     stripeSecretKeyLast4: "",
     stripeWebhookSecretLast4: "",
+    stripeWebhookEndpointUrl: "http://localhost:3000/api/webhooks/stripe",
     isLiveMode: false
   });
 }

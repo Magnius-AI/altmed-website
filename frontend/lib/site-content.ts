@@ -4,7 +4,7 @@ export const clinic = {
   phone: "(703) 361-4357",
   email: "info@altmedfirst.com",
   address: "8551 Rixlew Lane Suite 140, Manassas, VA 20109",
-  canonicalUrl: "https://altmedfirst.com",
+  canonicalUrl: "https://stage.altmedfirst.com",
   bookingUrl: "/appointment",
   hours: "Mon-Fri: 9:00 AM-5:00 PM",
   coordinates: {
@@ -28,11 +28,13 @@ export const seoPriorityKeywords = [
 
 export const clinicCoverageAreas = [
   "Manassas",
+  "Manassas Park",
   "Sudley",
   "Gainesville",
   "Haymarket",
   "Centreville",
   "Bristow",
+  "Woodbridge",
   "Prince William County"
 ] as const;
 
@@ -128,7 +130,7 @@ export const serviceCards = [
     slug: "urgent-care-manassas-va",
     title: "Urgent Care",
     description: "Walk-in urgent care for minor illness, infections, injuries, and same-day care in Manassas.",
-    image: legacyAssets.heroClinic,
+    image: legacyAssets.heroDoctor,
     shortDescription: "Walk-in care for sudden health needs."
   },
   {
@@ -163,7 +165,7 @@ export const serviceCards = [
     slug: "occupational-health/workers-compensation-injury-care-manassas",
     title: "Workers' Compensation",
     description: "Same-day injury evaluation, return-to-work planning, and workers' comp documentation support.",
-    image: legacyAssets.heroClinic,
+    image: legacyAssets.departmentFour,
     shortDescription: "Work injury evaluation and follow-up."
   },
   {
@@ -1740,35 +1742,39 @@ export const defaultNavigationMenu: NavigationMenuItem[] = [
 
 export const adminNav: AdminNavGroup[] = [
   {
-    label: "Home",
-    items: [{ href: "/admin/dashboard", label: "Home" }]
+    label: "Dashboard",
+    items: [{ href: "/admin/dashboard", label: "Dashboard Overview" }]
   },
   {
-    label: "Publishing",
+    label: "Services",
+    items: [
+      { href: "/admin/services-pages", label: "Services Management" },
+      { href: "/admin/providers", label: "Provider Profiles" },
+      { href: "/admin/treatment-plans", label: "Treatment Plans" },
+      { href: "/admin/treatment-plans/cash-inflow", label: "Cash Inflow" },
+      { href: "/admin/treatment-plans/enrollments", label: "Enrollments" },
+      { href: "/admin/treatment-plans/payments", label: "Payments" }
+    ]
+  },
+  {
+    label: "Content",
     items: [
       { href: "/admin/blog", label: "Blog Posts" },
       { href: "/admin/blog/categories", label: "Categories" },
       { href: "/admin/blog/tags", label: "Tags" },
       { href: "/admin/faq", label: "FAQs" },
-      { href: "/admin/announcements", label: "Announcements" },
-      { href: "/admin/providers", label: "Providers" }
+      { href: "/admin/announcements", label: "Announcements" }
     ]
   },
   {
-    label: "Configuration",
+    label: "Appointments / Leads",
+    items: [{ href: "/admin/contact-submissions", label: "Contact Inbox" }]
+  },
+  {
+    label: "Settings",
     items: [
       { href: "/admin/site-settings", label: "Settings" },
       { href: "/admin/seo-settings", label: "SEO" }
-    ]
-  },
-  {
-    label: "Operations",
-    items: [
-      { href: "/admin/treatment-plans", label: "Treatment Plans" },
-      { href: "/admin/treatment-plans/cash-inflow", label: "Cash Inflow" },
-      { href: "/admin/treatment-plans/enrollments", label: "Enrollments" },
-      { href: "/admin/treatment-plans/payments", label: "Payments" },
-      { href: "/admin/contact-submissions", label: "Contact Inbox" }
     ]
   }
 ];

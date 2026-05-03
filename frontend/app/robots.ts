@@ -5,8 +5,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/admin/", "/dashboard/", "/login", "/api/"]
+      disallow: ["/admin/", "/admin/login", "/dashboard/", "/login", "/api/"]
     },
-    sitemap: "https://altmedfirst.com/sitemap.xml"
+    sitemap: "https://stage.altmedfirst.com/sitemap.xml"
   };
 }

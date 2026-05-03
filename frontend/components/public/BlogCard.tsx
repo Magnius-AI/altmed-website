@@ -16,25 +16,27 @@ type Props = {
 };
 
 export function BlogCard({ post }: Props) {
+  const readTime = Math.max(3, Math.ceil(`${post.title} ${post.excerpt ?? ""}`.split(/\s+/).length / 90));
+
   return (
-    <article className="overflow-hidden rounded-[16px] border border-[rgba(18,52,77,0.08)] bg-white transition hover:-translate-y-1">
-      <div className="relative h-56 bg-[var(--color-primary-light)]">
+    <article className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-white transition hover:-translate-y-1">
+      <div className="relative h-48 bg-[var(--color-surface-alt)]">
         <Image
-          src={post.featuredImage ?? "/legacy-assets/homepage/clinic-front-view.jpg"}
-          alt={post.title}
+          src={post.featuredImage ?? "/legacy-assets/homepage/top.jpg"}
+          alt={`${post.title} from Altmed Medical Center in Manassas VA`}
           fill
-          className="object-cover transition duration-300 hover:scale-[1.03]"
+          className="site-photo object-cover transition duration-300 hover:scale-[1.03]"
         />
         <div className="absolute inset-x-0 top-0 flex items-center justify-between p-4">
           {post.category ? (
-            <span className="rounded-[10px] bg-white/95 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+            <span className="rounded-md bg-white/95 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
               {post.category}
             </span>
           ) : (
             <span />
           )}
           {("featured" in post && (post as { featured?: boolean }).featured) ? (
-            <span className="rounded-[10px] bg-accent px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+            <span className="rounded-md bg-[var(--color-primary)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
               Featured
             </span>
           ) : null}
@@ -50,6 +52,7 @@ export function BlogCard({ post }: Props) {
             day: "numeric",
             year: "numeric"
           }) : "Updated recently"}
+          {` • ${readTime} min read`}
         </div>
       </div>
       <Link

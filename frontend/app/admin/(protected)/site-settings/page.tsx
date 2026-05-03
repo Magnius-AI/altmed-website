@@ -1,3 +1,4 @@
+import { AdminSubmitButton } from "@/components/admin/AdminSubmitButton";
 import { getAdminSiteSettings } from "@/lib/api";
 import { updateSiteSettingAction } from "./actions";
 
@@ -30,12 +31,12 @@ export default async function AdminSiteSettingsPage() {
               defaultValue={JSON.stringify(setting.value, null, 2)}
               className="focus-ring mt-3 w-full rounded-xl border border-slate-200 px-4 py-3 font-mono text-sm leading-7 text-neutral-700"
             />
-            <button
-              type="submit"
+            <AdminSubmitButton
               className="focus-ring mt-4 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white"
+              pendingLabel="Saving setting..."
             >
               Save setting
-            </button>
+            </AdminSubmitButton>
           </form>
         ))}
       </div>

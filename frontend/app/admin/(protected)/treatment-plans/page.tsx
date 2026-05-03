@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { ClipboardList, Copy, DollarSign } from "lucide-react";
+import { AdminSubmitButton } from "@/components/admin/AdminSubmitButton";
+import { AdminToast } from "@/components/admin/AdminToast";
 import { TreatmentPlanForm } from "@/components/admin/TreatmentPlanForm";
 import { getAdminTreatmentPlans } from "@/lib/api";
 import {
@@ -15,7 +17,7 @@ function formatMoney(cents: number, currency = "usd") {
 export default async function AdminTreatmentPlansPage({
   searchParams
 }: {
-  searchParams?: { search?: string; status?: string; edit?: string };
+  searchParams?: { search?: string; status?: string; edit?: string; saved?: string };
 }) {
   const plans = await getAdminTreatmentPlans();
   const search = searchParams?.search?.trim().toLowerCase() ?? "";
@@ -29,8 +31,18 @@ export default async function AdminTreatmentPlansPage({
     return matchesSearch && matchesStatus;
   });
 
+  const notice =
+    searchParams?.saved === "created"
+      ? "Treatment plan created successfully."
+      : searchParams?.saved === "updated"
+        ? "Treatment plan saved successfully."
+        : searchParams?.saved === "deleted"
+          ? "Treatment plan deleted successfully."
+          : null;
+
   return (
     <div className="grid gap-5">
+      <AdminToast message={notice} />
       <section className="admin-card p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
@@ -73,9 +85,9 @@ export default async function AdminTreatmentPlansPage({
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
           </select>
-          <button type="submit" className="btn btn-primary">
+          <AdminSubmitButton className="btn btn-primary" pendingLabel="Filtering...">
             Filter
-          </button>
+          </AdminSubmitButton>
         </form>
         <div className="mt-5 grid gap-3">
           {filteredPlans.map((plan) => (
@@ -111,9 +123,9 @@ export default async function AdminTreatmentPlansPage({
                     <Copy className="h-4 w-4" />
                   </button>
                   <form action={deleteTreatmentPlanAction.bind(null, plan.id)}>
-                    <button type="submit" className="btn btn-danger">
+                    <AdminSubmitButton className="btn btn-danger" pendingLabel="Deleting...">
                       Delete
-                    </button>
+                    </AdminSubmitButton>
                   </form>
                 </div>
               </div>

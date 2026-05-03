@@ -117,7 +117,7 @@ export default async function CashInflowPage() {
                   <div className="admin-label">{stat.label}</div>
                   <div className="mt-3 text-3xl font-semibold text-neutral-900">{stat.value}</div>
                 </div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--color-primary-light)] text-[var(--color-primary)]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--color-primary)] text-white">
                   <Icon className="h-5 w-5" />
                 </div>
               </div>

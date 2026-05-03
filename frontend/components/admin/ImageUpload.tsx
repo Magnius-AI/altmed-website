@@ -19,7 +19,7 @@ export function ImageUpload({
     <div className="rounded-[14px] border border-slate-200 bg-white p-5">
       <div className="text-sm font-semibold text-neutral-900">{label}</div>
       <p className="mt-1 text-sm text-neutral-500">
-        Upload an image file or keep a hosted image URL.
+        Upload an image file or keep a hosted image URL. In production, uploads use S3 when the backend has AWS_S3_BUCKET and AWS_REGION set; otherwise they save to /uploads locally.
       </p>
       <div className="mt-4 grid gap-4">
         <label className="block">

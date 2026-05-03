@@ -199,6 +199,12 @@ The backend role that talks to S3 needs:
 - `s3:PutObject`
 - `s3:DeleteObject`
 
+Important ECS note:
+- Put S3 permissions on the backend task role, not only the execution role.
+- `executionRoleArn` is for ECS image pulls, logs, and task startup secrets.
+- `taskRoleArn` is what the AWS SDK inside the backend container uses for S3 uploads.
+- If the backend logs `Could not load credentials from any providers`, the backend task is missing a usable `taskRoleArn` or that role is missing S3 permissions.
+
 ==================================================
 STEP 5 - Create two ECR repositories
 ==================================================
@@ -290,16 +296,16 @@ You need:
    If you use Secrets Manager values in the task definition, this role also needs permission to read those secrets.
 
 2. Optional task role
-   If later you use S3, SES, or Secrets Manager from app code, give that access here.
+   If you use S3 uploads, create or select a task role for the backend app code.
 
 For a first deployment:
 - execution role is required
-- task role can be minimal or reused if you do not yet call other AWS APIs from code
+- task role is required when the backend calls S3 from app code
 
 If you use the sample backend task definition in this repo:
 - the execution role must be allowed to call `secretsmanager:GetSecretValue`
 - if your secrets use a customer-managed KMS key, also allow `kms:Decrypt`
-- for S3-backed uploads, the role used by the backend container also needs `s3:PutObject` and `s3:DeleteObject` on the uploads bucket/prefix
+- for S3-backed uploads, the backend `taskRoleArn` needs `s3:PutObject` and `s3:DeleteObject` on the uploads bucket/prefix
 
 ==================================================
 STEP 12 - Store app secrets
@@ -349,6 +355,10 @@ Backend storage env vars:
 - `AWS_S3_BUCKET=altmed-uploads-prod`
 - `AWS_S3_UPLOAD_PREFIX=uploads`
 - `AWS_S3_PUBLIC_BASE_URL=https://altmed-uploads-prod.s3.us-east-1.amazonaws.com`
+
+Do not set the S3 env vars until the backend ECS task has a task role with S3 access.
+If S3 env vars are set but the task role is missing, image uploads fail with:
+`Image upload failed: Could not load credentials from any providers`.
 
 Domain env strategy:
 - deploy now with:
