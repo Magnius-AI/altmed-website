@@ -1,3 +1,4 @@
+import { AdminSubmitButton } from "@/components/admin/AdminSubmitButton";
 import { getAdminPlanEnrollments, getAdminTreatmentPlans } from "@/lib/api";
 import { updateEnrollmentAction } from "../actions";
 
@@ -47,9 +48,9 @@ export default async function PlanEnrollmentsPage({
               </option>
             ))}
           </select>
-          <button type="submit" className="btn btn-primary">
+          <AdminSubmitButton className="btn btn-primary" pendingLabel="Filtering...">
             Filter
-          </button>
+          </AdminSubmitButton>
         </form>
       </section>
 
@@ -88,9 +89,9 @@ export default async function PlanEnrollmentsPage({
                           </option>
                         ))}
                       </select>
-                      <button type="submit" className="btn btn-secondary">
+                      <AdminSubmitButton className="btn btn-secondary" pendingLabel="Saving...">
                         Save
-                      </button>
+                      </AdminSubmitButton>
                     </form>
                   </td>
                 </tr>

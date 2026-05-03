@@ -1,12 +1,28 @@
+import { AdminSubmitButton } from "@/components/admin/AdminSubmitButton";
+import { AdminToast } from "@/components/admin/AdminToast";
 import { getStripeSettingsSummary } from "@/lib/api";
 import { updateStripeSettingsAction } from "../actions";
 
-export default async function PaymentSettingsPage() {
+type Props = {
+  searchParams?: {
+    saved?: string;
+  };
+};
+
+function noticeMessage(saved?: string) {
+  if (saved === "settings") {
+    return "Payment settings saved successfully.";
+  }
+
+  return null;
+}
+
+export default async function PaymentSettingsPage({ searchParams }: Props) {
   const settings = await getStripeSettingsSummary();
-  const webhookUrl = "https://altmedfirst.com/api/webhooks/stripe";
 
   return (
     <div className="admin-card p-5">
+      <AdminToast message={noticeMessage(searchParams?.saved)} />
       <div className="admin-label">Stripe Configuration</div>
       <h2 className="mt-2 text-2xl font-semibold text-neutral-900">Payment settings</h2>
       <p className="mt-1 max-w-3xl text-sm leading-6 text-neutral-600">
@@ -35,14 +51,20 @@ export default async function PaymentSettingsPage() {
         </label>
         <label className="block">
           <span className="mb-1 block text-sm font-medium text-neutral-700">Webhook Endpoint URL</span>
-          <input readOnly value={webhookUrl} className="input bg-slate-50" />
+          <input
+            name="stripeWebhookEndpointUrl"
+            type="url"
+            defaultValue={settings.stripeWebhookEndpointUrl}
+            className="input"
+            placeholder="https://altmedfirst.com/api/webhooks/stripe"
+          />
         </label>
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-neutral-700">
           Required Stripe webhook events: checkout.session.completed, payment_intent.payment_failed, charge.refunded.
         </div>
-        <button type="submit" className="btn btn-primary w-fit">
+        <AdminSubmitButton className="btn btn-primary w-fit" pendingLabel="Saving settings...">
           Save settings
-        </button>
+        </AdminSubmitButton>
       </form>
     </div>
   );

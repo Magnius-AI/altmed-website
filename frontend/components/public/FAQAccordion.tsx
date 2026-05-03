@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { Plus } from "lucide-react";
 
 type Props = {
   items: Array<{ id?: string; question: string; answer: string }>;
@@ -6,17 +6,17 @@ type Props = {
 
 export function FAQAccordion({ items }: Props) {
   return (
-    <div className="space-y-3">
+    <div className="divide-y divide-[var(--color-border)] border-y border-[var(--color-border)]">
       {items.map((item, index) => (
         <details
           key={item.id ?? index}
-          className="group overflow-hidden rounded-[14px] border border-slate-200 bg-white"
+          className="group bg-transparent"
         >
-          <summary className="focus-ring flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 text-left font-semibold text-neutral-900">
+          <summary className="focus-ring flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-left font-semibold text-[var(--color-text-primary)] transition group-open:text-[var(--color-primary)]">
             <span>{item.question}</span>
-            <ChevronDown className="h-5 w-5 shrink-0 text-primary transition-transform duration-200 group-open:rotate-180" />
+            <Plus className="h-5 w-5 shrink-0 text-[var(--color-primary)] transition-transform duration-200 group-open:rotate-45" />
           </summary>
-          <div className="border-t border-slate-100 px-6 pb-5 pt-4 text-base leading-7 text-neutral-700">
+          <div className="pb-5 text-base leading-7 text-[var(--color-text-secondary)] transition-opacity duration-200 group-open:opacity-100">
             <div dangerouslySetInnerHTML={{ __html: item.answer }} />
           </div>
         </details>

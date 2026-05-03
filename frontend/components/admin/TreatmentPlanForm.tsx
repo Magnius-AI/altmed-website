@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
+import { AdminSubmitButton } from "@/components/admin/AdminSubmitButton";
 import type { TreatmentPlan } from "@/lib/api";
 
 type Props = {
@@ -106,9 +107,9 @@ export function TreatmentPlanForm({ plan, action, submitLabel }: Props) {
         <input type="checkbox" name="isActive" defaultChecked={plan?.isActive ?? true} />
         Active
       </label>
-      <button type="submit" className="btn btn-primary w-fit">
+      <AdminSubmitButton className="btn btn-primary w-fit" pendingLabel="Saving plan...">
         {submitLabel}
-      </button>
+      </AdminSubmitButton>
     </form>
   );
 }

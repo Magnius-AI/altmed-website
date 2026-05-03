@@ -9,6 +9,7 @@
     "cpuArchitecture": "X86_64"
   },
   "executionRoleArn": "arn:aws:iam::245324547486:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::245324547486:role/altmedBackendTaskRole",
   "containerDefinitions": [
     {
       "name": "backend",

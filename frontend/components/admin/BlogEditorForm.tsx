@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdminSubmitButton } from "@/components/admin/AdminSubmitButton";
 import { BlogFaqEditor } from "@/components/admin/BlogFaqEditor";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
@@ -177,12 +178,12 @@ export function BlogEditorForm({
         />
         <section className="admin-card p-5">
           <div className="space-y-3">
-            <button
-              type="submit"
+            <AdminSubmitButton
               className="focus-ring w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white"
+              pendingLabel="Saving post..."
             >
               {submitLabel}
-            </button>
+            </AdminSubmitButton>
             <Link
               href="/admin/blog"
               className="focus-ring block w-full rounded-xl border border-slate-200 px-4 py-3 text-center text-sm font-semibold text-neutral-700"

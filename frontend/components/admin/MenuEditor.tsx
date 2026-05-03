@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { AdminSubmitButton } from "@/components/admin/AdminSubmitButton";
 import type { NavigationMenuItem } from "@/lib/site-content";
 
 type Props = {
@@ -160,12 +161,12 @@ export function MenuEditor({ initialMenu, action }: Props) {
         </section>
       ))}
 
-      <button
-        type="submit"
+      <AdminSubmitButton
         className="focus-ring rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white"
+        pendingLabel="Saving menu..."
       >
         Save navigation menu
-      </button>
+      </AdminSubmitButton>
     </form>
   );
 }

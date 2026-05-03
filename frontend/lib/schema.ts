@@ -21,7 +21,7 @@ export function buildClinicSchema() {
       latitude: clinic.coordinates.latitude,
       longitude: clinic.coordinates.longitude
     },
-    image: `${clinic.canonicalUrl}/legacy-assets/homepage/clinic-front-view.jpg`,
+    image: `${clinic.canonicalUrl}/legacy-assets/homepage/top.jpg`,
     priceRange: "$$",
     hasMap: clinic.mapUrl,
     openingHoursSpecification: [
@@ -54,7 +54,22 @@ export function buildClinicSchema() {
     ],
     sameAs: [
       "https://www.facebook.com/p/Altmed-Medical-Center-100050878933887/"
-    ]
+    ],
+    employee: {
+      "@type": "Physician",
+      name: "Gerald K. Lee",
+      worksFor: {
+        "@type": "MedicalClinic",
+        name: clinic.name
+      },
+      medicalSpecialty: [
+        "Primary Care",
+        "Urgent Care",
+        "Occupational Medicine",
+        "Addiction Medicine",
+        "Weight Management"
+      ]
+    }
   };
 }
 
@@ -92,13 +107,19 @@ export function buildServiceSchema(input: {
 }) {
   return {
     "@context": "https://schema.org",
-    "@type": "Service",
+    "@type": ["Service", "MedicalProcedure"],
     name: input.name,
     description: input.description,
-    areaServed: {
-      "@type": "City",
-      name: "Manassas"
-    },
+    areaServed: [
+      "Manassas, VA",
+      "Manassas Park, VA",
+      "Gainesville, VA",
+      "Bristow, VA",
+      "Haymarket, VA",
+      "Centreville, VA",
+      "Woodbridge, VA",
+      "Prince William County, VA"
+    ],
     availableChannel: {
       "@type": "ServiceChannel",
       serviceUrl: input.url,

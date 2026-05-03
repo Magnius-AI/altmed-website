@@ -51,10 +51,10 @@ export default function PatientFormsPage() {
               before your visit and our team can guide you.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <a href={liveFormsLibraryUrl} target="_blank" rel="noreferrer" className="btn-primary">
+              <a href={liveFormsLibraryUrl} target="_blank" rel="noreferrer" className="btn-outline-dark">
                 Open Live Forms Library
               </a>
-              <Link href={publicRoutes.appointment as Route} className="btn-outline-dark">
+              <Link href={publicRoutes.appointment as Route} className="btn-primary">
                 Book Appointment
               </Link>
               <a href={`tel:${clinic.phone}`} className="btn-outline-dark">

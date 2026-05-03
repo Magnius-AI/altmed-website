@@ -20,19 +20,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...staticRoutes.map((route) => ({
-      url: `https://altmedfirst.com${route === "/" ? "" : route}`,
+      url: `https://stage.altmedfirst.com${route === "/" ? "" : route}`,
       lastModified: now
     })),
     ...serviceCards.map((service) => ({
-      url: `https://altmedfirst.com/services/${service.slug}`,
+      url: `https://stage.altmedfirst.com/services/${service.slug}`,
       lastModified: now
     })),
     ...posts.map((post) => ({
-      url: `https://altmedfirst.com/health-blogs/${post.slug}`,
+      url: `https://stage.altmedfirst.com/health-blogs/${post.slug}`,
       lastModified: post.updatedAt ? new Date(post.updatedAt) : now
     })),
     ...plans.map((plan) => ({
-      url: `https://altmedfirst.com/plans/${plan.slug}`,
+      url: `https://stage.altmedfirst.com/plans/${plan.slug}`,
       lastModified: plan.updatedAt ? new Date(plan.updatedAt) : now
     }))
   ];

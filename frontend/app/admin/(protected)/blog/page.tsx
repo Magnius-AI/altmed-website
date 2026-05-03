@@ -1,5 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
+import { AdminSubmitButton } from "@/components/admin/AdminSubmitButton";
+import { AdminToast } from "@/components/admin/AdminToast";
 import { deleteBlogPostAction } from "./actions";
 import { getAdminBlogCategories, getAdminBlogPosts } from "@/lib/api";
 
@@ -8,6 +10,7 @@ type Props = {
     status?: string;
     category?: string;
     search?: string;
+    saved?: string;
   };
 };
 
@@ -51,6 +54,7 @@ export default async function AdminBlogPage({ searchParams }: Props) {
 
   return (
     <div className="space-y-6">
+      <AdminToast message={searchParams?.saved === "deleted" ? "Blog post deleted successfully." : null} />
       <section className="admin-card p-6">
         <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
           <div>
@@ -138,9 +142,9 @@ export default async function AdminBlogPage({ searchParams }: Props) {
             </select>
           </label>
           <div className="flex items-end">
-            <button type="submit" className="admin-action w-full justify-center">
+            <AdminSubmitButton className="admin-action w-full justify-center" pendingLabel="Filtering...">
               Apply filters
-            </button>
+            </AdminSubmitButton>
           </div>
         </form>
       </section>
@@ -213,12 +217,12 @@ export default async function AdminBlogPage({ searchParams }: Props) {
                   Edit
                 </Link>
                 <form action={deleteBlogPostAction.bind(null, post.id)}>
-                  <button
-                    type="submit"
+                  <AdminSubmitButton
                     className="focus-ring inline-flex items-center rounded-full border border-rose-200 px-4 py-2.5 text-sm font-semibold text-rose-700"
+                    pendingLabel="Deleting..."
                   >
                     Delete
-                  </button>
+                  </AdminSubmitButton>
                 </form>
               </div>
             </article>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdminSubmitButton } from "@/components/admin/AdminSubmitButton";
 import { createBlogTagAction, deleteBlogTagAction, updateBlogTagAction } from "../actions";
 import { getAdminBlogTags } from "@/lib/api";
 
@@ -55,9 +56,9 @@ export default async function AdminBlogTagsPage() {
               <input type="checkbox" name="isActive" defaultChecked />
               Active
             </label>
-            <button type="submit" className="admin-action justify-center">
+            <AdminSubmitButton className="admin-action justify-center" pendingLabel="Saving...">
               Save
-            </button>
+            </AdminSubmitButton>
           </div>
         </form>
       </section>
@@ -100,15 +101,16 @@ export default async function AdminBlogTagsPage() {
                 </label>
               </div>
               <div className="flex flex-wrap gap-3 xl:justify-end">
-                <button type="submit" className="admin-secondary-action">
+                <AdminSubmitButton className="admin-secondary-action" pendingLabel="Saving...">
                   Save
-                </button>
-                <button
+                </AdminSubmitButton>
+                <AdminSubmitButton
                   formAction={deleteBlogTagAction.bind(null, tag.id)}
                   className="focus-ring inline-flex items-center rounded-full border border-rose-200 px-4 py-2.5 text-sm font-semibold text-rose-700"
+                  pendingLabel="Deleting..."
                 >
                   Delete
-                </button>
+                </AdminSubmitButton>
               </div>
             </form>
           ))}

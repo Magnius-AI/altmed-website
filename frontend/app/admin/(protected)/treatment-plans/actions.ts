@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { adminJsonRequest } from "@/lib/admin-api";
 
 function toBoolean(value: FormDataEntryValue | null) {
@@ -38,18 +39,21 @@ export async function createTreatmentPlanAction(formData: FormData) {
   await adminJsonRequest("/api/treatment-plans", "POST", buildPlanPayload(formData));
   revalidatePath("/admin/treatment-plans");
   revalidatePath("/plans");
+  redirect("/admin/treatment-plans?saved=created");
 }
 
 export async function updateTreatmentPlanAction(id: string, formData: FormData) {
   await adminJsonRequest(`/api/treatment-plans/${id}`, "PATCH", buildPlanPayload(formData));
   revalidatePath("/admin/treatment-plans");
   revalidatePath("/plans");
+  redirect("/admin/treatment-plans?saved=updated");
 }
 
 export async function deleteTreatmentPlanAction(id: string) {
   await adminJsonRequest(`/api/treatment-plans/${id}`, "DELETE");
   revalidatePath("/admin/treatment-plans");
   revalidatePath("/plans");
+  redirect("/admin/treatment-plans?saved=deleted");
 }
 
 export async function updateEnrollmentAction(id: string, formData: FormData) {
@@ -66,9 +70,11 @@ export async function updateStripeSettingsAction(formData: FormData) {
     stripePublishableKey: String(formData.get("stripePublishableKey") ?? "").trim() || undefined,
     stripeSecretKey: String(formData.get("stripeSecretKey") ?? "").trim() || undefined,
     stripeWebhookSecret: String(formData.get("stripeWebhookSecret") ?? "").trim() || undefined,
+    stripeWebhookEndpointUrl: String(formData.get("stripeWebhookEndpointUrl") ?? "").trim() || undefined,
     isLiveMode: toBoolean(formData.get("isLiveMode"))
   });
   revalidatePath("/admin/treatment-plans/payments");
+  redirect("/admin/treatment-plans/payments?saved=settings");
 }
 
 export async function testStripeConnectionAction(formData: FormData) {

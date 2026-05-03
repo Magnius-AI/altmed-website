@@ -1,3 +1,4 @@
+import { AdminSubmitButton } from "@/components/admin/AdminSubmitButton";
 import { createFaqAction, deleteFaqAction, updateFaqAction } from "./actions";
 import { getAdminFaqs } from "@/lib/api";
 
@@ -54,9 +55,9 @@ export default async function AdminFaqPage() {
               Active
             </label>
           </div>
-          <button type="submit" className="admin-action h-fit justify-center">
+          <AdminSubmitButton className="admin-action h-fit justify-center" pendingLabel="Adding FAQ...">
             Add FAQ
-          </button>
+          </AdminSubmitButton>
         </form>
       </section>
 
@@ -105,15 +106,16 @@ export default async function AdminFaqPage() {
                 </label>
               </div>
               <div className="flex flex-col gap-3">
-                <button type="submit" className="admin-secondary-action justify-center">
+                <AdminSubmitButton className="admin-secondary-action justify-center" pendingLabel="Saving...">
                   Save
-                </button>
-                <button
+                </AdminSubmitButton>
+                <AdminSubmitButton
                   formAction={deleteFaqAction.bind(null, faq.id!)}
                   className="focus-ring inline-flex items-center justify-center rounded-full border border-rose-200 px-4 py-2.5 text-sm font-semibold text-rose-700"
+                  pendingLabel="Deleting..."
                 >
                   Delete
-                </button>
+                </AdminSubmitButton>
               </div>
             </form>
           ))}

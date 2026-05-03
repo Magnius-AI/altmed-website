@@ -88,7 +88,7 @@ export async function createBlogPostAction(formData: FormData) {
   revalidatePath("/admin/blog");
   revalidatePath("/health-blogs");
   revalidatePath("/");
-  redirect(`/admin/blog/${post.id}/edit`);
+  redirect(`/admin/blog/${post.id}/edit?saved=created`);
 }
 
 export async function updateBlogPostAction(id: string, formData: FormData) {
@@ -100,12 +100,14 @@ export async function updateBlogPostAction(id: string, formData: FormData) {
   revalidatePath("/admin/blog");
   revalidatePath(`/admin/blog/${id}/edit`);
   revalidatePath("/health-blogs");
+  redirect(`/admin/blog/${id}/edit?saved=updated`);
 }
 
 export async function deleteBlogPostAction(id: string) {
   await adminJsonRequest(`/api/blog/${id}`, "DELETE");
   revalidatePath("/admin/blog");
   revalidatePath("/health-blogs");
+  redirect("/admin/blog?saved=deleted");
 }
 
 function buildTaxonomyPayload(formData: FormData) {

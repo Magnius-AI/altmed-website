@@ -1,3 +1,4 @@
+import { AdminSubmitButton } from "@/components/admin/AdminSubmitButton";
 import { getAdminContactStats, getAdminContactSubmissions } from "@/lib/api";
 import {
   deleteContactSubmissionAction,
@@ -81,21 +82,21 @@ export default async function AdminContactSubmissionsPage() {
                     <div className="flex flex-wrap gap-2">
                       {!submission.reviewed && !submission.isBot ? (
                         <form action={markContactSubmissionReviewedAction.bind(null, submission.id)}>
-                          <button
-                            type="submit"
+                          <AdminSubmitButton
                             className="focus-ring rounded-full border border-emerald-200 px-3 py-1 text-xs font-semibold text-emerald-700"
+                            pendingLabel="Saving..."
                           >
                             Mark reviewed
-                          </button>
+                          </AdminSubmitButton>
                         </form>
                       ) : null}
                       <form action={deleteContactSubmissionAction.bind(null, submission.id)}>
-                        <button
-                          type="submit"
+                        <AdminSubmitButton
                           className="focus-ring rounded-full border border-rose-200 px-3 py-1 text-xs font-semibold text-rose-700"
+                          pendingLabel="Deleting..."
                         >
                           Delete
-                        </button>
+                        </AdminSubmitButton>
                       </form>
                     </div>
                   </td>

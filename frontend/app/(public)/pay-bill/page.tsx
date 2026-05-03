@@ -47,7 +47,7 @@ export default function PayBillPage() {
           right billing workflow.
         </p>
         <div className="mt-5 flex flex-wrap gap-4">
-          <a href={`tel:${clinic.phone}`} className="rounded-full bg-accent px-5 py-3 font-semibold text-white">
+          <a href={`tel:${clinic.phone}`} className="rounded-md border border-primary px-5 py-3 font-semibold text-primary">
             Call {clinic.phone}
           </a>
           <Link href={publicRoutes.contact} className="rounded-full border border-primary px-5 py-3 font-semibold text-primary">

@@ -74,8 +74,12 @@ export class UploadsService {
         })
       );
     } catch (error) {
+      this.logger.error(
+        `S3 image upload failed for bucket ${this.bucket}: ${error instanceof Error ? error.message : String(error)}`
+      );
+
       throw new InternalServerErrorException(
-        `Image upload failed${error instanceof Error ? `: ${error.message}` : ""}`
+        `Image upload failed. S3 is configured, but the backend could not write to the bucket. In ECS, attach a taskRoleArn to the backend task with s3:PutObject and s3:DeleteObject for ${this.bucket}/${this.uploadPrefix ? `${this.uploadPrefix}/*` : "*"}. If you want local uploads instead, remove AWS_S3_BUCKET or AWS_REGION from the backend environment.`
       );
     }
 

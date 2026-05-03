@@ -283,6 +283,9 @@ export class StripeSettings {
   @Column("text", { nullable: true })
   stripeWebhookSecretEnc!: string | null;
 
+  @Column("text", { nullable: true })
+  stripeWebhookEndpointUrl!: string | null;
+
   @Column({ default: false })
   isLiveMode!: boolean;
 

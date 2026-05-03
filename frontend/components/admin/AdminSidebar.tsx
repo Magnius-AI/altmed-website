@@ -14,7 +14,6 @@ import {
   Home,
   LayoutDashboard,
   Megaphone,
-  MenuSquare,
   MessageCircleQuestion,
   Settings,
   ShieldCheck,
@@ -25,13 +24,14 @@ import { adminNav } from "@/lib/site-content";
 
 const iconMap: Record<string, ComponentType<{ className?: string }>> = {
   Home,
+  "Dashboard Overview": LayoutDashboard,
+  "Services Management": ClipboardList,
+  "Provider Profiles": Users,
   "Blog Posts": FileText,
   Categories: FolderTree,
   Tags,
   FAQs: MessageCircleQuestion,
   Announcements: Megaphone,
-  Providers: Users,
-  Menus: MenuSquare,
   Settings,
   SEO: ShieldCheck,
   "Contact Inbox": Bell,
@@ -47,10 +47,10 @@ export function AdminSidebar() {
     pathname === href || (href !== "/admin/dashboard" && pathname.startsWith(`${href}/`));
 
   return (
-    <aside className="hidden w-72 shrink-0 border-r border-slate-200 bg-white px-4 py-5 lg:block">
-      <div className="rounded-xl border border-slate-200 bg-[var(--color-bg-gray)] p-4">
+    <aside className="hidden w-72 shrink-0 border-r border-[var(--admin-border)] bg-white/95 px-4 py-5 shadow-[10px_0_30px_rgba(16,42,58,0.04)] lg:block">
+      <div className="rounded-lg border border-[var(--admin-border)] bg-[linear-gradient(135deg,#ffffff_0%,var(--color-primary-soft)_100%)] p-4 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--color-primary-light)] text-[var(--color-text-dark)]">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-[var(--color-primary)] shadow-sm ring-1 ring-[rgba(22,122,91,0.12)]">
             <LayoutDashboard className="h-5 w-5" />
           </div>
           <div>
@@ -74,9 +74,9 @@ export function AdminSidebar() {
                   <Link
                     key={item.href}
                     href={item.href as Route}
-                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 transition ${
+                    className={`flex items-center gap-3 rounded-md px-3 py-2.5 transition ${
                       isActive(item.href)
-                        ? "bg-[var(--color-primary-light)] text-[var(--color-text-dark)]"
+                        ? "bg-[var(--color-primary)] text-white shadow-sm"
                         : "text-neutral-700 hover:bg-[var(--color-bg-gray)] hover:text-neutral-900"
                     }`}
                   >
@@ -89,7 +89,7 @@ export function AdminSidebar() {
           </div>
         ))}
       </nav>
-      <div className="mt-6 rounded-xl border border-slate-200 bg-[var(--color-bg-gray)] p-4 text-sm leading-6 text-neutral-600">
+      <div className="mt-6 rounded-lg border border-[var(--admin-border)] bg-[var(--color-bg-warm)] p-4 text-sm leading-6 text-neutral-600 shadow-sm">
         <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-primary)]">
           Workflow Goals
         </div>

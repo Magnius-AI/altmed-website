@@ -21,12 +21,12 @@ export async function generateMetadata({
     description: page.metaDescription,
     keywords: page.metaKeywords.split(",").map((item) => item.trim()),
     alternates: {
-      canonical: `/services/${canonicalSlug}`
+      canonical: `https://stage.altmedfirst.com/services/${canonicalSlug}`
     },
     openGraph: {
       title: page.metaTitle,
       description: page.metaDescription,
-      url: `https://altmedfirst.com/services/${canonicalSlug}`,
+      url: `https://stage.altmedfirst.com/services/${canonicalSlug}`,
       images: [
         {
           url: page.featuredImage,

@@ -1,3 +1,4 @@
+import { AdminSubmitButton } from "@/components/admin/AdminSubmitButton";
 import { createProviderAction, deleteProviderAction, updateProviderAction } from "./actions";
 import { getAdminProviders } from "@/lib/api";
 
@@ -87,9 +88,9 @@ export default async function AdminProvidersPage() {
             accept="image/png,image/jpeg,image/webp,image/gif"
             className="focus-ring rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm text-neutral-700"
           />
-          <button type="submit" className="admin-action justify-center lg:col-span-2">
+          <AdminSubmitButton className="admin-action justify-center lg:col-span-2" pendingLabel="Adding provider...">
             Add provider
-          </button>
+          </AdminSubmitButton>
         </form>
       </section>
 
@@ -167,15 +168,16 @@ export default async function AdminProvidersPage() {
                 </label>
               </div>
               <div className="flex flex-wrap gap-3">
-                <button type="submit" className="admin-secondary-action">
+                <AdminSubmitButton className="admin-secondary-action" pendingLabel="Saving changes...">
                   Save changes
-                </button>
-                <button
+                </AdminSubmitButton>
+                <AdminSubmitButton
                   formAction={deleteProviderAction.bind(null, provider.id)}
                   className="focus-ring inline-flex items-center rounded-full border border-rose-200 px-4 py-2.5 text-sm font-semibold text-rose-700"
+                  pendingLabel="Deleting..."
                 >
                   Delete
-                </button>
+                </AdminSubmitButton>
               </div>
             </form>
           ))}

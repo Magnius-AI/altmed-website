@@ -1,3 +1,4 @@
+import { AdminSubmitButton } from "@/components/admin/AdminSubmitButton";
 import {
   createAnnouncementAction,
   deleteAnnouncementAction,
@@ -97,9 +98,9 @@ export default async function AdminAnnouncementsPage() {
               </label>
             ))}
           </div>
-          <button type="submit" className="admin-action justify-center lg:col-span-2">
+          <AdminSubmitButton className="admin-action justify-center lg:col-span-2" pendingLabel="Saving announcement...">
             Save announcement
-          </button>
+          </AdminSubmitButton>
         </form>
       </section>
 
@@ -182,15 +183,16 @@ export default async function AdminAnnouncementsPage() {
                 ))}
               </div>
               <div className="flex flex-wrap gap-3">
-                <button type="submit" className="admin-secondary-action">
+                <AdminSubmitButton className="admin-secondary-action" pendingLabel="Saving changes...">
                   Save changes
-                </button>
-                <button
+                </AdminSubmitButton>
+                <AdminSubmitButton
                   formAction={deleteAnnouncementAction.bind(null, announcement.id!)}
                   className="focus-ring inline-flex items-center rounded-full border border-rose-200 px-4 py-2.5 text-sm font-semibold text-rose-700"
+                  pendingLabel="Deleting..."
                 >
                   Delete
-                </button>
+                </AdminSubmitButton>
               </div>
             </form>
           ))}

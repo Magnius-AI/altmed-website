@@ -31,38 +31,50 @@ export function DoctorsCarousel({ providers }: Props) {
   };
 
   return (
-    <section className="container-shell py-20">
+    <section className="bg-[var(--color-surface-alt)]">
+      <div className="container-shell py-16 md:py-24">
       <div className="flex items-end justify-between gap-6">
         <div>
-          <h2 className="text-4xl font-semibold text-neutral-900">Meet the Altmed Care Team</h2>
-          <p className="mt-4 max-w-2xl text-lg text-neutral-700">
+          <div className="section-label">Provider expertise</div>
+          <h2 className="mt-3 text-4xl font-semibold text-[var(--color-text-primary)]">Meet the Altmed Care Team</h2>
+          <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--color-text-secondary)]">
             The original site leaned heavily on provider trust. We kept that emphasis and presented
             the team in a cleaner, more modern format.
           </p>
         </div>
         <div className="hidden gap-3 md:flex">
-          <button className="focus-ring rounded-full border border-slate-200 p-3" onClick={() => scroll("left")}>
+          <button className="focus-ring rounded-md border border-[var(--color-border)] bg-white p-3" onClick={() => scroll("left")}>
             <ChevronLeft className="h-5 w-5" />
           </button>
-          <button className="focus-ring rounded-full border border-slate-200 p-3" onClick={() => scroll("right")}>
+          <button className="focus-ring rounded-md border border-[var(--color-border)] bg-white p-3" onClick={() => scroll("right")}>
             <ChevronRight className="h-5 w-5" />
           </button>
         </div>
       </div>
       <div ref={scrollerRef} className="mt-8 flex snap-x gap-5 overflow-x-auto pb-2">
         {cards.map((doctor) => (
-          <article key={doctor.name} className="min-w-[280px] snap-start rounded-xl border border-slate-200 bg-white p-6">
-            <div className="relative h-20 w-20 overflow-hidden rounded-full border border-slate-200">
-              <Image src={doctor.image} alt={doctor.name} fill className="object-cover" />
+          <article key={doctor.name} className="grid min-w-[300px] snap-start gap-5 rounded-lg border border-[var(--color-border)] bg-white p-5 md:min-w-[520px] md:grid-cols-[160px_1fr]">
+            <div className="relative min-h-[190px] overflow-hidden rounded-lg border border-[var(--color-border)]">
+              <Image src={doctor.image} alt={doctor.name} fill className="site-photo object-cover" />
             </div>
-            <h3 className="mt-5 text-xl font-semibold text-neutral-900">{doctor.name}</h3>
-            <p className="mt-1 text-sm text-primary">{doctor.specialty}</p>
-            <p className="mt-3 text-sm text-neutral-400">{doctor.experience}</p>
-            <a href={buildBookingUrl("doctor_card", doctor.name.toLowerCase().replace(/\s+/g, "-"))} className="mt-5 inline-block text-sm font-semibold text-primary">
-              {doctor.cta} →
-            </a>
+            <div>
+              <h3 className="text-xl font-semibold text-[var(--color-text-primary)]">{doctor.name}</h3>
+              <p className="mt-1 text-sm font-bold uppercase tracking-[0.08em] text-[var(--color-primary)]">{doctor.specialty}</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {["MD", "PhD", "Board Certified"].map((badge) => (
+                  <span key={badge} className="rounded-full bg-[var(--color-surface-alt)] px-3 py-1 text-xs font-bold uppercase tracking-[0.08em] text-[var(--color-primary)]">
+                    {badge}
+                  </span>
+                ))}
+              </div>
+              <p className="mt-4 text-sm leading-7 text-[var(--color-text-secondary)]">{doctor.experience}</p>
+              <a href={buildBookingUrl("doctor_card", doctor.name.toLowerCase().replace(/\s+/g, "-"))} className="mt-5 inline-block text-sm font-semibold text-[var(--color-primary)]">
+                {doctor.cta} →
+              </a>
+            </div>
           </article>
         ))}
+      </div>
       </div>
     </section>
   );

@@ -264,6 +264,8 @@ export class TreatmentPlansService {
       stripePublishableKey: settings?.stripePublishableKey ?? "",
       stripeSecretKeyLast4: this.maskSecretLast4(settings?.stripeSecretKeyEnc),
       stripeWebhookSecretLast4: this.maskSecretLast4(settings?.stripeWebhookSecretEnc),
+      stripeWebhookEndpointUrl:
+        settings?.stripeWebhookEndpointUrl ?? `${this.configService.get<string>("payments.baseUrl") ?? "http://localhost:3000"}/api/webhooks/stripe`,
       isLiveMode: settings?.isLiveMode ?? false
     };
   }
@@ -277,6 +279,10 @@ export class TreatmentPlansService {
     settings.stripeWebhookSecretEnc = dto.stripeWebhookSecret?.trim()
       ? this.encrypt(dto.stripeWebhookSecret.trim())
       : settings.stripeWebhookSecretEnc;
+    settings.stripeWebhookEndpointUrl =
+      dto.stripeWebhookEndpointUrl !== undefined
+        ? dto.stripeWebhookEndpointUrl.trim() || null
+        : settings.stripeWebhookEndpointUrl;
     settings.isLiveMode = dto.isLiveMode ?? settings.isLiveMode ?? false;
     await this.settings.save(settings);
     return this.getMaskedSettings();

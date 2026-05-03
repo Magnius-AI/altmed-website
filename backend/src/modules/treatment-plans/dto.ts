@@ -89,6 +89,10 @@ export class UpdateStripeSettingsDto {
   stripeWebhookSecret?: string;
 
   @IsOptional()
+  @IsString()
+  stripeWebhookEndpointUrl?: string;
+
+  @IsOptional()
   @IsBoolean()
   isLiveMode?: boolean;
 }
