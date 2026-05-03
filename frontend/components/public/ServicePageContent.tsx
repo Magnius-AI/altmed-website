@@ -410,10 +410,16 @@ export function ServicePageContent({ page }: Props) {
                 your visit is better handled in clinic or through another Altmed service.
               </p>
               <div className="mt-5 flex flex-wrap gap-4">
-                <a href={`tel:${clinic.phone}`} className="btn-outline-dark border-white text-white hover:bg-white hover:text-[var(--color-text-primary)]">
+                <a
+                  href={`tel:${clinic.phone}`}
+                  className="focus-ring inline-flex min-h-[44px] items-center justify-center rounded-md border border-[var(--color-accent)] bg-[var(--color-accent)] px-5 py-2.5 text-sm font-bold uppercase tracking-[0.08em] text-white shadow-[0_10px_22px_rgba(217,123,58,0.22)] transition hover:border-[var(--color-accent-hover)] hover:bg-[var(--color-accent-hover)]"
+                >
                   Call {clinic.phone}
                 </a>
-                <Link href={publicRoutes.contact as Route} className="btn-secondary">
+                <Link
+                  href={publicRoutes.contact as Route}
+                  className="focus-ring inline-flex min-h-[44px] items-center justify-center rounded-md border border-white/70 bg-transparent px-5 py-2.5 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:bg-white hover:text-[var(--color-footer-bg)]"
+                >
                   Contact Us
                 </Link>
               </div>
