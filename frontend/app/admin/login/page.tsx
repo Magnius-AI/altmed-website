@@ -32,14 +32,14 @@ export default function AdminLoginPage({ searchParams }: AdminLoginPageProps) {
             Calm tools for the work behind the clinic.
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-white/80">
-            Sign in to update blog posts, FAQs, service pages, announcements, providers, and
-            SEO-critical content from one publishing console.
+            Sign in to review enrollments, publish clinic updates, manage blog posts, answer FAQs,
+            and keep the patient-facing basics current.
           </p>
           <div className="mt-6 grid gap-3 md:grid-cols-3">
             {[
-              "Blog and announcement workflows",
-              "Service-page and FAQ editing",
-              "Provider, SEO, and inbox management"
+              "Enrollments and payments",
+              "Blog, notices, and FAQs",
+              "Providers and contact inbox"
             ].map((item) => (
               <div key={item} className="rounded-lg border border-white/10 bg-white/10 p-4 text-sm leading-6 text-white/80 shadow-sm">
                 {item}

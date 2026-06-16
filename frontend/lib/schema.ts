@@ -3,14 +3,17 @@ import { clinic } from "./site-content";
 export function buildClinicSchema() {
   return {
     "@context": "https://schema.org",
-    "@type": ["MedicalClinic", "MedicalOrganization", "LocalBusiness"],
+    "@type": "MedicalBusiness",
     name: clinic.name,
     url: clinic.canonicalUrl,
+    logo: `${clinic.canonicalUrl}/assets/img/logo.png`,
     telephone: clinic.phone,
     email: clinic.email,
+    description:
+      "Walk-in clinic in Manassas VA offering urgent care, DOT physicals, medical weight loss, occupational health, and telehealth services.",
     address: {
       "@type": "PostalAddress",
-      streetAddress: clinic.address,
+      streetAddress: "8551 Rixlew Lane Suite 140",
       addressLocality: "Manassas",
       addressRegion: "VA",
       postalCode: "20109",
@@ -21,8 +24,10 @@ export function buildClinicSchema() {
       latitude: clinic.coordinates.latitude,
       longitude: clinic.coordinates.longitude
     },
-    image: `${clinic.canonicalUrl}/legacy-assets/homepage/top.jpg`,
+    image: `${clinic.canonicalUrl}/assets/img/homepage/clinic-front-view.jpg`,
     priceRange: "$$",
+    currenciesAccepted: "USD",
+    paymentAccepted: "Cash, Credit Card, Insurance",
     hasMap: clinic.mapUrl,
     openingHoursSpecification: [
       {
@@ -34,14 +39,11 @@ export function buildClinicSchema() {
     ],
     areaServed: [
       "Manassas, VA",
+      "Manassas Park, VA",
       "Gainesville, VA",
       "Haymarket, VA",
-      "Bristow, VA",
       "Woodbridge, VA",
-      "Centreville, VA",
-      "Dale City, VA",
-      "Prince William County, VA",
-      "Northern Virginia"
+      "Prince William County, VA"
     ],
     availableLanguage: clinic.languages,
     medicalSpecialty: [
@@ -107,37 +109,14 @@ export function buildServiceSchema(input: {
 }) {
   return {
     "@context": "https://schema.org",
-    "@type": ["Service", "MedicalProcedure"],
+    "@type": "MedicalSpecialty",
     name: input.name,
+    url: input.url,
     description: input.description,
-    areaServed: [
-      "Manassas, VA",
-      "Manassas Park, VA",
-      "Gainesville, VA",
-      "Bristow, VA",
-      "Haymarket, VA",
-      "Centreville, VA",
-      "Woodbridge, VA",
-      "Prince William County, VA"
-    ],
-    availableChannel: {
-      "@type": "ServiceChannel",
-      serviceUrl: input.url,
-      servicePhone: clinic.phone
-    },
     provider: {
-      "@type": "MedicalClinic",
+      "@type": "MedicalBusiness",
       name: clinic.name,
-      url: clinic.canonicalUrl,
-      telephone: clinic.phone,
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: clinic.address,
-        addressLocality: "Manassas",
-        addressRegion: "VA",
-        postalCode: "20109",
-        addressCountry: "US"
-      }
+      url: clinic.canonicalUrl
     }
   };
 }

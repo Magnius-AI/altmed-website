@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Route } from "next";
 import { CreditCard, FileText, Phone } from "lucide-react";
 import { clinic, publicRoutes } from "@/lib/site-content";
 
@@ -50,7 +51,7 @@ export default function PayBillPage() {
           <a href={`tel:${clinic.phone}`} className="rounded-md border border-primary px-5 py-3 font-semibold text-primary">
             Call {clinic.phone}
           </a>
-          <Link href={publicRoutes.contact} className="rounded-full border border-primary px-5 py-3 font-semibold text-primary">
+          <Link href={publicRoutes.contact as Route} className="rounded-full border border-primary px-5 py-3 font-semibold text-primary">
             Contact Us
           </Link>
         </div>

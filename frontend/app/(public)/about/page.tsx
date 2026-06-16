@@ -2,21 +2,16 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Award, HeartHandshake, ShieldCheck } from "lucide-react";
 import { getProviders } from "@/lib/api";
+import { buildPageMetadata } from "@/lib/metadata";
 import { clinic, legacyAssets } from "@/lib/site-content";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "About Altmed Medical Center | Medical Clinic Manassas VA",
   description:
     "Learn about Altmed Medical Center in Manassas, VA, including Dr. Gerald K. Lee, the care team, clinic services, and local patient-focused approach.",
-  alternates: {
-    canonical: "/about-us"
-  },
-  openGraph: {
-    title: "About Altmed Medical Center | Manassas, VA",
-    description:
-      "Meet the Altmed Medical Center team and learn how the clinic supports patients, families, employers, and drivers in Manassas."
-  }
-};
+  path: "/about",
+  image: legacyAssets.aboutPhoto
+});
 
 const highlights = [
   {
@@ -104,7 +99,7 @@ export default async function AboutPage() {
             <div className="mt-8 flex flex-wrap gap-4">
               <a href="/services" className="btn-outline-dark">Browse Services</a>
               <a href="/faq" className="btn-outline-dark">Read FAQs</a>
-              <a href="/contact-us" className="btn-outline-dark">Contact Us</a>
+              <a href="/contact" className="btn-outline-dark">Contact Us</a>
             </div>
           </div>
         </div>

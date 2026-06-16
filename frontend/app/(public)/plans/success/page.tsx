@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { Route } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -19,7 +20,7 @@ export default function PlanSuccessPage() {
           <Link href="/plans" className="btn btn-secondary">
             View plans
           </Link>
-          <Link href="/contact-us" className="btn btn-primary">
+          <Link href={"/contact" as Route} className="btn btn-primary">
             Contact clinic
           </Link>
         </div>

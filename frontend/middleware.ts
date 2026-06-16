@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getCanonicalHost, isLocalHost } from "@/lib/site-url";
 
 function getJwtExpiry(token: string) {
   try {
@@ -19,6 +20,20 @@ function getJwtExpiry(token: string) {
 }
 
 export function middleware(request: NextRequest) {
+  const host = request.nextUrl.host.toLowerCase();
+  const forwardedProto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim();
+  const protocol = forwardedProto || request.nextUrl.protocol.replace(":", "");
+  const canonicalHost = getCanonicalHost(host);
+  const shouldCanonicalizeHost = host !== canonicalHost;
+  const shouldCanonicalizeProtocol = protocol !== "https" && !isLocalHost(host);
+
+  if (shouldCanonicalizeHost || shouldCanonicalizeProtocol) {
+    const canonicalUrl = request.nextUrl.clone();
+    canonicalUrl.host = canonicalHost;
+    canonicalUrl.protocol = isLocalHost(host) ? request.nextUrl.protocol : "https";
+    return NextResponse.redirect(canonicalUrl, 301);
+  }
+
   if (
     request.nextUrl.pathname.startsWith("/admin") &&
     request.nextUrl.pathname !== "/admin/login"
@@ -48,5 +63,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"]
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"]
 };

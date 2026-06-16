@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Header,
+  Headers,
   Param,
   Patch,
   Post,
@@ -21,8 +22,14 @@ export class ContactController {
   constructor(private readonly contactService: ContactService) {}
 
   @Post()
-  submit(@Body() dto: CreateContactSubmissionDto, @Req() request: Request) {
-    return this.contactService.submit(dto, request.ip);
+  submit(
+    @Body() dto: CreateContactSubmissionDto,
+    @Req() request: Request,
+    @Headers("x-forwarded-for") forwardedFor?: string,
+    @Headers("x-real-ip") realIp?: string
+  ) {
+    const clientIp = forwardedFor?.split(",")[0]?.trim() || realIp || request.ip;
+    return this.contactService.submit(dto, clientIp);
   }
 
   @Get("submissions")

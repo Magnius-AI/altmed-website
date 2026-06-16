@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 type Props = {
   announcement: null | {
@@ -12,20 +12,9 @@ type Props = {
 };
 
 export function AnnouncementBanner({ announcement }: Props) {
-  const storageKey = useMemo(() => {
-    const seed = `${announcement?.title ?? ""}-${announcement?.body ?? ""}`;
-    return `altmed-announcement-${seed}`;
-  }, [announcement?.body, announcement?.title]);
+  const [dismissed, setDismissed] = useState(false);
 
-  const [dismissed, setDismissed] = useState(true);
-
-  useEffect(() => {
-    if (!announcement) {
-      return;
-    }
-
-    setDismissed(window.localStorage.getItem(storageKey) === "hidden");
-  }, [announcement, storageKey]);
+  useEffect(() => setDismissed(false), [announcement?.body, announcement?.title]);
 
   if (!announcement || dismissed) {
     return null;
@@ -42,10 +31,7 @@ export function AnnouncementBanner({ announcement }: Props) {
           type="button"
           className="focus-ring inline-flex h-8 w-8 items-center justify-center rounded-full border border-[rgba(18,52,77,0.12)] text-[var(--color-text-muted)] transition hover:bg-white hover:text-[var(--color-text-dark)]"
           aria-label="Dismiss announcement"
-          onClick={() => {
-            window.localStorage.setItem(storageKey, "hidden");
-            setDismissed(true);
-          }}
+          onClick={() => setDismissed(true)}
         >
           <X className="h-4 w-4" />
         </button>

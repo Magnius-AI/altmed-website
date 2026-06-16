@@ -26,6 +26,22 @@ export class CreateProviderDto {
   specialties?: string[];
 
   @IsOptional()
+  @IsArray()
+  scheduleServices?: string[];
+
+  @IsOptional()
+  @IsString()
+  appointmentUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  scheduleStatus?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isSchedulable?: boolean;
+
+  @IsOptional()
   @IsString()
   personalNote?: string;
 

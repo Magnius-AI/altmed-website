@@ -2,7 +2,15 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { ServicePageContent } from "@/components/public/ServicePageContent";
 import { getServicePage } from "@/lib/api";
+import { buildPageMetadata } from "@/lib/metadata";
 import { legacyServiceRedirects, supportedServiceSlugs } from "@/lib/site-content";
+
+export function generateStaticParams() {
+  return Array.from(supportedServiceSlugs)
+    .filter((slug) => !slug.includes("/"))
+    .filter((slug) => !legacyServiceRedirects[slug])
+    .map((slug) => ({ slug }));
+}
 
 export async function generateMetadata({
   params
@@ -16,25 +24,13 @@ export async function generateMetadata({
   const page = await getServicePage(params.slug);
   const canonicalSlug = legacyServiceRedirects[params.slug] ?? params.slug;
 
-  return {
+  return buildPageMetadata({
     title: page.metaTitle,
     description: page.metaDescription,
     keywords: page.metaKeywords.split(",").map((item) => item.trim()),
-    alternates: {
-      canonical: `https://stage.altmedfirst.com/services/${canonicalSlug}`
-    },
-    openGraph: {
-      title: page.metaTitle,
-      description: page.metaDescription,
-      url: `https://stage.altmedfirst.com/services/${canonicalSlug}`,
-      images: [
-        {
-          url: page.featuredImage,
-          alt: `${page.name} at Altmed Medical Center in Manassas`
-        }
-      ]
-    }
-  };
+    path: `/services/${canonicalSlug}`,
+    image: page.featuredImage
+  });
 }
 
 export default async function ServiceDynamicPage({ params }: { params: { slug: string } }) {

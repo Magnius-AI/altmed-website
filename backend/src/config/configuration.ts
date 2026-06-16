@@ -24,7 +24,10 @@ export default () => ({
     port: Number(process.env.EMAIL_PORT ?? 587),
     user: process.env.EMAIL_USER ?? "info@altmedfirst.com",
     pass: process.env.EMAIL_PASS ?? "",
-    recipient: process.env.CONTACT_FORM_RECIPIENT ?? "info@altmedfirst.com"
+    recipient:
+      process.env.CONTACT_FORM_RECIPIENT ??
+      process.env.ADMIN_ALERT_EMAIL ??
+      "info@altmedfirst.com"
   },
   recaptcha: {
     secret: process.env.RECAPTCHA_SECRET_KEY ?? ""

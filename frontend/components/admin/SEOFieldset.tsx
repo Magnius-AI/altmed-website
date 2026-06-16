@@ -1,3 +1,5 @@
+import { getConfiguredSiteOrigin } from "@/lib/site-url";
+
 type Props = {
   metaTitle?: string | null;
   metaDescription?: string | null;
@@ -11,6 +13,8 @@ export function SEOFieldset({
   metaKeywords,
   canonicalUrl
 }: Props) {
+  const siteOrigin = getConfiguredSiteOrigin();
+
   return (
     <div className="space-y-5 rounded-xl border bg-white p-5">
       <h3 className="text-lg font-semibold text-neutral-900">SEO Checklist</h3>
@@ -51,7 +55,7 @@ export function SEOFieldset({
           name="canonicalUrl"
           defaultValue={canonicalUrl ?? ""}
           className="focus-ring w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-neutral-700"
-          placeholder="https://altmedfirst.com/health-blogs/example"
+          placeholder={`${siteOrigin}/health-blogs/example`}
         />
       </label>
       <ul className="mt-4 space-y-2 text-sm text-neutral-700">

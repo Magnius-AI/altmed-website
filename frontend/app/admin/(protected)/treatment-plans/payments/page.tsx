@@ -1,6 +1,7 @@
 import { AdminSubmitButton } from "@/components/admin/AdminSubmitButton";
 import { AdminToast } from "@/components/admin/AdminToast";
 import { getStripeSettingsSummary } from "@/lib/api";
+import { getConfiguredSiteOrigin } from "@/lib/site-url";
 import { updateStripeSettingsAction } from "../actions";
 
 type Props = {
@@ -19,6 +20,7 @@ function noticeMessage(saved?: string) {
 
 export default async function PaymentSettingsPage({ searchParams }: Props) {
   const settings = await getStripeSettingsSummary();
+  const siteOrigin = getConfiguredSiteOrigin();
 
   return (
     <div className="admin-card p-5">
@@ -56,7 +58,7 @@ export default async function PaymentSettingsPage({ searchParams }: Props) {
             type="url"
             defaultValue={settings.stripeWebhookEndpointUrl}
             className="input"
-            placeholder="https://altmedfirst.com/api/webhooks/stripe"
+            placeholder={`${siteOrigin}/api/webhooks/stripe`}
           />
         </label>
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-neutral-700">

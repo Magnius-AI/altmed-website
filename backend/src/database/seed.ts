@@ -135,7 +135,7 @@ async function seed() {
         address: "8551 Rixlew Lane, Suite 140, Manassas, VA 20109",
         phone: "(703) 361-4357",
         email: "info@altmedfirst.com",
-        canonicalUrl: "https://altmedfirst.com"
+        canonicalUrl: process.env.FRONTEND_URL ?? "http://localhost:3000"
       }
     },
     {
@@ -203,27 +203,88 @@ async function seed() {
     }
   }
 
-  if (!(await providerRepo.count())) {
-    await providerRepo.save(
-      providerRepo.create({
-        name: "Dr. Gerald K. Lee",
-        credentials: "MD, PhD, MS",
-        title: "Founder & Lead Physician",
-        bio: "Dr. Gerald Lee combines frontline clinical care with advanced training in epidemiology and biostatistics to deliver evidence-based, compassionate medicine for families and employers across Northern Virginia.",
-        photo: "/images/dr-lee-placeholder.webp",
-        specialties: [
-          "Obesity Medicine",
-          "Addiction Medicine",
-          "Pain Management",
-          "Family Medicine",
-          "Occupational Health",
-          "Preventive Medicine"
-        ],
-        personalNote: "Comprehensive Care. Convenient Access. Trusted Expertise.",
-        displayOrder: 1,
-        isActive: true
-      })
-    );
+  const providerSeeds = [
+    {
+      name: "Dr. Gerald K. Lee, M.D., Ph.D.",
+      credentials: "MD, PhD, MS",
+      title: "Medical Provider",
+      bio: "Dr. Gerald Lee combines frontline clinical care with advanced training in epidemiology and biostatistics to deliver evidence-based, compassionate medicine for families and employers across Northern Virginia.",
+      photo: "/legacy-assets/doctors/doctors-1.jpg",
+      specialties: [
+        "Obesity Medicine",
+        "Addiction Medicine",
+        "Pain Management",
+        "Family Medicine",
+        "Occupational Health",
+        "Preventive Medicine"
+      ],
+      scheduleServices: ["dot-physical", "medical-visit"],
+      appointmentUrl: "https://www.patientfusion.com/doctor/jerry-lee-md-phd-08966",
+      scheduleStatus: "Available",
+      isSchedulable: true,
+      personalNote: "Comprehensive Care. Convenient Access. Trusted Expertise.",
+      displayOrder: 1,
+      isActive: true
+    },
+    {
+      name: "Simon Choi FNP-BC",
+      credentials: "FNP-BC",
+      title: "Family Nurse Practitioner",
+      bio: "Simon Choi supports timely medical visits, occupational health care, and DOT physical scheduling at Altmed.",
+      photo: "/legacy-assets/doctors/doctors-1.jpg",
+      specialties: ["DOT Physicals", "Medical Visits", "Primary Care", "Occupational Health"],
+      scheduleServices: ["dot-physical", "medical-visit"],
+      appointmentUrl: "https://www.patientfusion.com/doctor/simon-choi-aprn-29100",
+      scheduleStatus: "Available",
+      isSchedulable: true,
+      displayOrder: 2,
+      isActive: true
+    },
+    {
+      name: "Garima Pokhrel, DNP, FNP-C",
+      credentials: "DNP, FNP-C",
+      title: "Family Nurse Practitioner",
+      bio: "Garima Pokhrel supports primary care, urgent care, DOT physicals, and practical patient education.",
+      photo: "/legacy-assets/doctors/doctors-2.jpg",
+      specialties: ["DOT Physicals", "Medical Visits", "Primary Care", "Preventive Care"],
+      scheduleServices: ["dot-physical", "medical-visit"],
+      appointmentUrl: "https://www.patientfusion.com/doctor/garima-pokhrel-fnp-c-msn-56621",
+      scheduleStatus: "Available",
+      isSchedulable: true,
+      displayOrder: 3,
+      isActive: true
+    },
+    {
+      name: "David Mejia",
+      credentials: "Clinical Support",
+      title: "Medical Assistant",
+      bio: "David Mejia supports drug and alcohol testing visits with check-in, collection, and appointment flow.",
+      photo: "/legacy-assets/doctors/doctors-3.jpg",
+      specialties: ["Drug Testing", "Alcohol Testing", "Occupational Health"],
+      scheduleServices: ["drug-test"],
+      appointmentUrl: "https://www.patientfusion.com/doctor/david-mejia-55893",
+      scheduleStatus: "Available",
+      isSchedulable: true,
+      displayOrder: 4,
+      isActive: true
+    }
+  ];
+
+  for (const provider of providerSeeds) {
+    let existing = await providerRepo.findOne({ where: { name: provider.name } });
+    if (!existing && provider.name.startsWith("Dr. Gerald")) {
+      existing = await providerRepo.findOne({ where: { name: "Dr. Gerald K. Lee" } });
+    }
+    if (!existing) {
+      await providerRepo.save(providerRepo.create(provider));
+    } else if (!existing.appointmentUrl) {
+      await providerRepo.update(existing.id, {
+        scheduleServices: provider.scheduleServices,
+        appointmentUrl: provider.appointmentUrl,
+        scheduleStatus: provider.scheduleStatus,
+        isSchedulable: provider.isSchedulable
+      });
+    }
   }
 
   await dataSource.destroy();

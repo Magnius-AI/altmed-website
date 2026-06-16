@@ -3,35 +3,22 @@ import type { Route } from "next";
 import Link from "next/link";
 import { BlogCard } from "@/components/public/BlogCard";
 import { BlogPost, getBlogPosts } from "@/lib/api";
+import { buildPageMetadata } from "@/lib/metadata";
 import { buildBookingUrl, legacyAssets, publicRoutes } from "@/lib/site-content";
 
-export const metadata: Metadata = {
-  title: "Health Blog for Manassas Patients | Altmed Medical Center Manassas VA",
+export const metadata: Metadata = buildPageMetadata({
+  title: "Health Blog | Medical Tips & Manassas VA Health News | Altmed Medical Center",
   description:
     "Patient-friendly articles on urgent care, weight loss, occupational health, telehealth, and preventive care from Altmed Medical Center in Manassas.",
-  alternates: {
-    canonical: "https://stage.altmedfirst.com/health-blogs"
-  },
-  openGraph: {
-    title: "Health Blog for Manassas Patients",
-    description:
-      "Local health articles from Altmed Medical Center covering urgent care, DOT health, weight loss, telehealth, and prevention.",
-    url: "https://stage.altmedfirst.com/health-blogs",
-    images: [legacyAssets.heroDoctor]
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Health Blog for Manassas Patients",
-    description: "Patient-friendly medical articles from Altmed Medical Center in Manassas VA.",
-    images: [legacyAssets.heroDoctor]
-  }
-};
+  path: "/health-blogs",
+  image: legacyAssets.heroDoctor
+});
 
 export default async function BlogPage() {
   const posts = await getBlogPosts();
   const featured = posts.find((post) => post.featured) ?? posts[0];
   const remaining = posts.filter((post) => post.slug !== featured?.slug);
-  const categoryPills = ["All", "Urgent Care", "Weight Loss", "Occupational Health", "Telehealth", "Preventive Care"];
+  const categoryPills = ["All", "Urgent Care", "Weight Loss", "DOT & Occupational", "Addiction", "Primary Care"];
 
   return (
     <main className="bg-[var(--color-bg)]">
