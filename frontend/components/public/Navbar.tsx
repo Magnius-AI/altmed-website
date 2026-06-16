@@ -143,9 +143,9 @@ export function Navbar({ menu, showTreatmentPlans = true }: Props) {
             <Image
               src={legacyAssets.logo}
               alt="Altmed Medical Center"
-              width={68}
-              height={68}
-              className="h-14 w-24 object-cover"
+              width={150}
+              height={70}
+              className="h-12 w-auto object-contain"
               priority
             />
           </Link>

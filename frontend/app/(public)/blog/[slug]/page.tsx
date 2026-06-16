@@ -5,8 +5,9 @@ import Link from "next/link";
 import { FAQAccordion } from "@/components/public/FAQAccordion";
 import { SchemaOrg } from "@/components/public/SchemaOrg";
 import { getBlogPost, getBlogPosts } from "@/lib/api";
+import { buildPageMetadata } from "@/lib/metadata";
 import { buildBreadcrumbSchema } from "@/lib/schema";
-import { buildBookingUrl, publicRoutes } from "@/lib/site-content";
+import { buildBookingUrl, clinic, publicRoutes } from "@/lib/site-content";
 
 export async function generateMetadata({
   params
@@ -14,10 +15,13 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   const post = await getBlogPost(params.slug);
-  return {
+  return buildPageMetadata({
     title: post.metaTitle ?? post.title,
-    description: post.metaDescription ?? post.excerpt
-  };
+    description: post.metaDescription ?? post.excerpt ?? "Health article from Altmed Medical Center in Manassas VA.",
+    path: publicRoutes.blogPost(post.slug),
+    image: post.featuredImage ?? "/assets/img/logo.png",
+    keywords: post.metaKeywords?.split(",").map((item) => item.trim())
+  });
 }
 
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
@@ -26,16 +30,40 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
   const headings = Array.from(post.body.matchAll(/<h2>(.*?)<\/h2>/g)).map((match) => match[1]);
   const blogFaqs = (post.faqs ?? []).filter((faq) => faq.question && faq.answer);
   const readTime = Math.max(4, Math.ceil(post.body.replace(/<[^>]+>/g, " ").split(/\s+/).length / 180));
+  const postUrl = `${clinic.canonicalUrl}${publicRoutes.blogPost(post.slug)}`;
+  const publishedAt = post.publishedAt ?? post.createdAt ?? new Date().toISOString();
+  const modifiedAt = post.updatedAt ?? publishedAt;
 
   return (
     <main className="bg-[var(--color-bg)]">
       <div className="container-shell py-16 md:py-24">
       <SchemaOrg
         schema={buildBreadcrumbSchema([
-          { name: "Home", item: "https://stage.altmedfirst.com" },
-          { name: "Health Blogs", item: `https://stage.altmedfirst.com${publicRoutes.blog}` },
-          { name: post.title, item: `https://stage.altmedfirst.com${publicRoutes.blogPost(post.slug)}` }
+          { name: "Home", item: clinic.canonicalUrl },
+          { name: "Health Blogs", item: `${clinic.canonicalUrl}${publicRoutes.blog}` },
+          { name: post.title, item: postUrl }
         ])}
+      />
+      <SchemaOrg
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: post.title,
+          author: {
+            "@type": "Person",
+            name: post.author || "Dr. Jerry K. Lee",
+            url: `${clinic.canonicalUrl}/providers`
+          },
+          publisher: {
+            "@type": "Organization",
+            name: clinic.name,
+            url: clinic.canonicalUrl
+          },
+          image: post.featuredImage ? `${clinic.canonicalUrl}${post.featuredImage}` : `${clinic.canonicalUrl}/assets/img/logo.png`,
+          mainEntityOfPage: postUrl,
+          datePublished: publishedAt,
+          dateModified: modifiedAt
+        }}
       />
       {blogFaqs.length ? (
         <SchemaOrg

@@ -1,15 +1,17 @@
+import { getConfiguredSiteOrigin } from "./site-url";
+
 export const clinic = {
   name: "Altmed Medical Center",
   tagline: "Primary care, urgent care, occupational health, weight loss, and telehealth in Manassas, VA.",
   phone: "(703) 361-4357",
   email: "info@altmedfirst.com",
   address: "8551 Rixlew Lane Suite 140, Manassas, VA 20109",
-  canonicalUrl: "https://stage.altmedfirst.com",
+  canonicalUrl: getConfiguredSiteOrigin(),
   bookingUrl: "/appointment",
   hours: "Mon-Fri: 9:00 AM-5:00 PM",
   coordinates: {
-    latitude: 38.7711537,
-    longitude: -77.5023036
+    latitude: 38.771256819960136,
+    longitude: -77.50167231304229
   },
   mapUrl: "https://maps.google.com/?q=8551+Rixlew+Lane+Suite+140+Manassas+VA+20109",
   languages: ["English", "Spanish"]
@@ -77,16 +79,16 @@ export const legacyAssets = {
 
 export const publicRoutes = {
   home: "/",
-  about: "/about-us",
+  about: "/about",
   services: "/services",
   plans: "/plans",
   departments: "/services",
   appointment: "/appointment",
   blog: "/health-blogs",
   faq: "/faq",
-  contact: "/contact-us",
+  contact: "/contact",
   announcements: "/updates",
-  providers: "/about-us",
+  providers: "/providers",
   forms: "/patient-forms",
   privacy: "/privacy-policy",
   tpaAgreement: "/tpa-service-agreement",
@@ -100,14 +102,22 @@ export const publicRoutes = {
 export const reconstructedLegacyRoutes = [
   { from: "/blog", to: "/health-blogs", reason: "Google already indexes the health-blogs archive path" },
   { from: "/blogs", to: "/health-blogs", reason: "Backlink-safe alias for legacy blog usage" },
+  { from: "/altmed-blogs", to: "/health-blogs", reason: "Legacy blog archive alias from Search Console" },
+  { from: "/current-news", to: "/health-blogs", reason: "Legacy news archive now consolidates into health blogs" },
+  { from: "/about-us", to: "/about", reason: "Canonical about page is the shorter indexed route requested for launch" },
+  { from: "/contact-us", to: "/contact", reason: "Canonical contact page is the shorter indexed route requested for launch" },
   { from: "/book", to: "/appointment", reason: "Appointment route preserved from old public site" },
   { from: "/announcements", to: "/updates", reason: "Legacy site used updates/news naming" },
+  { from: "/services/primary-care", to: "/services/primary-care-manassas-va", reason: "Local-service slug carries the Search Console impressions" },
+  { from: "/services/urgent-care", to: "/services/urgent-care-manassas-va", reason: "Local-service slug carries the Search Console impressions" },
   { from: "/services/addiction", to: "/services/suboxone-treatment-manassas", reason: "Google indexes the newer addiction/Suboxone page slug" },
   { from: "/services/occupational-health/dot-physical", to: "/services/dot-physical-manassas-va", reason: "Google indexes the newer DOT physical landing page" },
   { from: "/services/occupational-health/drug-and-alcohol-test", to: "/services/occupational-health/drug-alcohol-testing-manassas", reason: "Google indexes the newer drug testing slug" },
   { from: "/services/occupational-health/vaccinations", to: "/services/occupational-health/vaccinations-immunizations-manassas-va", reason: "Google indexes the expanded vaccination slug" },
   { from: "/services/occupational-health/workers-compensation", to: "/services/occupational-health/workers-compensation-injury-care-manassas", reason: "Google indexes the workers comp landing page" },
-  { from: "/services/third-party-administration-service", to: "/tpa-service-agreement", reason: "Agreement page remains important for employer traffic" },
+  { from: "/services/third-party-administration-service", to: "/services/third-party-administrator-service-manassas", reason: "Canonical TPA service page uses administrator wording" },
+  { from: "/services/occupational-health/pre-employment-physical", to: "/services/pre-employment-physical-drug-test-manassas", reason: "New local pre-employment physical page targets zero-click GSC queries" },
+  { from: "/services/weight-management/semaglutide-weight-loss-manassas", to: "/services/semaglutide-weight-loss-manassas", reason: "Dedicated GLP-1 page targets semaglutide and tirzepatide queries" },
   { from: "/services/medical-review-officer", to: "/services/mro-services-manassas", reason: "Google indexes the dedicated MRO services page" },
   { from: "/services/corporate-wellness-and-health-fairs", to: "/services/corporate-wellness-programs-manassas", reason: "Google indexes the newer corporate wellness slug" },
   { from: "/services/weight_management", to: "/services/medical-weight-loss-manassas", reason: "Google indexes the newer weight loss page" },
@@ -130,7 +140,7 @@ export const serviceCards = [
     slug: "urgent-care-manassas-va",
     title: "Urgent Care",
     description: "Walk-in urgent care for minor illness, infections, injuries, and same-day care in Manassas.",
-    image: legacyAssets.heroDoctor,
+    image: "/images/homepage/new/same-day-care.webp",
     shortDescription: "Walk-in care for sudden health needs."
   },
   {
@@ -144,7 +154,7 @@ export const serviceCards = [
     slug: "occupational-health-clinic-manassas",
     title: "Occupational Health",
     description: "Employer-based screenings, injury follow-up, DOT support, and workforce health services.",
-    image: legacyAssets.heroBackdrop,
+    image: "/images/occupational/occ-med-3.jpg",
     shortDescription: "Workplace and employer health services."
   },
   {
@@ -160,6 +170,13 @@ export const serviceCards = [
     description: "Pre-employment, random, post-accident, and DOT-compliant testing for employers and individuals.",
     image: legacyAssets.heroDoctor,
     shortDescription: "Drug screens and alcohol testing."
+  },
+  {
+    slug: "pre-employment-physical-drug-test-manassas",
+    title: "Pre-Employment Physicals",
+    description: "Same-day job physicals, drug tests, and employer screening support for new-hire onboarding.",
+    image: legacyAssets.departmentThree,
+    shortDescription: "New-hire physicals and drug tests."
   },
   {
     slug: "occupational-health/workers-compensation-injury-care-manassas",
@@ -181,6 +198,13 @@ export const serviceCards = [
     description: "Physician-guided weight loss plans with medications, injections, nutrition support, and monitoring.",
     image: legacyAssets.doctorsOverview,
     shortDescription: "B-12, semaglutide, and coached programs."
+  },
+  {
+    slug: "semaglutide-weight-loss-manassas",
+    title: "Semaglutide & GLP-1 Weight Loss",
+    description: "Semaglutide, tirzepatide, Ozempic, Wegovy, and GLP-1 weight-loss consultations in Manassas.",
+    image: "/images/homepage/new/comprehensive-weight-loss.webp",
+    shortDescription: "GLP-1 medication consultations."
   },
   {
     slug: "functional-medicine-manassas",
@@ -234,78 +258,78 @@ export const servicePageFallbackContent: Record<
   "urgent-care-manassas-va": {
     name: "Urgent Care",
     heroContent:
-      "<h1>Urgent Care in Manassas, VA</h1><p>Walk in for fast, same-day care for non-life-threatening illness, minor injuries, infections, rashes, and everyday problems that should not wait.</p>",
+      "<h1>Urgent Care in Manassas, VA — Walk In Today, No Appointment Needed</h1><p>Walk in for fast, same-day urgent care for infections, injuries, flu symptoms, strep throat, UTIs, ear infections, rashes, minor burns, sprains, and everyday medical problems that should not wait.</p>",
     bodyContent:
-      "<h2>Same-day care without the emergency-room wait</h2><p>The legacy urgent care page focused on one clear promise: convenient local care for common medical problems that need attention today. We kept that message, but made the visit path easier to understand for patients searching from Manassas, Sudley, Gainesville, Bristow, and nearby communities.</p><h2>What we commonly treat</h2><ul><li>Flu, colds, fever, sore throat, ear pain, sinus symptoms, and other infections</li><li>Sprains, strains, minor burns, cuts, rashes, allergic reactions, and mild sports injuries</li><li>UTI symptoms, pink eye, minor abdominal discomfort, and other everyday urgent concerns</li><li>School, sports, and work-related physicals when same-day convenience matters</li></ul><h2>Why patients choose Altmed for urgent care</h2><p>Patients often want something more personal than a large chain clinic. Altmed combines walk-in access with on-site lab support, practical follow-up planning, and a wider care network that also includes <a href='/services/primary-care-manassas-va'>primary care</a> and occupational services.</p><h2>When urgent care is not the right setting</h2><p>Call 911 or go to the nearest emergency room for chest pain, stroke symptoms, severe shortness of breath, uncontrolled bleeding, loss of consciousness, or major trauma.</p>",
-    metaTitle: "Urgent Care Manassas VA | Walk-In Clinic & Same-Day Care | Altmed",
-    metaDescription: "Walk-in urgent care in Manassas, VA with same-day treatment for minor illness and injury. Skip the ER wait and get care fast at Altmed Medical Center.",
-    metaKeywords: "urgent care Manassas VA, walk in clinic Manassas, same day care, urgent care near me",
+      "<h2>Walk-in urgent care without the emergency-room wait</h2><p>Altmed Medical Center gives Manassas patients a practical place to go when a health problem needs attention today but does not belong in the emergency room. Walk-ins are welcome for many non-life-threatening concerns, and scheduled visits are available when you want a planned arrival time.</p><h2>Conditions treated at our Manassas urgent care clinic</h2><ul><li>Flu, fever, cough, sore throat, strep throat, sinus symptoms, ear infections, and respiratory infections</li><li>UTI symptoms, pink eye, rashes, allergic reactions, skin infections, and minor burns</li><li>Sprains, strains, minor cuts, bruises, mild sports injuries, and work-related minor injuries</li><li>COVID testing guidance, medication refills when clinically appropriate, and same-day medical evaluation</li></ul><h2>Urgent care vs ER in Manassas</h2><p>Urgent care is best for problems that need prompt medical attention but are not immediately life-threatening. The ER is the right place for chest pain, stroke symptoms, severe shortness of breath, major trauma, uncontrolled bleeding, severe allergic reaction, or loss of consciousness. For more guidance, read our article on <a href='/health-blogs/urgent-care-vs-er-in-manassas-va-whats-the-difference-and-when-to-choose'>urgent care vs the emergency room in Manassas</a>.</p><h2>Flu treatment and flu vaccines in Manassas</h2><p>Patients searching for flu treatment in Manassas and flu vaccine options can start at Altmed. We evaluate flu-like symptoms, discuss testing and treatment options, and provide vaccine guidance based on age, risk factors, supply, and timing. Families can also ask about routine and pediatric vaccines through our <a href='/services/occupational-health/vaccinations-immunizations-manassas-va'>vaccinations and immunizations page</a>.</p><h2>How the walk-in process works</h2><p>Bring a photo ID, insurance card if available, medication list, and any relevant medical history. Our team checks you in, reviews symptoms, completes the medical evaluation, and explains treatment or follow-up. Wait times vary by day, but the goal is clear same-day care without the cost or delay of an ER visit for minor illness or injury.</p><h2>After-hours and 24-hour urgent care searches</h2><p>Altmed is not a 24-hour urgent care center. If you are searching for 24 hour urgent care in Manassas because symptoms are severe or worsening after hours, use the nearest emergency department or call 911 for emergencies. During clinic hours, Altmed is built for efficient walk-in care and same-day appointments.</p><p>Helpful next steps: <a href='/appointment'>book a visit</a>, ask about <a href='/telehealth-manassas'>telehealth</a>, or <a href='/contact'>contact the clinic</a> before coming in.</p>",
+    metaTitle: "Urgent Care Manassas VA | Walk-In Clinic Open Now | Altmed Medical Center",
+    metaDescription: "Walk-in urgent care in Manassas VA with no appointment needed. Treat infections, injuries, flu, strep, and more. Shorter waits than the ER. Board-certified providers. Call (703) 361-4357.",
+    metaKeywords: "urgent care Manassas VA, walk in clinic Manassas VA, flu treatment in Manassas, flu vaccine in Manassas, urgent care near me",
     featuredImage: legacyAssets.heroClinic
   },
   "primary-care-manassas-va": {
     name: "Primary Care",
     heroContent:
-      "<h1>Primary Care in Manassas, VA</h1><p>Trusted family medicine, preventive care, and chronic-condition support from a local team accepting new patients.</p>",
+      "<h1>Primary Care in Manassas, VA — Your Neighborhood Doctor, When You Need Them</h1><p>Trusted primary care, preventive visits, medication management, chronic-condition support, and same-day access from a local Manassas medical team accepting new patients.</p>",
     bodyContent:
-      "<h2>Family medicine built around prevention and continuity</h2><p>The scraped primary care page repeatedly emphasized relationship-based care for everyone from children to older adults. We preserved that direction here: patients can use Altmed for routine checkups, ongoing health planning, and help making sense of recurring concerns over time.</p><h2>Primary care services include</h2><ul><li>Annual physicals, wellness exams, and preventive screenings</li><li>Immunizations, routine lab coordination, and age-appropriate follow-up care</li><li>Chronic disease support for blood pressure, diabetes, asthma, thyroid concerns, and similar conditions</li><li>Women&apos;s health, men&apos;s health, pediatric visits, and everyday illness care</li><li>Mental health check-ins and practical coordination when specialty referral is needed</li></ul><h2>A more holistic approach when appropriate</h2><p>The legacy content also highlighted nutrition, lifestyle, and whole-person health discussions. That remains part of the experience here, especially for patients who want care that feels both evidence-based and attentive to habits, stress, and long-term health goals.</p><h2>Accepting new patients in Manassas</h2><p>If you are looking for a primary care doctor close to home, Altmed is designed to make that first visit feel easier, whether you are new to the area, changing providers, or finally setting up a regular medical home.</p>",
-    metaTitle: "Primary Care Manassas VA | Comprehensive Healthcare | Altmed Medical Center",
-    metaDescription: "Looking for primary care in Manassas, VA? Altmed Medical Center offers family medicine, wellness exams, chronic care, and preventive screenings.",
-    metaKeywords: "primary care Manassas VA, family doctor Manassas, physical exams, preventive care",
+      "<h2>Primary care that connects prevention, urgent needs, and follow-up</h2><p>Altmed Medical Center is a neighborhood primary care clinic for adults and families in Manassas, Manassas Park, Gainesville, Haymarket, Woodbridge, and Prince William County. Patients use Altmed for annual physicals, routine checkups, chronic disease management, lab follow-up, vaccines, and same-day visits when a regular appointment cannot wait.</p><h2>Conditions managed by primary care</h2><ul><li>Hypertension, high cholesterol, diabetes, prediabetes, thyroid concerns, and hormone disorders</li><li>Asthma, COPD, allergies, recurring infections, arthritis, joint pain, and digestive concerns</li><li>Anxiety, depression, sleep concerns, fatigue, weight-related health risks, and preventive screening needs</li><li>Medication refills, medication side effect reviews, specialist coordination, and lab monitoring</li></ul><h2>Primary care services included</h2><ul><li>Annual physicals, wellness exams, work or school physicals, and preventive screenings</li><li>Blood pressure management, diabetes follow-up, cholesterol checks, and routine blood work coordination</li><li>Well-woman exams, flu shots, routine vaccines, health counseling, and smoking-cessation conversations</li><li>Same-day appointments and walk-in availability for common urgent concerns when appropriate</li></ul><h2>Medication management in Manassas</h2><p>Patients searching for Manassas medication management often need more than a refill. Altmed reviews what you take, why you take it, whether it is working, and whether lab monitoring or safer alternatives are needed. This is especially important for blood pressure medication, diabetes medication, thyroid medication, asthma inhalers, cholesterol medication, weight-loss medication, and mental-health prescriptions.</p><h2>Hormone disorders and metabolic concerns</h2><p>Hormone disorders can affect weight, mood, energy, sleep, blood sugar, menstrual symptoms, and day-to-day function. Altmed can start the primary care evaluation, order appropriate lab work, and connect patients with <a href='/services/functional-medicine-manassas'>functional medicine</a> or specialty follow-up when deeper review is needed.</p><h2>Atendemos pacientes que hablan espanol</h2><p>Si busca clinicas en Manassas VA o una clinica familiar en Manassas, llame a Altmed Medical Center. Nuestro equipo puede ayudar con citas, atencion primaria, cuidado urgente, formularios y preguntas generales en espanol cuando hay personal disponible.</p><p>Helpful next steps: <a href='/appointment'>schedule primary care</a>, learn about <a href='/telehealth-manassas'>virtual visits</a>, or read why <a href='/health-blogs/your-health-starts-here-why-you-need-a-primary-care-physician-in-manassas-va'>primary care matters in Manassas</a>.</p>",
+    metaTitle: "Primary Care Doctor Manassas VA | Walk-In & Same-Day | Altmed Medical Center",
+    metaDescription: "Primary care in Manassas VA with same-day appointments and walk-in availability. Annual physicals, chronic disease management, preventive care, and medication management. (703) 361-4357.",
+    metaKeywords: "primary care doctor Manassas VA, medication management Manassas, hormone disorders Manassas, clinicas en Manassas VA",
     featuredImage: legacyAssets.departmentThree
   },
   "occupational-health-clinic-manassas": {
     name: "Occupational Health",
     heroContent:
-      "<h1>Occupational Health Services in Manassas</h1><p>Workplace injury care, DOT exams, employer testing, and compliance-minded workforce services for businesses across Prince William County.</p>",
+      "<h1>Occupational Health Services in Manassas, VA — For Employers & Workers</h1><p>Workplace injury care, DOT exams, drug testing, pre-employment physicals, employer accounts, and compliance-minded workforce services for businesses across Prince William County.</p>",
     bodyContent:
-      "<h2>A local occupational health clinic built for speed and documentation</h2><p>The archived occupational-health page made two things clear: employers need fast medical response when injuries happen, and they need a dependable clinic partner for testing, compliance, and prevention even when nothing urgent is happening. This page now presents both sides more clearly.</p><h2>Core employer services</h2><ul><li><a href='/services/dot-physical-manassas-va'>DOT physicals</a> and commercial driver medical support</li><li><a href='/services/occupational-health/drug-alcohol-testing-manassas'>Drug and alcohol testing</a> for pre-employment, random, post-accident, and return-to-duty workflows</li><li><a href='/services/occupational-health/workers-compensation-injury-care-manassas'>Workers&apos; compensation injury care</a> with return-to-work communication</li><li>Breath alcohol testing, vision and hearing screening, respiratory evaluation, and related occupational exams</li><li><a href='/services/occupational-health/lab-testing-manassas'>Lab testing</a>, immunizations, and wellness support for employer programs</li></ul><h2>Why businesses choose Altmed</h2><p>Local companies need a clinic that understands hiring timelines, safety-sensitive roles, and the paperwork that keeps a workforce moving. Altmed supports small businesses, fleet operators, contractors, and other employers who want faster service and a more responsive local partner.</p><h2>Getting started</h2><p>If your company needs a single clinic for injury response, testing, and ongoing occupational health coordination, contact Altmed to discuss account setup, scheduling, and business-specific program needs.</p>",
-    metaTitle: "Occupational Health Clinic Manassas | Workplace Injury & Drug Testing Services",
-    metaDescription: "Occupational health clinic in Manassas, VA for injury care, physicals, DOT services, drug testing, breath alcohol testing, and employer wellness programs.",
-    metaKeywords: "occupational health clinic Manassas, employer testing, workplace injury care, DOT physicals",
+      "<h2>A local occupational health clinic built for employers</h2><p>Altmed Medical Center helps employers, HR teams, fleet operators, contractors, schools, and safety-sensitive workers manage the medical side of hiring, injuries, testing, and compliance. The goal is simple: fast visits, clear paperwork, and a local team that understands employer workflows.</p><h2>Employer services overview</h2><ul><li><a href='/services/dot-physical-manassas-va'>DOT physicals</a> and commercial driver medical exams</li><li><a href='/services/occupational-health/drug-alcohol-testing-manassas'>DOT and non-DOT drug and alcohol testing</a>, including random, pre-employment, post-accident, and return-to-duty workflows</li><li><a href='/services/occupational-health/workers-compensation-injury-care-manassas'>Workers comp injury care</a>, occupational injury evaluation, and return-to-work planning</li><li><a href='/services/pre-employment-physical-drug-test-manassas'>Pre-employment physicals and drug tests</a> for new hires</li><li><a href='/services/occupational-health/vaccinations-immunizations-manassas-va'>Vaccinations and immunizations</a>, flu shots, and workplace vaccine support</li><li><a href='/services/occupational-health/lab-testing-manassas'>Lab testing</a>, breath alcohol testing, vision screening, hearing screening, and related occupational exams</li><li><a href='/services/third-party-administrator-service-manassas'>Third-party administrator services</a>, random pool support, and <a href='/services/mro-services-manassas'>MRO services</a></li></ul><h2>Occupational injury clinic in Manassas</h2><p>When an employee is injured, delays create confusion for the worker, the employer, and the insurance carrier. Altmed evaluates many non-emergency workplace injuries, documents work status, and helps plan safe return to work. For severe trauma, chest pain, stroke symptoms, uncontrolled bleeding, or emergencies, use the ER or call 911.</p><h2>Workers comp urgent care and return-to-work support</h2><p>Employers searching for workers comp urgent care need timely access and paperwork that can be used by supervisors, carriers, and claims teams. Altmed helps with initial assessment, progress notes, restrictions, follow-up, and practical communication so a case does not stall after the first visit.</p><h2>How to set up an employer account</h2><p>Call <a href='tel:+17033614357'>(703) 361-4357</a> or <a href='/contact'>contact Altmed</a> to discuss services, billing preferences, authorization forms, testing protocols, and recurring needs. Employers can send workers with the <a href='/forms/Company%20Authorization%20Form%20New.pdf'>Company Authorization Form</a> when a visit is tied to a workplace requirement.</p><h2>Employer perspective</h2><p>HR managers use Altmed because one local clinic can coordinate testing, physicals, injury care, and follow-up documentation. That consistency matters when a team is hiring quickly, responding to an injury, or maintaining a DOT-compliant program.</p>",
+    metaTitle: "Occupational Health Clinic Manassas VA | Worker Injury & DOT Services | Altmed",
+    metaDescription: "Occupational health services in Manassas VA for employers and employees. Work injury treatment, DOT physicals, drug testing, pre-employment physicals, and return-to-work evaluations. (703) 361-4357.",
+    metaKeywords: "occupational health clinic Manassas VA, occupational injury clinic, workers comp urgent care, DOT services Manassas, employer drug testing",
     featuredImage: legacyAssets.heroBackdrop
   },
   "dot-physical-manassas-va": {
     name: "DOT Physicals",
     heroContent:
-      "<h1>DOT Physical Exams in Manassas, VA</h1><p>Fast, affordable CDL medical exams with FMCSA-aligned documentation, walk-in convenience, and practical support for drivers across Manassas and Northern Virginia.</p>",
+      "<h1>DOT Physical Exams in Manassas, VA — FMCSA Certified, Same-Day Available</h1><p>Fast, affordable CDL medical exams with FMCSA-certified medical examiners, same-day availability, walk-in convenience, and practical support for drivers across Manassas and Northern Virginia.</p>",
     bodyContent:
-      "<h2>Why drivers choose Altmed for a DOT physical</h2><p>The legacy DOT page focused on the same things most drivers care about: speed, predictable pricing, a certified provider, and paperwork done correctly the first time. We continue to support individual CDL drivers as well as employers who need a dependable local clinic for medical certification.</p><ul><li>FMCSA-aligned exam process with same-day documentation when you qualify</li><li>Walk-in friendly scheduling for drivers coming from Manassas, Gainesville, Bristow, Centreville, and nearby areas</li><li>Clear guidance if additional medical records or specialist clearance is needed</li></ul><h2>What is included in the exam</h2><ul><li>Medical history review and general physical exam</li><li>Vision and hearing screening</li><li>Blood pressure, pulse, and urinalysis for medical screening</li><li>Discussion of medications, chronic conditions, and related safety requirements</li></ul><h2>What to bring</h2><ul><li>Your CDL or photo ID</li><li>A current medication list</li><li>Glasses, contacts, or hearing aids if you use them</li><li>Any medical paperwork tied to diabetes, blood pressure, sleep apnea, cardiac history, or other clearance-related concerns</li></ul><h2>Walk-in convenience for busy schedules</h2><p>The archived page also emphasized flexible scheduling for drivers trying to fit an exam between shifts or routes. Altmed remains a practical local option for fast, straightforward DOT exams without unnecessary runaround.</p>",
-    metaTitle: "DOT Physical in Manassas, VA | Walk-In CDL Exams Near You",
-    metaDescription: "Need a DOT physical in Manassas, VA? Altmed provides FMCSA-compliant CDL exams with same-day options for commercial drivers.",
-    metaKeywords: "DOT physical Manassas VA, CDL physical, FMCSA exam, medical card exam",
+      "<h2>Affordable DOT physical pricing in Manassas</h2><p>Drivers searching for a $50 DOT physical near me want clear pricing and a fast visit. Altmed keeps DOT physical pricing visible and straightforward; call <a href='tel:+17033614357'>(703) 361-4357</a> to confirm the current DOT exam price, available same-day times, and whether any employer paperwork changes your visit needs.</p><h2>What your DOT physical includes</h2><ul><li>FMCSA medical history review and general physical exam</li><li>Vision and hearing screening</li><li>Blood pressure, pulse, and urinalysis screening</li><li>Medication and chronic-condition review focused on safe commercial driving</li><li>Medical certificate documentation when you qualify</li></ul><h2>What to bring to your DOT physical</h2><p>Bring your CDL or photo ID, current medication list, glasses or contacts, hearing aids if used, and any condition-specific records. Drivers can also download the <a href='/forms/DOCUMENTS%20TO%20BRING%20IN%20FOR%20YOUR%20UPCOMING%20DOT%20PHYSICAL.pdf'>documents to bring for your DOT physical PDF</a> before coming in.</p><h2>DOT medical clearance forms</h2><p>If you have a cardiac history, high blood pressure, sleep apnea, diabetes, vision concerns, or a return-to-duty issue, the examiner may request supporting documentation. These indexed PDFs are preserved on the new site for drivers and treating clinicians:</p><ul><li><a href='/forms/medical_clearance/Cardiac%20DOT%20Clearance%20Form%20.pdf'>Cardiac DOT Clearance Form</a></li><li><a href='/forms/medical_clearance/Hypertension%20DOT%20Clearance%20Form.pdf'>Hypertension DOT Clearance Form</a></li><li><a href='/forms/medical_clearance/Obstructive%20Sleep%20Apnea%20DOT%20Clearance%20Form.pdf'>Obstructive Sleep Apnea DOT Clearance Form</a></li><li><a href='/forms/medical_clearance/Non-Insulin-Treated%20Diabetes%20DOT%20Clearance%20Form.pdf'>Non-Insulin-Treated Diabetes DOT Clearance Form</a></li><li><a href='/forms/medical_clearance/Insulin-Treated%20Diabetes%20Mellitus%20Assessment%20Form%20MCSA-5870.pdf'>Insulin-Treated Diabetes Mellitus Assessment Form MCSA-5870</a></li><li><a href='/forms/medical_clearance/Vision%20Evaluation%20Report%20Form%20MCSA-5871_0.pdf'>Vision Evaluation Report Form MCSA-5871</a></li><li><a href='/forms/medical_clearance/Return%20to%20Duty%20_%20Work%20DOT%20Clearance%20Form.pdf'>Return to Duty / Work DOT Clearance Form</a></li><li><a href='/forms/medical_clearance/Medical%20DOT%20Clearance%20Form.pdf'>Medical DOT Clearance Form</a></li></ul><h2>Cardiac, hypertension, and sleep apnea clearance</h2><p>Cardiac clearance, hypertension clearance, and sleep apnea clearance are common reasons a driver needs additional paperwork. The examiner reviews the condition, medications, stability, and supporting documentation before determining certification length. Drivers using CPAP should bring compliance information when available.</p><h2>FMCSA-certified examiner information</h2><p>Altmed performs DOT exams through FMCSA-certified medical examiners. If your employer requires the examiner's National Registry details, call before your appointment so the team can provide the current verification information.</p><h2>Helpful DOT links</h2><p>Employers and drivers may also need <a href='/services/occupational-health/drug-alcohol-testing-manassas'>DOT drug and alcohol testing</a>, the <a href='/services/occupational-health-clinic-manassas'>occupational health overview</a>, or a scheduled exam through <a href='/appointment?service=dot-physical'>DOT physical appointments</a>. For more detail, read our <a href='/health-blogs/dot-physical-exams-in-manassas-va-a-complete-guide-for-employers-and-commercial-drivers'>DOT physical guide for commercial drivers</a>.</p>",
+    metaTitle: "DOT Physical Exam Manassas VA | $50 CDL Medical Exam | Altmed Medical Center",
+    metaDescription: "Get your DOT/CDL physical exam in Manassas VA — FMCSA-certified medical examiners, same-day appointments, and results on the spot. Affordable pricing. Call (703) 361-4357.",
+    metaKeywords: "$50 dot physical near me, DOT physical exam Manassas VA, CDL medical exam, FMCSA medical examiner, DOT clearance forms",
     featuredImage: legacyAssets.departmentFive
   },
   "occupational-health/drug-alcohol-testing-manassas": {
     name: "Drug and Alcohol Testing",
     heroContent:
-      "<h1>Drug and Alcohol Testing in Manassas, VA</h1><p>Walk-in and employer-ready testing with DOT support, chain-of-custody procedures, and confidential handling for workplace, school, legal, and individual needs.</p>",
+      "<h1>Drug & Alcohol Testing in Manassas, VA — DOT & Non-DOT</h1><p>Pre-employment, random, post-accident, return-to-duty, DOT, and non-DOT drug and alcohol testing for employers, workers, and individuals in Manassas.</p>",
     bodyContent:
-      "<h2>Why people in Manassas need drug and alcohol testing</h2><p>The scraped page made clear that this service is not just for large employers. It supports DOT-regulated workers, pre-employment candidates, school or legal requirements, probation-related monitoring, and employers who want safer workplaces with clear testing workflows.</p><h2>Testing services we offer</h2><ul><li>5-panel and 10-panel urine drug screens in rapid or lab-based formats</li><li>DOT and non-DOT testing for pre-employment, random, post-accident, and return-to-duty needs</li><li><a href='/services/occupational-health/breath-alcohol-test-manassas'>Breath alcohol testing</a> for regulated and workplace programs</li><li>Hair and oral-fluid options when requested or required</li><li>MRO coordination and lab confirmation workflows when a program requires formal review</li></ul><h2>What to expect at your visit</h2><p>Altmed keeps the process simple: check in with your paperwork, confirm the required test type, complete the collection under the right protocol, and receive either rapid results or lab processing based on the program. Confidentiality and documentation standards matter, especially for workplace testing.</p><h2>Built for employers and walk-ins</h2><p>This page remains especially relevant for HR teams, fleet managers, job candidates, and businesses that need consistent local support rather than a one-off collection site.</p>",
-    metaTitle: "Drug and Alcohol Testing in Manassas, VA | Walk-In & DOT Testing",
-    metaDescription: "Altmed offers drug and alcohol testing in Manassas, VA including pre-employment, random, post-accident, breath alcohol, and DOT-compliant programs.",
-    metaKeywords: "drug and alcohol testing Manassas, DOT testing, breath alcohol testing, pre employment drug test",
+      "<h2>Drug testing near me in Manassas</h2><p>Altmed provides local drug testing for job candidates, employees, DOT-regulated drivers, schools, legal requirements, and individuals who need documented results. Walk-ins may be available, and employer-authorized visits can be handled with the correct paperwork.</p><h2>Alcohol testing near me</h2><p>Breath alcohol testing is used for DOT and non-DOT programs, post-accident situations, reasonable suspicion, and workplace policies. Professional handling matters because alcohol results can affect employment, compliance, and return-to-duty decisions.</p><h2>DOT testing near me</h2><p>DOT drug and alcohol testing requires the correct chain-of-custody process, collection standards, and result routing. Altmed supports pre-employment, random, post-accident, reasonable-cause, return-to-duty, and follow-up testing workflows for regulated employers and drivers.</p><h2>Types of tests available</h2><ul><li>Urine drug screens, including common 5-panel and 10-panel options</li><li>Breath alcohol testing for workplace and DOT programs</li><li>Hair follicle testing when requested or required</li><li>Oral fluid testing when appropriate for the program</li><li>Rapid screens and lab-based testing depending on documentation needs</li></ul><h2>Employer portal and account support</h2><p>Employers can contact Altmed to discuss account setup, authorization forms, result routing, random testing pools, TPA support, and <a href='/services/mro-services-manassas'>MRO services</a>. For broader services, see the <a href='/services/occupational-health-clinic-manassas'>occupational health clinic overview</a>.</p><p>Helpful resources: <a href='/forms/Company%20Authorization%20Form%20New.pdf'>Company Authorization Form</a>, <a href='/services/dot-physical-manassas-va'>DOT physical exams</a>, and <a href='/appointment'>appointment scheduling</a>.</p>",
+    metaTitle: "Drug & Alcohol Testing Manassas VA | DOT & Non-DOT | Altmed Medical Center",
+    metaDescription: "Pre-employment, random, and post-accident drug and alcohol testing in Manassas VA. DOT-compliant, fast results, employer accounts available. Walk-in welcome. (703) 361-4357.",
+    metaKeywords: "drug testing near me Manassas, alcohol testing near me, DOT testing near me, drug and alcohol testing Manassas VA",
     featuredImage: legacyAssets.heroDoctor
   },
   "occupational-health/workers-compensation-injury-care-manassas": {
     name: "Workers' Compensation",
     heroContent:
-      "<h1>Workers' Compensation Injury Care in Manassas</h1><p>Same-day workplace injury evaluation, insurer-ready documentation, and return-to-work planning from a clinic that understands workers’ comp workflows.</p>",
+      "<h1>Workers Compensation Injury Care in Manassas, VA — Work Injury Clinic</h1><p>Same-day workplace injury evaluation, workers comp urgent care, insurer-ready documentation, and return-to-work planning from a clinic that understands employer workflows.</p>",
     bodyContent:
-      "<h2>Workers’ compensation care that starts with proper evaluation</h2><p>The legacy workers’ comp page emphasized that choosing the right medical provider shapes the entire recovery process. Altmed helps injured workers get assessed quickly, treated appropriately, and documented correctly for employers and carriers.</p><h2>What injuries may be covered</h2><ul><li>Immediate workplace accidents such as falls, strains, cuts, burns, or lifting injuries</li><li>Job-related injuries that happen while traveling or performing work off site</li><li>Repetitive-use or over-time injuries that develop through job demands</li><li>Approved follow-up care, testing, medications, and rehabilitation tied to the claim</li></ul><h2>What Altmed provides</h2><ul><li>Initial injury reports and progress notes</li><li>Work-capacity and return-to-work evaluations</li><li>Communication that supports insurance and employer documentation needs</li><li>Practical follow-up planning so treatment does not stall after the first visit</li></ul><h2>Why this matters</h2><p>Workers’ compensation cases often become harder when the medical side is poorly documented or delayed. Altmed aims to make the process clearer for the injured worker, the employer, and the insurance carrier.</p>",
-    metaTitle: "Workers' Compensation for Injury Care | Medical Clinic | Same-Day Appointments",
-    metaDescription: "Workers' compensation injury care in Manassas with same-day evaluation, documentation, and return-to-work support.",
+      "<h2>Workers comp urgent care for non-emergency injuries</h2><p>When an employee gets hurt, prompt evaluation protects the worker and helps the employer understand restrictions, follow-up, and next steps. Altmed evaluates many non-emergency work injuries, including strains, sprains, minor cuts, burns, lifting injuries, repetitive-use concerns, and job-related pain.</p><h2>How to file a claim and what to bring</h2><p>Employees should bring a photo ID, employer contact information, claim details if available, and any required authorization paperwork. Employers can use the <a href='/forms/Company%20Authorization%20Form%20New.pdf'>Company Authorization Form</a> to clarify what services are approved. If a claim number already exists, bring it to the visit.</p><h2>How Altmed works with employers and insurers</h2><ul><li>Initial injury evaluation and treatment recommendations</li><li>Work-status notes, restrictions, and return-to-work documentation</li><li>Follow-up visits to monitor recovery and update restrictions</li><li>Coordination with employer and insurer workflows when documentation is needed</li></ul><h2>When to use the ER</h2><p>Use the emergency room or call 911 for major trauma, uncontrolled bleeding, chest pain, stroke symptoms, severe shortness of breath, loss of consciousness, or a serious injury that cannot safely wait for clinic care.</p><p>Employers can also pair workers comp visits with <a href='/services/occupational-health/drug-alcohol-testing-manassas'>post-accident drug and alcohol testing</a> and broader <a href='/services/occupational-health-clinic-manassas'>occupational health services</a>.</p>",
+    metaTitle: "Workers Compensation Injury Care Manassas VA | Work Injury Clinic | Altmed",
+    metaDescription: "Workers compensation injury care in Manassas VA with same-day work injury evaluation, documentation, employer communication, and return-to-work support.",
     metaKeywords: "workers compensation Manassas, work injury clinic, occupational injury care, return to work evaluation",
     featuredImage: legacyAssets.heroClinic
   },
   "occupational-health/vaccinations-immunizations-manassas-va": {
     name: "Vaccinations & Immunizations",
     heroContent:
-      "<h1>Vaccinations & Immunizations in Manassas</h1><p>Walk-in flu shots and routine immunizations for families, students, travelers, and workplace health programs in one convenient local clinic.</p>",
+      "<h1>Vaccinations & Immunizations in Manassas, VA — Flu Shots & Travel Vaccines</h1><p>Walk-in flu shots, routine immunizations, COVID booster guidance, travel vaccine conversations, and occupational vaccines for families, students, and employers.</p>",
     bodyContent:
-      "<h2>Why vaccines matter</h2><p>The archived vaccine page framed immunizations as one of the simplest ways to protect families, schools, and the broader community. That remains true whether you need a seasonal flu shot, a school-required vaccine, or a preventive travel discussion.</p><h2>Common vaccines offered</h2><ul><li>Influenza and seasonal flu shots</li><li>Tdap and school-entry vaccines</li><li>Hepatitis A and B</li><li>MMR, varicella, polio, and routine pediatric or adult immunization updates</li><li>Pneumococcal vaccines and selected travel-related immunizations when appropriate</li></ul><h2>How it works</h2><p>Walk in or schedule ahead, bring a photo ID and insurance card if available, and bring old vaccine records if you have them. Most vaccine visits are quick, and our team can help clarify what may be required for school, work, or travel.</p><h2>Who uses this service</h2><p>Families, students, healthcare workers, employers, and adults trying to stay current on preventive care all use this page. Altmed also supports occupational and employer vaccine needs as part of broader workplace health services.</p>",
-    metaTitle: "Vaccinations & Immunizations Manassas VA | Walk-In Flu Shots",
-    metaDescription: "Walk-in vaccinations and immunizations in Manassas, VA including flu shots and routine preventive vaccines at Altmed Medical Center.",
-    metaKeywords: "vaccinations Manassas, flu shots Manassas, immunizations, vaccines near me",
+      "<h2>Vaccines offered at Altmed</h2><p>Vaccine availability can change by season and supply, so calling ahead is helpful. Altmed commonly supports flu shots, routine adult and pediatric immunization updates, Tdap, MMR, varicella, Hepatitis A, Hepatitis B, pneumococcal vaccine conversations, COVID booster guidance, and selected travel vaccine planning when appropriate.</p><h2>Flu shots in Manassas</h2><p>Seasonal influenza vaccines help protect families, schools, workplaces, older adults, and patients with chronic conditions. Patients can also use <a href='/services/urgent-care-manassas-va'>urgent care</a> if flu symptoms have already started and they need evaluation or treatment guidance.</p><h2>Occupational vaccine requirements</h2><p>Employers may require vaccines or titers for healthcare workers, school roles, public-facing positions, travel-related work, or safety-sensitive jobs. Altmed supports employer vaccine documentation and can pair immunization visits with <a href='/services/occupational-health/lab-testing-manassas'>lab testing</a>, physicals, or other occupational health services.</p><h2>Travel vaccine information</h2><p>Travel needs depend on destination, itinerary, age, health history, and timing. Bring your itinerary and vaccine records if you are preparing for travel so the provider can help identify practical next steps.</p><h2>What to bring</h2><p>Bring a photo ID, insurance card if available, prior immunization records, school or employer forms, and any deadline information. Download the <a href='/forms/rptVaccineAdministrationForm_blank.pdf'>vaccine administration form</a> when requested.</p>",
+    metaTitle: "Vaccinations & Immunizations Manassas VA | Flu Shots & Travel Vaccines | Altmed",
+    metaDescription: "Get flu shots, travel vaccines, COVID boosters, Hepatitis B, and occupational immunizations in Manassas VA. Walk-in available. No appointment needed. Call (703) 361-4357.",
+    metaKeywords: "vaccinations Manassas VA, immunizations Manassas, flu shots Manassas, travel vaccines Manassas, pediatric vaccines Manassas",
     featuredImage: legacyAssets.clinicalMask
   },
   "occupational-health/pre-employment-physical": {
@@ -319,14 +343,25 @@ export const servicePageFallbackContent: Record<
     metaKeywords: "pre employment physical Manassas, pre employment drug screening, occupational physical, job physical exam",
     featuredImage: legacyAssets.departmentThree
   },
+  "pre-employment-physical-drug-test-manassas": {
+    name: "Pre-Employment Physical & Drug Test",
+    heroContent:
+      "<h1>Pre-Employment Physical & Drug Test in Manassas, VA — Same-Day</h1><p>Same-day pre-employment physicals, drug tests, job-readiness screening, and employer account support for Manassas businesses and job candidates.</p>",
+    bodyContent:
+      "<h2>Pre-employment physicals for faster onboarding</h2><p>Altmed helps employers and job candidates complete required medical screening without unnecessary delays. A pre-employment physical can support safer hiring for physically demanding, safety-sensitive, healthcare, school, transportation, construction, and public-facing roles.</p><h2>What may be included</h2><ul><li>Vital signs, medical history review, and general physical exam</li><li>Vision screening, hearing screening, musculoskeletal review, and job-specific paperwork</li><li>Drug testing, alcohol testing, urinalysis, lab work, TB testing, or vaccine documentation when required</li><li>Clear completion forms for the employer when the candidate meets the stated requirements</li></ul><h2>Pre-employment drug testing</h2><p>Drug testing may be ordered by the employer as part of the same visit. Altmed supports urine drug screens, lab-based confirmation workflows, DOT and non-DOT testing, and employer-specific collection requirements through the <a href='/services/occupational-health/drug-alcohol-testing-manassas'>drug and alcohol testing program</a>.</p><h2>How employers set up accounts</h2><p>Employers can call <a href='tel:+17033614357'>(703) 361-4357</a> or <a href='/contact'>contact Altmed</a> to set up authorization forms, billing preferences, required exam elements, result routing, and recurring new-hire workflows. Candidates should bring photo ID, employer paperwork, medication information, and any required assistive devices such as glasses or hearing aids.</p><h2>Turnaround times</h2><p>Many physical exam components can be completed the same day. Drug-test turnaround depends on whether the employer requires a rapid screen, lab processing, confirmation, or MRO review.</p>",
+    metaTitle: "Pre-Employment Physical & Drug Test Manassas VA | Same-Day | Altmed",
+    metaDescription: "Same-day pre-employment physicals and drug tests in Manassas VA for employers and job candidates. Fast paperwork, drug screening, and account setup.",
+    metaKeywords: "pre employment physical Manassas VA, pre employment drug test Manassas, same day job physical, employer physicals Manassas",
+    featuredImage: legacyAssets.departmentThree
+  },
   "occupational-health/lab-testing-manassas": {
     name: "Lab Testing",
     heroContent:
-      "<h1>Lab Testing Services in Manassas, VA</h1><p>Walk-in lab work, blood testing, drug screening, and routine diagnostic support for patients, employers, and occupational health programs.</p>",
+      "<h1>Lab Testing in Manassas, VA — Blood Work & Occupational Health Tests</h1><p>Walk-in lab work, blood testing, urinalysis, occupational health testing, drug screening, and routine diagnostic support for patients and employers.</p>",
     bodyContent:
-      "<h2>Why lab testing matters</h2><p>The scraped lab page positioned testing as one of the fastest ways to move from uncertainty to action. Patients use it for routine health checks, STD screening, workplace testing, hormone review, and many everyday diagnostic needs without the hassle of bouncing between separate locations.</p><h2>Types of lab tests offered</h2><ul><li>Blood panels such as CBC, metabolic panels, and lipid testing</li><li>Urinalysis and workplace drug screening</li><li>Hormone-related testing such as thyroid and testosterone support</li><li>Infectious disease and STD screening when appropriate</li><li>Occupational and employer testing tied to hiring or compliance workflows</li></ul><h2>Who comes to Altmed for lab work</h2><p>Families, students, teachers, commercial drivers, employers, and adults following up on routine or chronic-care needs all use this service. On-site coordination helps keep care more connected than sending every test out to a separate standalone location.</p><h2>What to bring</h2><p>Bring a photo ID, any provider or employer paperwork, and avoid overhydrating before a drug screen. Result timing varies by the type of test, with some results available quickly and others requiring formal lab processing.</p>",
-    metaTitle: "Lab Testing in Manassas | Blood Work & Drug Screening",
-    metaDescription: "On-site lab testing in Manassas, VA for blood work, urinalysis, drug screening, and clinical diagnostics at Altmed Medical Center.",
+      "<h2>Full list of common lab services</h2><p>Altmed supports routine and problem-focused lab testing tied to primary care, urgent care, occupational medicine, and employer requirements. Available tests may include CBC, metabolic panels, lipid testing, A1C, thyroid labs, urinalysis, pregnancy testing, infectious disease testing, STD screening, hormone-related testing, titers, drug screening, and employer-directed occupational tests.</p><h2>Blood work and routine health monitoring</h2><p>Patients use lab testing to monitor diabetes, cholesterol, thyroid concerns, liver and kidney function, medication safety, fatigue, hormone disorders, and preventive care needs. Results are interpreted in the context of your visit rather than as isolated numbers.</p><h2>Occupational health lab testing</h2><p>Employers may need lab testing for pre-employment physicals, compliance programs, vaccine/titer documentation, and post-accident workflows. Altmed can connect lab testing with <a href='/services/pre-employment-physical-drug-test-manassas'>pre-employment physicals</a>, <a href='/services/occupational-health/drug-alcohol-testing-manassas'>drug testing</a>, and <a href='/services/occupational-health-clinic-manassas'>occupational health services</a>.</p><h2>Turnaround times and ordering</h2><p>Some screening results may be available quickly, while lab-based blood work or specialized testing can take longer. Bring provider orders, employer paperwork, and photo ID. If you are unsure whether an order is needed, call before visiting.</p>",
+    metaTitle: "Lab Testing Manassas VA | Blood Work & Occupational Health Tests | Altmed",
+    metaDescription: "Lab testing in Manassas VA for blood work, urinalysis, drug screening, occupational health tests, and routine diagnostics at Altmed Medical Center.",
     metaKeywords: "lab testing Manassas, blood work Manassas, drug screening, urinalysis, lab tests near me",
     featuredImage: legacyAssets.heroDoctor
   },
@@ -354,33 +389,44 @@ export const servicePageFallbackContent: Record<
   "medical-weight-loss-manassas": {
     name: "Medical Weight Loss",
     heroContent:
-      "<h1>Medical Weight Loss in Manassas, VA</h1><p>Physician-guided weight-loss care with semaglutide conversations, metabolic review, nutrition support, and structured follow-up.</p>",
+      "<h1>Medical Weight Loss Programs in Manassas, VA — Physician-Supervised, Real Results</h1><p>Physician-supervised weight loss with semaglutide, tirzepatide, B-12 injections, phentermine conversations, metabolic review, nutrition support, and structured follow-up.</p>",
     bodyContent:
-      "<h2>A program built around more than a prescription</h2><p>The scraped weight-loss pages repeatedly stressed physician-led planning, body-composition review, and a broader approach than one-size-fits-all online medication services. We kept that structure while tightening the copy and removing overstated claims.</p><h2>What the program may include</h2><ul><li>Medical evaluation and discussion of weight history, habits, and related health concerns</li><li>Nutrition and activity planning tailored to real schedules and long-term goals</li><li>Semaglutide or other medication conversations when clinically appropriate</li><li>B-12 and lipotropic support as part of a broader, supervised plan</li><li>Regular follow-up to monitor progress, side effects, and strategy changes over time</li></ul><h2>Who the program is for</h2><p>Patients often come to Altmed after trying diet-only plans, short-term programs, or generic online weight-loss offers. This service is designed for people who want clearer guidance, more accountability, and physician involvement in the process.</p><h2>Important note</h2><p>Treatment decisions are individualized. The right plan depends on your history, symptoms, goals, and whether a medication-based approach makes sense for you.</p>",
-    metaTitle: "Personalized Medical Weight Loss & Injections | Altmed Manassas, VA",
-    metaDescription: "Medical weight loss in Manassas, VA with physician-guided plans, semaglutide options, B-12 injections, lipotropics, and lifestyle coaching.",
-    metaKeywords: "medical weight loss Manassas, B12 injections, semaglutide Manassas, weight management clinic",
+      "<h2>Physician-supervised weight loss in Manassas</h2><p>Altmed Medical Center helps patients who want more than a generic diet plan or an online prescription. The program starts with medical history, weight history, metabolic risk review, medication safety screening, goals, nutrition, activity, and follow-up planning.</p><h2>Semaglutide and GLP-1 weight loss</h2><p>Patients searching for semaglutide Manassas, Ozempic Manassas, Wegovy injections Manassas, and GLP-1 programs often want to understand whether medication is appropriate. Semaglutide is a GLP-1 medication class that can reduce appetite and support weight loss for qualified patients under medical supervision. Brand-name medications such as Ozempic and Wegovy have different FDA indications and insurance rules, so the right conversation starts with your health history.</p><h2>Tirzepatide and Mounjaro conversations</h2><p>Tirzepatide is another injectable medication class patients may ask about when comparing semaglutide vs tirzepatide or Mounjaro-style options. Altmed discusses benefits, risks, contraindications, expected follow-up, and realistic goals rather than treating injections as a quick fix.</p><h2>B-12 injections for weight loss support</h2><p>B-12 injections may be used as part of a broader wellness or weight-loss plan for selected patients. They are not a substitute for nutrition, activity, or medication review, but they can fit into a supervised program when the provider feels they are appropriate.</p><h2>Phentermine and appetite-control medication</h2><p>Patients searching for phentermine weight loss in Northern Virginia should be medically evaluated before using stimulant-style appetite medication. Blood pressure, heart history, current prescriptions, anxiety, sleep, and other risks matter. Altmed can discuss whether phentermine or a different plan is safer for your situation.</p><h2>Am I a candidate?</h2><ul><li>You have a BMI in a range where medical weight-loss treatment may be appropriate</li><li>You have weight-related health risks such as high blood pressure, prediabetes, diabetes, sleep apnea, or high cholesterol</li><li>You want provider monitoring instead of a one-time online order</li><li>You are ready for follow-up visits, nutrition changes, and long-term planning</li></ul><h2>Pricing and insurance transparency</h2><p>Coverage varies by medication, diagnosis, insurance plan, and pharmacy benefit. Altmed explains visit costs, self-pay options, and prescription considerations before treatment begins. Call <a href='tel:+17033614357'>(703) 361-4357</a> for current program pricing.</p><h2>Patient journey examples</h2><p>HIPAA-conscious stories help patients picture the process: Tanya from Gainesville used structured follow-ups and GLP-1 support to rebuild confidence after years of diet-only attempts. Maria from Manassas focused on appetite, meal timing, and lab follow-up. James used provider accountability to lower weight-related risk before a primary care follow-up. Individual results vary, and the best plan is personalized.</p><p>Helpful next steps: compare options on the <a href='/services/semaglutide-weight-loss-manassas'>semaglutide and GLP-1 page</a>, read the <a href='/health-blogs/semaglutide-glp-1-weight-loss-treatment-in-manassas-va'>semaglutide guide</a>, book an <a href='/appointment?service=medical-visit'>appointment</a>, or ask whether a <a href='/telehealth-manassas'>telehealth weight-loss consultation</a> is appropriate.</p>",
+    metaTitle: "Medical Weight Loss Manassas VA | Semaglutide & GLP-1 Programs | Altmed",
+    metaDescription: "Physician-supervised weight loss in Manassas VA. Semaglutide (Ozempic/Wegovy), tirzepatide, B-12 injections, and personalized plans. Real results with medical support. Call (703) 361-4357.",
+    metaKeywords: "medical weight loss Manassas VA, semaglutide Manassas, Ozempic Manassas, Wegovy injections Manassas, tirzepatide Manassas, phentermine Northern Virginia",
     featuredImage: legacyAssets.doctorsOverview
+  },
+  "semaglutide-weight-loss-manassas": {
+    name: "Semaglutide & GLP-1 Weight Loss",
+    heroContent:
+      "<h1>Semaglutide Weight Loss in Manassas, VA — GLP-1 Programs</h1><p>Physician-supervised semaglutide, tirzepatide, Ozempic, Wegovy, and GLP-1 weight-loss consultations for qualified patients in Manassas.</p>",
+    bodyContent:
+      "<h2>What is semaglutide?</h2><p>Semaglutide is part of the GLP-1 medication class. For qualified patients, GLP-1 medications can help reduce appetite, improve fullness, and support weight loss when combined with nutrition changes, activity planning, and medical monitoring. Patients often ask about Ozempic, Wegovy, semaglutide, tirzepatide, and GLP-1 options in Manassas; the safest first step is a provider visit.</p><h2>How GLP-1 weight-loss treatment works</h2><p>Altmed starts with a medical history, medication review, weight history, goals, lab considerations, and contraindication screening. If treatment is appropriate, follow-up visits monitor progress, side effects, appetite changes, dose questions, and long-term sustainability.</p><h2>Semaglutide vs tirzepatide</h2><p>Tirzepatide is a different medication class that patients may know from Mounjaro or Zepbound conversations. The right option depends on history, goals, insurance, safety factors, and provider judgment. Altmed explains differences without pressuring patients into a one-size-fits-all injection plan.</p><h2>Who may qualify?</h2><ul><li>Adults with BMI and weight-related risk factors that make medical weight-loss treatment appropriate</li><li>Patients who want physician supervision rather than an online-only prescription</li><li>People ready for follow-up visits, nutrition changes, and long-term monitoring</li><li>Patients without contraindications that would make GLP-1 treatment unsafe</li></ul><h2>Cost and what to expect</h2><p>Costs vary by visit type, insurance coverage, medication access, pharmacy benefit, and self-pay needs. Call Altmed for current pricing and scheduling. Patients can also review the broader <a href='/services/medical-weight-loss-manassas'>medical weight loss program</a>, read the <a href='/health-blogs/semaglutide-glp-1-weight-loss-treatment-in-manassas-va'>semaglutide GLP-1 guide</a>, or <a href='/appointment?service=medical-visit'>book an appointment</a>.</p>",
+    metaTitle: "Semaglutide Weight Loss Manassas VA | Ozempic, Wegovy & GLP-1 | Altmed",
+    metaDescription: "Semaglutide and GLP-1 weight loss in Manassas VA. Ask Altmed about Ozempic, Wegovy, tirzepatide, costs, candidacy, and physician monitoring.",
+    metaKeywords: "semaglutide Manassas, Ozempic Manassas, Wegovy injections Manassas, tirzepatide Manassas, GLP-1 Manassas",
+    featuredImage: "/images/homepage/new/comprehensive-weight-loss.webp"
   },
   "functional-medicine-manassas": {
     name: "Functional Medicine",
     heroContent:
-      "<h1>Functional Medicine in Manassas, VA</h1><p>Root-cause care for persistent symptoms, lifestyle patterns, and long-term wellness concerns that deserve a deeper look.</p>",
+      "<h1>Functional Medicine Doctor in Manassas, VA — Root Cause Care</h1><p>Root-cause care for persistent symptoms, hormone disorders, lifestyle patterns, and long-term wellness concerns that deserve a deeper look.</p>",
     bodyContent:
-      "<h2>What functional medicine means at Altmed</h2><p>The archived functional-medicine content centered on a simple idea: instead of stopping at symptom management, look more carefully at why the pattern may be happening. This page keeps that message, but frames it in clearer, more grounded language.</p><h2>Patients often explore this service for</h2><ul><li>Chronic fatigue, low energy, or brain fog</li><li>Gut symptoms, food reactions, bloating, or constipation</li><li>Hormonal concerns, unexplained weight changes, and stress-related health patterns</li><li>Persistent issues that have not improved with a quick-treatment model alone</li></ul><h2>What your first visit may involve</h2><p>Expect a more detailed conversation about symptoms, routines, stress, sleep, nutrition, and past medical history. Depending on the situation, the plan may include targeted lab review, lifestyle changes, conventional medical treatment, supplements, or other evidence-informed next steps.</p><h2>How this fits with other care</h2><p>Functional medicine at Altmed is meant to complement, not replace, sound medical evaluation. It works best when patients want a more personalized and thorough conversation about chronic patterns that deserve more context.</p>",
-    metaTitle: "Functional Medicine Manassas | Root-Cause Care – Altmed Medical Center",
-    metaDescription: "Functional medicine in Manassas, VA focused on identifying root causes and building personalized wellness plans.",
-    metaKeywords: "functional medicine Manassas, root cause care, chronic illness support, holistic medicine",
+      "<h2>Functional medicine doctor near me</h2><p>Patients searching for a functional medicine doctor near me often want more time to talk through patterns that do not fit neatly into a quick urgent-care visit. Altmed looks at symptoms, lifestyle, nutrition, sleep, stress, lab trends, and conventional medical concerns together.</p><h2>How functional medicine differs from conventional medicine</h2><p>Conventional medicine is essential for diagnosis, acute care, medication management, and disease monitoring. Functional medicine adds a deeper conversation about root causes and contributing factors. At Altmed, the two approaches are meant to work together, not compete.</p><h2>Conditions patients often discuss</h2><ul><li>Chronic fatigue, brain fog, poor sleep, and low energy</li><li>Digestive symptoms, bloating, constipation, reflux, food reactions, and gut-health concerns</li><li>Hormone disorders in Manassas, thyroid symptoms, unexplained weight changes, and metabolic concerns</li><li>Inflammation, stress-related symptoms, chronic pain patterns, and wellness planning</li></ul><h2>Hormone disorders in Manassas</h2><p>Hormone-related symptoms can overlap with primary care, weight management, thyroid disease, sleep problems, and mood concerns. Altmed can start with a practical review, order appropriate labs, and connect care back to <a href='/services/primary-care-manassas-va'>primary care</a> when ongoing medical management is needed.</p><h2>What to expect</h2><p>Your first visit may include an extended health history, symptom timeline, medication and supplement review, nutrition conversation, lab planning, and a step-by-step care plan. Treatment can include lifestyle changes, conventional medication when appropriate, targeted supplementation, lab follow-up, or specialty referral.</p>",
+    metaTitle: "Functional Medicine Doctor Manassas VA | Root Cause Care | Altmed Medical Center",
+    metaDescription: "Functional medicine doctor in Manassas VA for root-cause care, hormone disorders, fatigue, gut symptoms, metabolic concerns, and personalized wellness planning.",
+    metaKeywords: "functional medicine doctor Manassas VA, functional medicine doctor near me, hormone disorders Manassas, root cause care Manassas",
     featuredImage: legacyAssets.doctorThree
   },
   "suboxone-treatment-manassas": {
     name: "Suboxone Treatment",
     heroContent:
-      "<h1>Suboxone Treatment in Manassas</h1><p>Confidential, compassionate addiction care with evidence-based support for recovery and follow-up planning.</p>",
+      "<h1>Suboxone & Addiction Treatment in Manassas, VA — Compassionate, Confidential Care</h1><p>Confidential Suboxone and buprenorphine treatment, addiction medicine support, and follow-up planning for patients seeking help with opioid use disorder.</p>",
     bodyContent:
-      "<h2>Respectful care for people who need help now</h2><p>The legacy Suboxone page had a strong local, human tone. We preserved the urgency and compassion while removing language that could feel overly sensational. Altmed offers confidential addiction care for people seeking support with opioid use disorder and recovery planning.</p><h2>What patients can expect</h2><ul><li>Private consultations with a respectful, non-judgmental approach</li><li>Discussion of medication-assisted treatment, including Suboxone, when clinically appropriate</li><li>Same-day access when scheduling allows and telehealth follow-up for eligible established patients</li><li>Ongoing check-ins designed to support safety, stability, and long-term recovery goals</li></ul><h2>What to do next</h2><p>If you or a loved one is looking for help, call Altmed for a private consultation. Medication questions and treatment planning should be handled directly with the clinical team rather than through general website guidance.</p>",
-    metaTitle: "Suboxone Treatment in Manassas | Suboxone Doctor at Altmed",
-    metaDescription: "Confidential Suboxone treatment and addiction management in Manassas, VA with compassionate, evidence-based care.",
+      "<h2>Suboxone treatment near me in Manassas</h2><p>Altmed provides confidential addiction medicine visits for patients seeking help with opioid use disorder. The first step is a private evaluation, a discussion of symptoms and history, and a care plan that may include medication-assisted treatment when clinically appropriate.</p><h2>What is Suboxone or buprenorphine?</h2><p>Suboxone is a medication that contains buprenorphine and naloxone. Buprenorphine can reduce cravings and withdrawal symptoms for many patients with opioid use disorder. Treatment decisions must be individualized by a qualified provider and paired with follow-up support.</p><h2>What is Vivitrol?</h2><p>Vivitrol is an injectable form of naltrexone used in some addiction-treatment plans. It is different from Suboxone and may be considered for selected patients depending on opioid-free timing, history, goals, and provider evaluation.</p><h2>Treatment process</h2><ul><li>Private first appointment and medical history review</li><li>Discussion of MAT, Suboxone, buprenorphine, Vivitrol, counseling, and recovery supports</li><li>Medication planning when appropriate and safe</li><li>Follow-up visits for stability, dose review, relapse prevention, and long-term recovery goals</li></ul><h2>Confidential and respectful care</h2><p>People often delay treatment because they are worried about stigma. Altmed aims to make the first step clear, private, and non-judgmental. Call the clinic directly for sensitive questions rather than relying only on website information.</p><p>Existing patients can ask about telehealth follow-up when appropriate. New patients can complete the <a href='https://form.jotform.com/230454861250148'>Suboxone new-patient Jotform</a>, and returning patients can complete the <a href='https://form.jotform.com/230443970780054'>Suboxone follow-up Jotform</a> before a visit.</p>",
+    metaTitle: "Suboxone Treatment Manassas VA | Addiction Medicine | Altmed Medical Center",
+    metaDescription: "Suboxone and buprenorphine treatment for opioid addiction in Manassas VA. Confidential, compassionate care from board-certified providers. Same-day evaluations available. (703) 361-4357.",
     metaKeywords: "Suboxone treatment Manassas, addiction management, opioid recovery, suboxone doctor",
     featuredImage: legacyAssets.heroDoctor
   },
@@ -1048,6 +1094,21 @@ export const servicePageFaqs: Record<
       question: "When should I go to the ER instead of urgent care?",
       answer:
         "Call 911 or go to the nearest emergency room for chest pain, stroke symptoms, severe shortness of breath, uncontrolled bleeding, major trauma, or loss of consciousness."
+    },
+    {
+      question: "Do you see children for urgent care?",
+      answer:
+        "Altmed sees families for many common urgent care needs. Severe symptoms, trouble breathing, major injury, or emergencies should go to the ER or 911."
+    },
+    {
+      question: "Do I need insurance for urgent care?",
+      answer:
+        "Insurance is helpful but not always required. Bring your insurance card if you have one, and call ahead for current self-pay options."
+    },
+    {
+      question: "How long is the urgent care wait?",
+      answer:
+        "Wait times vary by day and season. Walk-ins are welcome, and booking ahead can help the team prepare for your visit."
     }
   ],
   "primary-care-manassas-va": [
@@ -1065,6 +1126,26 @@ export const servicePageFaqs: Record<
       question: "Can I come here for both urgent issues and long-term care?",
       answer:
         "Yes. One of Altmed’s strengths is combining same-day care with longer-term follow-up so patients do not have to start over with a different clinic after every visit."
+    },
+    {
+      question: "Do I need insurance for primary care?",
+      answer:
+        "Insurance is helpful, and Altmed accepts many major plans. Self-pay options may be available, so call the clinic with coverage or cost questions."
+    },
+    {
+      question: "Can I walk in without an appointment?",
+      answer:
+        "Walk-ins are welcome for many same-day concerns. Scheduled appointments are recommended for annual physicals, medication management, and longer chronic-care visits."
+    },
+    {
+      question: "Do you manage chronic conditions?",
+      answer:
+        "Yes. Altmed helps with hypertension, diabetes, thyroid concerns, asthma, COPD, cholesterol, medication management, and preventive follow-up."
+    },
+    {
+      question: "Do you offer same-day appointments?",
+      answer:
+        "Same-day appointments may be available depending on provider schedule and visit type. Call or book online for current openings."
     }
   ],
   "occupational-health-clinic-manassas": [
@@ -1099,6 +1180,26 @@ export const servicePageFaqs: Record<
       question: "How long does a DOT physical take?",
       answer:
         "Most DOT visits are straightforward and move quickly, but timing can vary if additional medical records or specialist clearance are needed."
+    },
+    {
+      question: "What disqualifies you from a DOT physical?",
+      answer:
+        "Certain uncontrolled medical conditions, unsafe medication effects, vision or hearing issues, high blood pressure, untreated sleep apnea, and missing clearance paperwork can delay or limit certification. The examiner reviews each case individually under FMCSA standards."
+    },
+    {
+      question: "How often do I need a DOT physical?",
+      answer:
+        "Many qualified drivers receive certification for up to 24 months, but some medical conditions require shorter certification or follow-up documentation."
+    },
+    {
+      question: "Do you accept FMCSA medical examiner cards?",
+      answer:
+        "Altmed performs DOT exams through FMCSA-certified medical examiners. Bring any employer forms or prior medical examiner card information to your visit."
+    },
+    {
+      question: "How much does a DOT physical cost at Altmed?",
+      answer:
+        "DOT physical pricing can change by promotion, employer requirements, and add-on services. Call (703) 361-4357 to confirm the current DOT exam price."
     }
   ],
   "occupational-health/drug-alcohol-testing-manassas": [
@@ -1235,6 +1336,60 @@ export const servicePageFaqs: Record<
       question: "Will I be monitored throughout the program?",
       answer:
         "Yes. Follow-up visits help track progress, adjust the plan, review side effects, and keep treatment aligned with your goals and health history."
+    },
+    {
+      question: "Does insurance cover weight loss medication?",
+      answer:
+        "Coverage varies by plan, diagnosis, medication, and pharmacy benefit. Altmed can discuss visit costs and help you understand what to ask your insurer."
+    },
+    {
+      question: "How fast will I lose weight on semaglutide?",
+      answer:
+        "Results vary. Some patients notice appetite changes early, but safe weight loss depends on medication fit, nutrition, activity, dose adjustments, and follow-up."
+    },
+    {
+      question: "What is the difference between Ozempic and Wegovy?",
+      answer:
+        "Both are semaglutide brand names, but they have different FDA indications, dosing paths, and coverage rules. A provider can explain what applies to your situation."
+    },
+    {
+      question: "Do I need a prescription?",
+      answer:
+        "Yes. GLP-1 medications and other weight-loss prescriptions require a medical evaluation and provider oversight."
+    }
+  ],
+  "semaglutide-weight-loss-manassas": [
+    {
+      question: "Who qualifies for semaglutide weight loss?",
+      answer:
+        "Qualification depends on BMI, health history, weight-related risks, contraindications, medications, and provider evaluation."
+    },
+    {
+      question: "Is tirzepatide the same as semaglutide?",
+      answer:
+        "No. They are different medication classes with different mechanisms and brand names. The best option depends on your medical history and goals."
+    },
+    {
+      question: "Can I do GLP-1 visits by telehealth?",
+      answer:
+        "Some follow-up conversations may be appropriate by telehealth, but initial evaluation, labs, vitals, and safety checks may require in-person care."
+    }
+  ],
+  "pre-employment-physical-drug-test-manassas": [
+    {
+      question: "Can I get a pre-employment physical and drug test the same day?",
+      answer:
+        "Often yes. Same-day completion depends on the employer requirements, collection type, paperwork, and whether lab confirmation is needed."
+    },
+    {
+      question: "What should I bring to a pre-employment physical?",
+      answer:
+        "Bring photo ID, employer paperwork, medication information, glasses or hearing aids if used, and any job-specific instructions."
+    },
+    {
+      question: "Can employers set up recurring new-hire screening?",
+      answer:
+        "Yes. Employers can contact Altmed to define exam components, authorization forms, billing preferences, and result routing."
     }
   ],
   "functional-medicine-manassas": [
@@ -1326,17 +1481,21 @@ export const servicePageFaqs: Record<
 
 export const legacyServiceRedirects: Record<string, string> = {
   addiction: "suboxone-treatment-manassas",
+  "primary-care": "primary-care-manassas-va",
+  "urgent-care": "urgent-care-manassas-va",
   "occupational-health": "occupational-health-clinic-manassas",
+  "occupational-health/pre-employment-physical": "pre-employment-physical-drug-test-manassas",
   "occupational-health/dot-physical": "dot-physical-manassas-va",
   "occupational-health/drug-and-alcohol-test": "occupational-health/drug-alcohol-testing-manassas",
   "occupational-health/lab-tests": "occupational-health/lab-testing-manassas",
-  "occupational-health/breadth-alcohol-testing": "occupational-health/breath-alcohol-test-manassas",
+  "occupational-health/breadth-alcohol-testing": "occupational-health/drug-alcohol-testing-manassas",
   "occupational-health/vaccinations": "occupational-health/vaccinations-immunizations-manassas-va",
   "occupational-health/workers-compensation": "occupational-health/workers-compensation-injury-care-manassas",
   "third-party-administration-service": "third-party-administrator-service-manassas",
   "medical-review-officer": "mro-services-manassas",
   "corporate-wellness-and-health-fairs": "corporate-wellness-programs-manassas",
   weight_management: "medical-weight-loss-manassas",
+  "weight-management/semaglutide-weight-loss-manassas": "semaglutide-weight-loss-manassas",
   "functional-medicine": "functional-medicine-manassas"
 };
 
@@ -1446,8 +1605,6 @@ export const faqPreview = [
   }
 ] as const;
 
-export const liveFormsLibraryUrl = "https://altmedfirst.com/patient-forms";
-
 export const formsSections = [
   {
     title: "Occupational Health Forms",
@@ -1457,56 +1614,14 @@ export const formsSections = [
       {
         title: "Medical Exam Form (Police Officer and Fire Fighters)",
         description: "Virginia initial-hire medical standards examination form for public-safety roles.",
-        href: "https://altmedfirst.com/forms/Medical%20Exam%20Form%202018%20forms.pdf",
-        actionLabel: "Download PDF"
-      },
-      {
-        title: "Company Authorization Form",
-        description: "Authorization for examination or treatment, including occupational testing and injury services.",
-        href: "https://altmedfirst.com/forms/Company%20Authorization%20Form%20New.pdf",
-        actionLabel: "Download PDF"
-      },
-      {
-        title: "Vision Titmus Results Form",
-        description: "Vision results form used in occupational screening workflows.",
-        href: "https://altmedfirst.com/forms/VisionTitmusResultsForm_blank.pdf",
+        href: "/forms/Medical%20Exam%20Form%202018%20forms.pdf",
         actionLabel: "Download PDF"
       },
       {
         title: "New Patient Registration (English)",
-        description: "Available on the current live Altmed forms library.",
-        href: liveFormsLibraryUrl,
-        actionLabel: "Open Live Library"
-      },
-      {
-        title: "Audiogram Form",
-        description: "Available on the current live Altmed forms library.",
-        href: liveFormsLibraryUrl,
-        actionLabel: "Open Live Library"
-      },
-      {
-        title: "Lift Test Results",
-        description: "Available on the current live Altmed forms library.",
-        href: liveFormsLibraryUrl,
-        actionLabel: "Open Live Library"
-      },
-      {
-        title: "RPT Vaccine Administration Form",
-        description: "Available on the current live Altmed forms library.",
-        href: liveFormsLibraryUrl,
-        actionLabel: "Open Live Library"
-      },
-      {
-        title: "Vision Ishihara Results Form",
-        description: "Available on the current live Altmed forms library.",
-        href: liveFormsLibraryUrl,
-        actionLabel: "Open Live Library"
-      },
-      {
-        title: "Vision Snellen Results Form",
-        description: "Available on the current live Altmed forms library.",
-        href: liveFormsLibraryUrl,
-        actionLabel: "Open Live Library"
+        description: "Online new-patient registration form for general clinic visits.",
+        href: "https://form.jotform.com/240354059307049",
+        actionLabel: "Complete Online"
       }
     ]
   },
@@ -1516,58 +1631,58 @@ export const formsSections = [
       "DOT and medical-clearance paperwork used when drivers need supporting records from specialists or treating clinicians.",
     items: [
       {
-        title: "Cardiac DOT Clearance Form",
-        description: "Supporting cardiac clearance form for DOT medical exam follow-up.",
-        href: "https://altmedfirst.com/forms/medical_clearance/Cardiac%20DOT%20Clearance%20Form%20.pdf",
+        title: "391.41 CMV Driver Medication Form MCSA-5895",
+        description: "FMCSA driver medication form for DOT medical exam follow-up.",
+        href: "/forms/medical_clearance/MCSA-5895%20Form%204-10-2020%20508.pdf",
         actionLabel: "Download PDF"
       },
       {
-        title: "391.41 CMV Driver Medication Form MCSA-5895",
-        description: "Listed on the live forms library for DOT-related follow-up.",
-        href: liveFormsLibraryUrl,
-        actionLabel: "Open Live Library"
+        title: "Non-Insulin-Treated Diabetes DOT Clearance Form",
+        description: "DOT clearance form for non-insulin-treated diabetes medical review.",
+        href: "/forms/medical_clearance/Non-Insulin-Treated%20Diabetes%20DOT%20Clearance%20Form.pdf",
+        actionLabel: "Download PDF"
       },
       {
         title: "Vision Evaluation Report Form MCSA-5871",
-        description: "Listed on the live forms library for DOT-related follow-up.",
-        href: liveFormsLibraryUrl,
-        actionLabel: "Open Live Library"
-      },
-      {
-        title: "Return to Duty / Work DOT Clearance Form",
-        description: "Listed on the live forms library for DOT-related follow-up.",
-        href: liveFormsLibraryUrl,
-        actionLabel: "Open Live Library"
-      },
-      {
-        title: "Medical DOT Clearance Form",
-        description: "Listed on the live forms library for DOT-related follow-up.",
-        href: liveFormsLibraryUrl,
-        actionLabel: "Open Live Library"
-      },
-      {
-        title: "Non-Insulin-Treated Diabetes DOT Clearance Form",
-        description: "Listed on the live forms library for DOT-related follow-up.",
-        href: liveFormsLibraryUrl,
-        actionLabel: "Open Live Library"
+        description: "FMCSA vision evaluation report used when a driver needs additional vision documentation.",
+        href: "/forms/medical_clearance/Vision%20Evaluation%20Report%20Form%20MCSA-5871_0.pdf",
+        actionLabel: "Download PDF"
       },
       {
         title: "Insulin-Treated Diabetes Mellitus Assessment Form MCSA-5870",
-        description: "Listed on the live forms library for DOT-related follow-up.",
-        href: liveFormsLibraryUrl,
-        actionLabel: "Open Live Library"
+        description: "FMCSA insulin-treated diabetes mellitus assessment form MCSA-5870.",
+        href: "/forms/medical_clearance/Insulin-Treated%20Diabetes%20Mellitus%20Assessment%20Form%20MCSA-5870.pdf",
+        actionLabel: "Download PDF"
+      },
+      {
+        title: "Return to Duty / Work DOT Clearance Form",
+        description: "Return-to-duty and work-status clearance form for DOT physical follow-up.",
+        href: "/forms/medical_clearance/Return%20to%20Duty%20_%20Work%20DOT%20Clearance%20Form.pdf",
+        actionLabel: "Download PDF"
       },
       {
         title: "Hypertension DOT Clearance Form",
-        description: "Listed on the live forms library for DOT-related follow-up.",
-        href: liveFormsLibraryUrl,
-        actionLabel: "Open Live Library"
+        description: "High-traffic DOT hypertension clearance form for blood pressure follow-up.",
+        href: "/forms/medical_clearance/Hypertension%20DOT%20Clearance%20Form.pdf",
+        actionLabel: "Download PDF"
+      },
+      {
+        title: "Cardiac DOT Clearance Form",
+        description: "Supporting cardiac clearance form for DOT medical exam follow-up.",
+        href: "/forms/medical_clearance/Cardiac%20DOT%20Clearance%20Form%20.pdf",
+        actionLabel: "Download PDF"
       },
       {
         title: "Obstructive Sleep Apnea DOT Clearance Form",
-        description: "Listed on the live forms library for DOT-related follow-up.",
-        href: liveFormsLibraryUrl,
-        actionLabel: "Open Live Library"
+        description: "DOT sleep apnea clearance form for CPAP and sleep-study documentation.",
+        href: "/forms/medical_clearance/Obstructive%20Sleep%20Apnea%20DOT%20Clearance%20Form.pdf",
+        actionLabel: "Download PDF"
+      },
+      {
+        title: "Medical DOT Clearance Form",
+        description: "General medical clearance form for drivers who need supporting DOT documentation.",
+        href: "/forms/medical_clearance/Medical%20DOT%20Clearance%20Form.pdf",
+        actionLabel: "Download PDF"
       }
     ]
   },
@@ -1578,73 +1693,130 @@ export const formsSections = [
     items: [
       {
         title: "Suboxone Form for New Patient",
-        description: "Intake packet for new Suboxone and addiction-treatment patients.",
-        href: "https://www.altmedfirst.com/forms/New%20Suboxone%20Intake%20forms.pdf",
-        actionLabel: "Download PDF"
+        description: "Online intake packet for new Suboxone and addiction-treatment patients.",
+        href: "https://form.jotform.com/230454861250148",
+        actionLabel: "Complete Online"
       },
       {
         title: "Suboxone Follow Up",
-        description: "Listed on the live forms library for returning addiction-treatment patients.",
-        href: liveFormsLibraryUrl,
-        actionLabel: "Open Live Library"
+        description: "Online follow-up form for returning Suboxone and addiction-treatment patients.",
+        href: "https://form.jotform.com/230443970780054",
+        actionLabel: "Complete Online"
       }
     ]
   },
   {
-    title: "Weight Loss & Wellness Forms",
-    description:
-      "Medical weight-loss intake and wellness-consent paperwork surfaced on the live Altmed forms library.",
+    title: "Weight Loss Forms",
+    description: "Medical weight-loss intake paperwork for specialty visits.",
     items: [
       {
         title: "New Patient Weight Loss Intake Form",
-        description: "Listed on the live forms library for physician-guided weight-loss visits.",
-        href: liveFormsLibraryUrl,
-        actionLabel: "Open Live Library"
-      },
-      {
-        title: "IV Nutritional Therapy (Patient Registration & Informed Consent)",
-        description: "Listed on the live forms library for wellness-related visits.",
-        href: liveFormsLibraryUrl,
-        actionLabel: "Open Live Library"
-      },
-      {
-        title: "Testosterone Therapy (Patient Registration & Informed Consent)",
-        description: "Listed on the live forms library for wellness-related visits.",
-        href: liveFormsLibraryUrl,
-        actionLabel: "Open Live Library"
-      },
-      {
-        title: "Pain Management Follow Up Evaluation",
-        description: "Listed on the live forms library for wellness-related follow-up.",
-        href: liveFormsLibraryUrl,
-        actionLabel: "Open Live Library"
+        description: "Online intake form for new medical weight-loss patients.",
+        href: "https://form.jotform.com/232264741654053",
+        actionLabel: "Complete Online"
       }
     ]
   },
   {
-    title: "Telehealth & Medical Release Forms",
-    description:
-      "Virtual-care consent and records-release options for patients, parents, and authorized representatives.",
+    title: "Wellness Forms",
+    description: "Wellness, hormone, IV therapy, and follow-up paperwork for specialty visits.",
     items: [
       {
-        title: "Telehealth Consent Form",
-        description: "Review the current telehealth-consent route before your virtual visit.",
-        href: "/telehealth-consent-forms",
-        actionLabel: "Open Form Route"
+        title: "IV Nutritional Therapy (Patient Registration & Informed Consent)",
+        description: "Online IV nutritional therapy registration and informed consent form.",
+        href: "https://form.jotform.com/240225387175053",
+        actionLabel: "Complete Online"
       },
       {
-        title: "Telehealth Consent Form - Minor",
-        description: "Use when a parent or guardian is participating in a minor’s telehealth visit.",
-        href: "/telehealth-consent-forms-minor",
-        actionLabel: "Open Form Route"
+        title: "Testosterone Therapy (Patient Registration & Informed Consent)",
+        description: "Online testosterone therapy registration and informed consent form.",
+        href: "https://form.jotform.com/240244624960454",
+        actionLabel: "Complete Online"
+      },
+      {
+        title: "Pain Management Follow Up Evaluation",
+        description: "Online follow-up evaluation form for pain management patients.",
+        href: "https://form.jotform.com/233404638270049",
+        actionLabel: "Complete Online"
+      }
+    ]
+  },
+  {
+    title: "Medical Release Forms",
+    description:
+      "Release and authorization forms for patients, employers, and authorized representatives.",
+    items: [
+      {
+        title: "Company Authorization Form",
+        description: "Authorization form used for employer-requested examination, treatment, testing, or injury services.",
+        href: "/forms/Company%20Authorization%20Form%20New.pdf",
+        actionLabel: "Download PDF"
       },
       {
         title: "Medical Records Request Form",
-        description: "Secure medical-records request workflow preserved on the new site.",
+        description: "Request access to medical records or release support from Altmed.",
         href: "/patient-forms/medical-record-request-form",
-        actionLabel: "Open Request Form"
+        actionLabel: "Open Form"
       }
     ]
+  }
+] as const;
+
+export const preservedPdfDownloads = [
+  {
+    title: "Documents to Bring for Your DOT Physical",
+    description: "Driver checklist for reducing DOT physical delays.",
+    href: "/forms/DOCUMENTS%20TO%20BRING%20IN%20FOR%20YOUR%20UPCOMING%20DOT%20PHYSICAL.pdf"
+  },
+  {
+    title: "The FMCSA DOT Medical Exam Standard",
+    description: "Preserved FMCSA medical exam standard reference PDF.",
+    href: "/forms/The%20FMCS%20DOT%20Medical%20Exam%20Standard.pdf"
+  },
+  {
+    title: "Audiogram Form",
+    description: "Hearing-screening documentation form for occupational or driver exams.",
+    href: "/forms/Audiogram%20form.pdf"
+  },
+  {
+    title: "Vision Titmus Results Form",
+    description: "Vision screening results form preserved from the legacy site.",
+    href: "/forms/VisionTitmusResultsForm_blank.pdf"
+  },
+  {
+    title: "Vision Snellen Results Form",
+    description: "Snellen vision screening results form.",
+    href: "/forms/VisionSnellenResultsForm_blank.pdf"
+  },
+  {
+    title: "Vision Ishihara Results Form",
+    description: "Ishihara color-vision screening results form.",
+    href: "/forms/VisionIshiharaResultsForm_blank.pdf"
+  },
+  {
+    title: "Lift Test Results Form",
+    description: "Lift test results documentation for employer-requested evaluations.",
+    href: "/forms/LiftTestResultsForm_blank.pdf"
+  },
+  {
+    title: "Vaccine Administration Form",
+    description: "Vaccine administration record used for immunization visits.",
+    href: "/forms/rptVaccineAdministrationForm_blank.pdf"
+  },
+  {
+    title: "New Patient Registration PDF",
+    description: "Legacy downloadable new-patient registration packet.",
+    href: "/forms/New%20Patient%20Registration.pdf"
+  },
+  {
+    title: "New Suboxone Intake Forms PDF",
+    description: "Legacy downloadable intake packet for new Suboxone patients.",
+    href: "/forms/New%20Suboxone%20Intake%20forms.pdf"
+  },
+  {
+    title: "Suboxone Follow Up PDF",
+    description: "Legacy downloadable follow-up packet for returning Suboxone patients.",
+    href: "/forms/suboxone%20follow%20up.pdf"
   }
 ] as const;
 
@@ -1674,25 +1846,25 @@ export const defaultNavigationMenu: NavigationMenuItem[] = [
   },
   {
     id: "about",
-    label: "About Us",
-    href: "/about-us",
+    label: "About",
+    href: "/about",
     children: [
       {
         id: "about-team",
         label: "Our Team",
-        href: "/about-us#team",
+        href: "/about#team",
         description: "Meet Altmed's clinical leadership."
       },
       {
         id: "about-mission",
         label: "Our Mission",
-        href: "/about-us#mission",
+        href: "/about#mission",
         description: "See the clinic's care philosophy."
       },
       {
         id: "about-providers",
         label: "Providers",
-        href: "/about-us#team",
+        href: "/providers",
         description: "Browse provider profiles and specialties."
       }
     ]
@@ -1730,13 +1902,13 @@ export const defaultNavigationMenu: NavigationMenuItem[] = [
   },
   {
     id: "announcements",
-    label: "Announcements",
+    label: "Updates",
     href: "/updates"
   },
   {
     id: "contact",
     label: "Contact Us",
-    href: "/contact-us"
+    href: "/contact"
   }
 ];
 
@@ -1746,13 +1918,11 @@ export const adminNav: AdminNavGroup[] = [
     items: [{ href: "/admin/dashboard", label: "Dashboard Overview" }]
   },
   {
-    label: "Services",
+    label: "Enrollments",
     items: [
-      { href: "/admin/services-pages", label: "Services Management" },
-      { href: "/admin/providers", label: "Provider Profiles" },
       { href: "/admin/treatment-plans", label: "Treatment Plans" },
-      { href: "/admin/treatment-plans/cash-inflow", label: "Cash Inflow" },
       { href: "/admin/treatment-plans/enrollments", label: "Enrollments" },
+      { href: "/admin/treatment-plans/cash-inflow", label: "Cash Inflow" },
       { href: "/admin/treatment-plans/payments", label: "Payments" }
     ]
   },
@@ -1763,18 +1933,15 @@ export const adminNav: AdminNavGroup[] = [
       { href: "/admin/blog/categories", label: "Categories" },
       { href: "/admin/blog/tags", label: "Tags" },
       { href: "/admin/faq", label: "FAQs" },
-      { href: "/admin/announcements", label: "Announcements" }
+      { href: "/admin/announcements", label: "Notices & Updates" }
     ]
   },
   {
-    label: "Appointments / Leads",
-    items: [{ href: "/admin/contact-submissions", label: "Contact Inbox" }]
-  },
-  {
-    label: "Settings",
+    label: "Operations",
     items: [
-      { href: "/admin/site-settings", label: "Settings" },
-      { href: "/admin/seo-settings", label: "SEO" }
+      { href: "/admin/contact-submissions", label: "Contact Inbox" },
+      { href: "/admin/providers", label: "Providers & Schedule" },
+      { href: "/admin/site-settings", label: "Settings" }
     ]
   }
 ];

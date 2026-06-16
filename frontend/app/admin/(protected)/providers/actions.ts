@@ -20,6 +20,10 @@ async function buildProviderPayload(formData: FormData, currentPhoto?: string) {
     bio: String(formData.get("bio") ?? "").trim() || undefined,
     photo: uploaded?.url ?? (String(formData.get("photo") ?? "").trim() || currentPhoto || undefined),
     specialties: parseSpecialties(formData.get("specialties")),
+    scheduleServices: parseSpecialties(formData.get("scheduleServices")),
+    appointmentUrl: String(formData.get("appointmentUrl") ?? "").trim() || undefined,
+    scheduleStatus: String(formData.get("scheduleStatus") ?? "").trim() || undefined,
+    isSchedulable: formData.get("isSchedulable") === "on",
     personalNote: String(formData.get("personalNote") ?? "").trim() || undefined,
     displayOrder: Number(formData.get("displayOrder") ?? 0),
     isActive: formData.get("isActive") === "on"
@@ -33,6 +37,7 @@ export async function createProviderAction(formData: FormData) {
     await buildProviderPayload(formData)
   );
   revalidatePath("/admin/providers");
+  revalidatePath("/providers");
   revalidatePath("/");
   revalidatePath("/about");
 }
@@ -45,6 +50,7 @@ export async function updateProviderAction(id: string, formData: FormData) {
     await buildProviderPayload(formData, currentPhoto)
   );
   revalidatePath("/admin/providers");
+  revalidatePath("/providers");
   revalidatePath("/");
   revalidatePath("/about");
 }
@@ -52,6 +58,7 @@ export async function updateProviderAction(id: string, formData: FormData) {
 export async function deleteProviderAction(id: string) {
   await adminJsonRequest(`/api/providers/${id}`, "DELETE");
   revalidatePath("/admin/providers");
+  revalidatePath("/providers");
   revalidatePath("/");
   revalidatePath("/about");
 }

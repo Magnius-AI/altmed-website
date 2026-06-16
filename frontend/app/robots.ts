@@ -1,12 +1,18 @@
 import type { MetadataRoute } from "next";
+import { headers } from "next/headers";
+import { getOriginFromHeaders } from "@/lib/site-url";
+
+export const dynamic = "force-dynamic";
 
 export default function robots(): MetadataRoute.Robots {
+  const origin = getOriginFromHeaders(headers());
+
   return {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/admin/", "/admin/login", "/dashboard/", "/login", "/api/"]
+      disallow: ["/admin/", "/login", "/login/", "/wp-admin/"]
     },
-    sitemap: "https://stage.altmedfirst.com/sitemap.xml"
+    sitemap: `${origin}/sitemap.xml`
   };
 }

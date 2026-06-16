@@ -25,7 +25,7 @@ export default async function AdminAnnouncementsPage() {
       <section className="admin-card p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <div className="admin-label">Announcements</div>
+            <div className="admin-label">Notices & Updates</div>
             <h2 className="mt-2 text-3xl font-semibold text-neutral-900">Clinic notices</h2>
             <p className="mt-2 max-w-2xl text-sm leading-7 text-neutral-600">
               Publish banners, operational notices, and time-sensitive patient messaging with clear
@@ -35,14 +35,14 @@ export default async function AdminAnnouncementsPage() {
           <div className="flex flex-wrap gap-3">
             <span className="admin-pill">{announcements.length} notices</span>
             <a href="#new-announcement" className="admin-action">
-              Add announcement
+              Add notice
             </a>
           </div>
         </div>
       </section>
 
       <section id="new-announcement" className="admin-card p-6">
-        <div className="admin-label">New Announcement</div>
+        <div className="admin-label">New Notice</div>
         <form action={createAnnouncementAction} className="mt-6 grid gap-4 lg:grid-cols-2">
           <input
             type="text"
@@ -62,7 +62,7 @@ export default async function AdminAnnouncementsPage() {
             name="body"
             rows={4}
             required
-            placeholder="Announcement body"
+            placeholder="Notice body"
             className="focus-ring rounded-xl border border-slate-200 px-4 py-3 text-sm text-neutral-700 lg:col-span-2"
           />
           <select
@@ -98,15 +98,15 @@ export default async function AdminAnnouncementsPage() {
               </label>
             ))}
           </div>
-          <AdminSubmitButton className="admin-action justify-center lg:col-span-2" pendingLabel="Saving announcement...">
-            Save announcement
+          <AdminSubmitButton className="admin-action justify-center lg:col-span-2" pendingLabel="Saving notice...">
+            Save notice
           </AdminSubmitButton>
         </form>
       </section>
 
       <section className="admin-card overflow-hidden">
         <div className="border-b border-slate-200 px-6 py-4">
-          <div className="admin-label">Announcement List</div>
+          <div className="admin-label">Notice List</div>
           <div className="mt-1 text-sm text-neutral-500">Edit, pin, or retire published notices</div>
         </div>
         <div className="divide-y divide-slate-200">

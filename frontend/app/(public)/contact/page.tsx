@@ -3,21 +3,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { ContactForm } from "@/components/public/ContactForm";
 import type { Route } from "next";
+import { buildPageMetadata } from "@/lib/metadata";
 import { clinic, clinicCoverageAreas, legacyAssets } from "@/lib/site-content";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "Contact Altmed Medical Center | Manassas Medical Clinic",
   description:
     "Contact Altmed Medical Center in Manassas, VA for appointments, directions, urgent care questions, occupational health setup, and telehealth support.",
-  alternates: {
-    canonical: "/contact-us"
-  },
-  openGraph: {
-    title: "Contact Altmed Medical Center | Manassas, VA",
-    description:
-      "Call, email, or visit Altmed Medical Center in Manassas for patient care, employer services, and appointment support."
-  }
-};
+  path: "/contact",
+  image: "/assets/img/homepage/clinic-front-view.jpg"
+});
 
 export default function ContactPage() {
   return (

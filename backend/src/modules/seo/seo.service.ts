@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { create } from "xmlbuilder2";
 import { Repository } from "typeorm";
@@ -13,11 +14,23 @@ export class SeoService {
     @InjectRepository(SiteSettings)
     private readonly settingsRepository: Repository<SiteSettings>,
     @InjectRepository(TreatmentPlan)
-    private readonly treatmentPlansRepository: Repository<TreatmentPlan>
+    private readonly treatmentPlansRepository: Repository<TreatmentPlan>,
+    private readonly configService: ConfigService
   ) {}
 
+  private getBaseUrl() {
+    const configured = this.configService.get<string>("app.frontendUrl") ?? "http://localhost:3000";
+    try {
+      const url = new URL(configured);
+      url.hostname = url.hostname.replace(/^www\./i, "");
+      return url.origin;
+    } catch {
+      return "http://localhost:3000";
+    }
+  }
+
   async sitemapXml() {
-    const baseUrl = "https://altmedfirst.com";
+    const baseUrl = this.getBaseUrl();
     const blogPosts = await this.blogRepository.find({ where: { published: true } });
     const servicePages = await this.servicesRepository.find({ where: { isActive: true } });
     const treatmentPlans = await this.treatmentPlansRepository.find({ where: { isActive: true } });
@@ -26,11 +39,15 @@ export class SeoService {
       { path: "/services", priority: "0.9" },
       { path: "/plans", priority: "0.9" },
       { path: "/health-blogs", priority: "0.7" },
-      { path: "/faqs", priority: "0.6" },
-      { path: "/contact-us", priority: "0.6" },
-      { path: "/about-us", priority: "0.6" },
-      { path: "/announcements", priority: "0.6" },
-      { path: "/appointment", priority: "0.6" }
+      { path: "/faq", priority: "0.6" },
+      { path: "/contact", priority: "0.6" },
+      { path: "/about", priority: "0.6" },
+      { path: "/providers", priority: "0.6" },
+      { path: "/patient-forms", priority: "0.6" },
+      { path: "/telehealth-manassas", priority: "0.6" },
+      { path: "/appointment", priority: "0.6" },
+      { path: "/insurance-accepted-manassas", priority: "0.5" },
+      { path: "/es", priority: "0.5" }
     ];
 
     const doc = create({ version: "1.0", encoding: "UTF-8" }).ele("urlset", {
@@ -69,6 +86,8 @@ export class SeoService {
   }
 
   robotsTxt() {
+    const baseUrl = this.getBaseUrl();
+
     return `User-agent: *
 Allow: /
 Disallow: /admin
@@ -76,7 +95,7 @@ Disallow: /admin/*
 Disallow: /dashboard/
 Disallow: /login
 Disallow: /api/
-Sitemap: https://altmedfirst.com/sitemap.xml`;
+Sitemap: ${baseUrl}/sitemap.xml`;
   }
 
   async defaults() {
@@ -99,7 +118,7 @@ Sitemap: https://altmedfirst.com/sitemap.xml`;
       "@context": "https://schema.org",
       "@type": "MedicalClinic",
       name: "Altmed Medical Center",
-      url: "https://altmedfirst.com",
+      url: this.getBaseUrl(),
       telephone: "+17033614357",
       email: "info@altmedfirst.com",
       address: {

@@ -7,37 +7,17 @@ import { BlogCard } from "@/components/public/BlogCard";
 import { FAQAccordion } from "@/components/public/FAQAccordion";
 import { SchemaOrg } from "@/components/public/SchemaOrg";
 import { getBlogPosts } from "@/lib/api";
+import { buildPageMetadata } from "@/lib/metadata";
 import { buildFaqSchema } from "@/lib/schema";
 import { buildBookingUrl, clinic, legacyAssets, publicRoutes, serviceCards } from "@/lib/site-content";
 
-export const metadata: Metadata = {
-  title: "Walk-In Urgent Care, DOT Physicals & Primary Care | Altmed Medical Center Manassas VA",
+export const metadata: Metadata = buildPageMetadata({
+  title: "Walk-In Clinic Manassas VA | Same-Day Urgent Care | Altmed Medical Center",
   description:
-    "Same-day urgent care, primary care, DOT physicals, medical weight loss, telehealth, and employer health services in Manassas, VA.",
-  alternates: {
-    canonical: "https://stage.altmedfirst.com/"
-  },
-  openGraph: {
-    title: "Altmed Medical Center | Walk-In Clinic in Manassas VA",
-    description:
-      "Walk-ins welcome for urgent care, primary care, DOT physicals, medical weight loss, telehealth, and occupational health in Manassas.",
-    url: "https://stage.altmedfirst.com/",
-    images: [
-      {
-        url: legacyAssets.departmentThree,
-        width: 1200,
-        height: 630,
-        alt: "Altmed Medical Center clinic team in Manassas VA"
-      }
-    ]
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Altmed Medical Center | Walk-In Clinic in Manassas VA",
-    description: "Same-day care and employer health services at 8551 Rixlew Lane in Manassas, VA.",
-    images: [legacyAssets.departmentThree]
-  }
-};
+    "Altmed Medical Center in Manassas VA offers walk-in urgent care, DOT physicals, medical weight loss, and occupational health — no appointment needed. Board-certified providers. Call (703) 361-4357.",
+  path: "/",
+  image: "/assets/img/homepage/clinic-front-view.jpg"
+});
 
 const careCards = [
   {
@@ -162,41 +142,76 @@ const testimonials = [
       "I'd tried losing weight on my own for years. The semaglutide program here came with actual check-ins, not just a prescription and a goodbye. Down 22 lbs in four months.",
     name: "Tanya P.",
     city: "Gainesville, VA"
+  },
+  {
+    quote:
+      "I needed a same-day appointment for a recurring blood pressure issue. The visit felt calm, thorough, and connected to a longer-term primary care plan.",
+    name: "Robert M.",
+    city: "Manassas Park, VA"
+  },
+  {
+    quote:
+      "The staff helped us sort out forms before a work physical and drug test. That saved our HR team a lot of back and forth.",
+    name: "Nina K.",
+    city: "Haymarket, VA"
   }
 ] as const;
 
 const serviceAreas = ["Manassas", "Manassas Park", "Gainesville", "Bristow", "Haymarket", "Centreville", "Woodbridge", "Prince William County"] as const;
 
+const localCarePoints = [
+  {
+    title: "Care today, follow-up tomorrow",
+    body:
+      "Patients often come to Altmed because they need care today, but they do not want a disconnected one-time visit. A sore throat, UTI, rash, blood pressure concern, DOT certificate, drug test, or weight-loss question can all create the same problem: you need clear answers, useful documentation, and a provider who can explain the next step."
+  },
+  {
+    title: "One clinic for the next step",
+    body:
+      "Our Manassas clinic connects walk-in urgent care with primary care follow-up, medical weight loss, telehealth, and occupational health services. A same-day visit can lead into lab review, medication support, chronic-condition management, or specialist paperwork when the situation calls for it."
+  },
+  {
+    title: "Paperwork handled carefully",
+    body:
+      "Employers and drivers use Altmed because speed matters, but accuracy matters too. DOT physicals, clearance forms, pre-employment exams, workers' compensation visits, and drug testing need careful handling so patients, supervisors, and HR teams know what happens next."
+  },
+  {
+    title: "Built for real weekday schedules",
+    body:
+      "Altmed can help with follow-up questions, preventive care, telehealth when appropriate, and records or forms that support school, work, driving, or employer requirements."
+  }
+] as const;
+
 const homeFaqs = [
   {
-    question: "Do I need an appointment, or can I walk in?",
+    question: "Do you accept walk-ins?",
     answer:
       "Walk-ins are welcome Monday through Friday for many urgent care and same-day services. Booking ahead is still helpful for physicals, weight loss consultations, and employer services so we can prepare the right paperwork."
   },
   {
-    question: "What insurance does Altmed accept?",
+    question: "What insurance do you take?",
     answer:
       "We accept most major insurances including Aetna, CareFirst, Cigna, and United. Please bring your insurance card and photo ID, and call ahead if you want our team to confirm details before your visit."
   },
   {
-    question: "How long does a DOT physical take?",
+    question: "What are your hours?",
     answer:
-      "Most DOT physicals take about 30 to 60 minutes when you bring the required ID, medication list, and any condition-specific paperwork. If additional records are needed, our team will explain exactly what is missing."
+      "Altmed Medical Center is open Monday through Friday, 9 AM to 5 PM. Hours can change around holidays, so call before coming in if timing is tight."
   },
   {
-    question: "Does Altmed offer telehealth visits?",
+    question: "Do you do DOT physicals?",
+    answer:
+      "Yes. Altmed performs DOT and CDL physical exams in Manassas with FMCSA-certified medical examiners and same-day availability when the schedule allows."
+  },
+  {
+    question: "Do you offer telehealth?",
     answer:
       "Yes. Telehealth is available for appropriate follow-up visits, medication discussions, and concerns that do not require an in-person exam or testing."
   },
   {
-    question: "What should I bring to my first appointment?",
+    question: "How much does a DOT physical cost?",
     answer:
-      "Bring a photo ID, insurance card, current medication list, and any relevant medical records or employer forms. DOT drivers should also bring glasses, hearing aids, and clearance documents when applicable."
-  },
-  {
-    question: "Does Altmed treat children as well as adults?",
-    answer:
-      "Altmed sees families for many common urgent care and primary care needs. If your child has severe symptoms, trouble breathing, major injury, or a medical emergency, go to the nearest ER or call 911."
+      "DOT physical pricing can change by promotion, employer requirements, and add-on services. Call (703) 361-4357 for the current DOT physical price before your visit."
   }
 ] as const;
 
@@ -221,54 +236,57 @@ export default async function HomePage() {
     <main>
       <SchemaOrg schema={buildFaqSchema([...homeFaqs])} />
 
-      <section className="bg-[var(--c-bg)]">
-        <div className="container-shell section-pad">
-          <div className="grid items-center gap-10 lg:grid-cols-[52fr_48fr]">
-            <div>
-              <div className="section-label">Manassas, VA · Walk-ins Welcome</div>
-              <h1 className="mt-5 max-w-2xl text-[var(--c-text)]">
-                Same-Day Care When
-                <br />
-                You Can&apos;t Wait.
-              </h1>
-              <p className="mt-6 text-lg leading-8 text-[var(--c-muted)]">
-                Urgent care, primary care, DOT physicals, weight loss, and employer health services
-                all under one roof at 8551 Rixlew Lane. No referral needed.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-4">
-                <Link href={buildBookingUrl("home_hero", "book-appointment") as Route} className="btn-primary">
-                  Book Appointment <ArrowRight className="h-4 w-4" />
-                </Link>
-                <a href={`tel:${clinic.phone}`} className="btn-outline-dark">
-                  Call {clinic.phone}
-                </a>
-              </div>
-              <a href={clinic.mapUrl} className="mt-7 inline-flex items-center gap-2 text-sm font-bold text-[var(--c-text)]">
-                <span className="inline-flex text-[var(--c-primary)]">
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <Star key={index} className="h-4 w-4 fill-current" />
-                  ))}
-                </span>
-                Rated 4.8 by 30+ patients on Google
+      <section className="overflow-hidden bg-[var(--c-bg)]">
+        <div className="container-shell grid gap-10 py-10 md:py-14 lg:grid-cols-[minmax(0,0.92fr)_minmax(380px,0.88fr)] lg:items-center lg:py-16">
+          <div className="max-w-[700px]">
+            <div className="section-label">Walk-In Clinic in Manassas, VA</div>
+            <h1 className="mt-5 max-w-2xl text-[2.55rem] leading-[1.08] text-dark-800 md:text-[3.35rem] lg:text-[3.95rem]">
+              Same-Day Urgent Care and Primary Care in Manassas, VA
+            </h1>
+            <p className="mt-6 max-w-2xl text-[1.03rem] leading-8 text-[var(--color-text-muted)] md:text-[1.08rem]">
+              Walk in for urgent care, DOT physicals, primary care, medical weight loss,
+              telehealth, and employer health services at Altmed Medical Center on Rixlew Lane.
+              No referral needed.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-4">
+              <Link href={buildBookingUrl("home_hero", "book-appointment") as Route} className="btn-primary">
+                Book Appointment <ArrowRight className="h-4 w-4" />
+              </Link>
+              <a href={`tel:${clinic.phone}`} className="btn-outline-dark">
+                Call {clinic.phone}
               </a>
-              <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-[var(--c-text)]">
-                {["Board-Certified Providers", "Walk-Ins Welcome", "Same-Day Availability", "Telehealth Options"].map((item) => (
-                  <span key={item} className="inline-flex items-center gap-1.5">
-                    <Check className="h-4 w-4 text-[var(--c-primary)]" />
-                    {item}
-                  </span>
-                ))}
-              </div>
             </div>
-            <div className="relative min-h-[420px] overflow-hidden rounded-b-[80px] bg-white lg:min-h-[580px]">
-              <Image
-                src={legacyAssets.departmentThree}
-                alt="Provider checking blood pressure at Altmed Medical Center in Manassas VA"
-                fill
-                className="clinic-img object-cover"
-                priority
-                sizes="(min-width: 1024px) 48vw, 100vw"
-              />
+            <a href={clinic.mapUrl} className="mt-7 inline-flex items-center gap-3 text-sm font-bold text-[var(--color-text)]">
+              <span className="inline-flex text-[var(--color-primary)]">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <Star key={index} className="h-4 w-4 fill-current" />
+                ))}
+              </span>
+              Rated 4.8 by 30+ patients on Google
+            </a>
+            <div className="mt-7 grid gap-x-5 gap-y-3 text-sm font-semibold text-[var(--color-text)] sm:grid-cols-2 lg:flex lg:flex-wrap">
+              {["Board-Certified Providers", "Walk-Ins Welcome", "Same-Day Availability", "Telehealth Options"].map((item) => (
+                <span key={item} className="inline-flex items-center gap-2">
+                  <Check className="h-4 w-4 text-[var(--color-primary)]" />
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="relative min-h-[340px] overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-bg-gray)] shadow-[0_22px_60px_rgba(17,30,27,0.12)] md:min-h-[460px] lg:min-h-[540px]">
+            <Image
+              src={legacyAssets.heroClinic}
+              alt="Altmed Medical Center walk-in clinic exterior at 8551 Rixlew Lane in Manassas VA"
+              fill
+              className="site-photo object-cover object-center"
+              priority
+              sizes="(min-width: 1024px) 44vw, 100vw"
+            />
+            <div className="absolute bottom-5 left-5 right-5 rounded-[var(--radius-sm)] border border-[rgba(28,43,39,0.08)] bg-white p-4 shadow-[0_14px_34px_rgba(17,30,27,0.14)] sm:right-auto sm:w-[min(520px,calc(100%-2.5rem))]">
+              <div className="text-xs font-bold uppercase tracking-[0.12em] text-[var(--color-primary)]">Altmed Medical Center</div>
+              <div className="mt-1 font-semibold leading-6 text-[var(--color-text-dark)]">8551 Rixlew Lane, Suite 140 · Manassas, VA</div>
+              <div className="text-sm font-medium text-[var(--color-text-muted)]">Open Monday-Friday, 9 AM-5 PM</div>
             </div>
           </div>
         </div>
@@ -302,6 +320,33 @@ export default async function HomePage() {
           {trustStats.map((stat) => (
             <div key={stat}>{stat}</div>
           ))}
+        </div>
+      </section>
+
+      <section className="bg-[var(--c-bg)]">
+        <div className="container-shell section-pad">
+          <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
+            <div className="max-w-xl">
+              <div className="section-label">Local Medical Care</div>
+              <h2 className="mt-3 max-w-lg text-[2rem] leading-[1.13] md:text-[2.35rem]">
+                A practical clinic for real-life visits, paperwork, and follow-up.
+              </h2>
+              <p className="mt-5 text-base leading-8 text-[var(--c-muted)]">
+                One local team for common medical visits, work requirements, and the follow-up that
+                often happens after the first appointment.
+              </p>
+            </div>
+            <div className="grid gap-5">
+              {localCarePoints.map((item) => (
+                <article key={item.title} className="border-l-2 border-[var(--c-border)] pl-5">
+                  <h3 className="text-[1rem]">{item.title}</h3>
+                  <p className="mt-2 max-w-[78ch] text-[0.98rem] leading-7 text-[var(--c-muted)] md:text-base">
+                    {item.body}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -445,6 +490,15 @@ export default async function HomePage() {
               Whether you&apos;re searching for urgent care near Sudley, a DOT physical in Gainesville,
               or a walk-in clinic in Bristow, our team is here Monday through Friday, 9 AM to 5 PM.
             </p>
+          </div>
+          <div className="mt-10 overflow-hidden rounded-[var(--radius-md)] border border-[var(--c-border)] bg-white">
+            <iframe
+              title="Altmed Medical Center location map"
+              src="https://www.google.com/maps?q=8551%20Rixlew%20Lane%20Suite%20140%20Manassas%20VA%2020109&output=embed"
+              className="h-[360px] w-full"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
           </div>
         </div>
       </section>

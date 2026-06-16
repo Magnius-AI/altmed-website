@@ -2,6 +2,7 @@ import {
   blogCategories,
   clinic,
   defaultNavigationMenu,
+  featuredDoctors,
   legacyServiceRedirects,
   NavigationMenuItem,
   reconstructedLegacyRoutes,
@@ -142,6 +143,10 @@ export type Provider = {
   title?: string;
   bio?: string;
   specialties?: string[];
+  scheduleServices?: string[];
+  appointmentUrl?: string | null;
+  scheduleStatus?: string | null;
+  isSchedulable?: boolean;
   photo?: string;
   personalNote?: string | null;
   displayOrder?: number;
@@ -266,11 +271,16 @@ function shouldUseFallbackServiceCopy(apiPage: ServicePage, fallbackPage: Servic
   return apiLength < 420 || apiLength < fallbackLength * 0.6;
 }
 
-async function safeFetch<T>(path: string, fallback: T, init?: RequestInit): Promise<T> {
+type PublicFetchInit = RequestInit & { next?: { revalidate?: number | false } };
+
+async function safeFetch<T>(path: string, fallback: T, init?: PublicFetchInit): Promise<T> {
   try {
+    const requestInit: PublicFetchInit =
+      init?.cache === "no-store"
+        ? { ...init, cache: "no-store" }
+        : { ...init, next: init?.next ?? { revalidate: 3600 } };
     const response = await fetch(`${API_URL}${path}`, {
-      ...init,
-      next: { revalidate: 3600 }
+      ...requestInit
     });
     if (!response.ok) {
       return fallback;
@@ -403,17 +413,19 @@ export async function getFaqSchema() {
 }
 
 export async function getProviders() {
-  const providers = await safeFetch<Provider[]>("/api/providers", [
-    {
-      id: "provider-1",
-      name: "Dr. Gerald K. Lee",
-      credentials: "MD, PhD, MS",
-      title: "Founder & Lead Physician",
-      bio: "Dr. Lee combines advanced research training with community-focused care.",
-      specialties: ["Obesity Medicine", "Addiction Medicine", "Pain Management"],
-      photo: "/images/dr-lee-placeholder.webp"
-    }
-  ]);
+  const fallbackProviders: Provider[] = featuredDoctors.map((provider, index) => ({
+    id: `fallback-provider-${index + 1}`,
+    name: provider.name,
+    credentials: provider.name.includes(",") ? provider.name.split(",").slice(1).join(",").trim() : provider.specialty,
+    title: provider.specialty,
+    bio: `${provider.name} supports Altmed Medical Center patients in Manassas with ${provider.experience.toLowerCase()} experience.`,
+    specialties: [provider.specialty, provider.experience],
+    photo: provider.image,
+    displayOrder: index + 1,
+    isActive: true,
+    isSchedulable: false
+  }));
+  const providers = await safeFetch<Provider[]>("/api/providers", fallbackProviders, { cache: "no-store" });
 
   return providers.map(normalizeProvider);
 }

@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     title: "Available Treatment Plans | Altmed Medical Center",
     description:
       "Review available bundled treatment plans, pricing, duration, and enrollment options from Altmed Medical Center.",
-    url: "https://altmedfirst.com/plans",
+    url: `${clinic.canonicalUrl}/plans`,
     type: "website"
   }
 };

@@ -33,30 +33,30 @@ export default async function AdminBlogCategoriesPage() {
         </div>
       </section>
 
-      <section id="new-category" className="admin-card p-6">
+      <section id="new-category" className="admin-card p-5">
         <div className="admin-label">New Category</div>
-        <form action={createBlogCategoryAction} className="mt-5 grid gap-4 lg:grid-cols-[1fr_1fr_1.3fr_auto]">
+        <form action={createBlogCategoryAction} className="mt-4 grid items-start gap-3 lg:grid-cols-[1fr_1fr_1.25fr_150px]">
           <input
             type="text"
             name="name"
             required
             placeholder="Category name"
-            className="focus-ring rounded-xl border border-slate-200 px-4 py-3 text-sm text-neutral-700"
+            className="input"
           />
           <input
             type="text"
             name="slug"
             placeholder="Slug (optional)"
-            className="focus-ring rounded-xl border border-slate-200 px-4 py-3 text-sm text-neutral-700"
+            className="input"
           />
           <textarea
             name="description"
             rows={2}
             placeholder="Description"
-            className="focus-ring rounded-xl border border-slate-200 px-4 py-3 text-sm text-neutral-700"
+            className="input min-h-[4.75rem]"
           />
-          <div className="flex flex-col gap-3">
-            <label className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm text-neutral-700">
+          <div className="grid gap-2">
+            <label className="admin-check">
               <input type="checkbox" name="isActive" defaultChecked />
               Active
             </label>
@@ -77,29 +77,29 @@ export default async function AdminBlogCategoriesPage() {
             <form
               key={category.id}
               action={updateBlogCategoryAction.bind(null, category.id)}
-              className="grid gap-4 px-6 py-5 xl:grid-cols-[1fr_1fr_1.4fr_120px_220px]"
+              className="grid items-start gap-3 px-5 py-4 xl:grid-cols-[1fr_1fr_1.4fr_120px_190px]"
             >
               <input
                 type="text"
                 name="name"
                 defaultValue={category.name}
-                className="focus-ring rounded-xl border border-slate-200 px-4 py-3 text-sm text-neutral-700"
+                className="input"
               />
               <input
                 type="text"
                 name="slug"
                 defaultValue={category.slug}
-                className="focus-ring rounded-xl border border-slate-200 px-4 py-3 text-sm text-neutral-700"
+                className="input"
               />
               <textarea
                 name="description"
                 rows={2}
                 defaultValue={category.description ?? ""}
-                className="focus-ring rounded-xl border border-slate-200 px-4 py-3 text-sm text-neutral-700"
+                className="input min-h-[4.75rem]"
               />
               <div className="space-y-3">
                 <div className="admin-pill">{category.usageCount ?? 0} posts</div>
-                <label className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm text-neutral-700">
+                <label className="admin-check">
                   <input type="checkbox" name="isActive" defaultChecked={category.isActive ?? true} />
                   Active
                 </label>

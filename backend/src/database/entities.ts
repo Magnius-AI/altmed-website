@@ -433,6 +433,18 @@ export class Provider {
   @Column("simple-array", { nullable: true })
   specialties!: string[] | null;
 
+  @Column("simple-array", { nullable: true })
+  scheduleServices!: string[] | null;
+
+  @Column({ type: "varchar", nullable: true })
+  appointmentUrl!: string | null;
+
+  @Column({ type: "varchar", nullable: true })
+  scheduleStatus!: string | null;
+
+  @Column({ default: false })
+  isSchedulable!: boolean;
+
   @Column({ type: "text", nullable: true })
   personalNote!: string | null;
 
