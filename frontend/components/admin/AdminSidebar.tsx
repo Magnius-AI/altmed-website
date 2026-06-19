@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import type { ComponentType } from "react";
 import {
   Bell,
+  CalendarCheck2,
   ClipboardList,
   CreditCard,
   DollarSign,
@@ -37,6 +38,7 @@ const iconMap: Record<string, ComponentType<{ className?: string }>> = {
   "Treatment Plans": ClipboardList,
   "Cash Inflow": DollarSign,
   Enrollments: Users,
+  Attendance: CalendarCheck2,
   Payments: CreditCard
 };
 
@@ -46,10 +48,10 @@ export function AdminSidebar() {
     pathname === href || (href !== "/admin/dashboard" && pathname.startsWith(`${href}/`));
 
   return (
-    <aside className="hidden w-60 shrink-0 border-r border-[var(--admin-border)] bg-white/95 px-2.5 py-3 shadow-[8px_0_24px_rgba(16,42,58,0.04)] lg:block">
-      <div className="rounded-lg border border-[var(--admin-border)] bg-[linear-gradient(135deg,#ffffff_0%,var(--color-primary-soft)_100%)] p-2.5 shadow-sm">
+    <aside className="hidden w-60 shrink-0 border-r border-[var(--admin-border)] bg-white px-2.5 py-3 lg:block">
+      <div className="rounded-lg border border-[var(--admin-border)] bg-white p-2.5">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-[var(--color-primary)] shadow-sm ring-1 ring-[rgba(22,122,91,0.12)]">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--color-bg-gray)] text-[var(--color-primary)] ring-1 ring-[rgba(22,122,91,0.12)]">
             <LayoutDashboard className="h-4 w-4" />
           </div>
           <div>
@@ -75,7 +77,7 @@ export function AdminSidebar() {
                     href={item.href as Route}
                     className={`flex items-center gap-2.5 rounded-md px-2.5 py-1.5 transition ${
                       isActive(item.href)
-                        ? "bg-[var(--color-primary)] text-white shadow-sm"
+                        ? "bg-[var(--color-primary)] text-white"
                         : "text-neutral-700 hover:bg-[var(--color-bg-gray)] hover:text-neutral-900"
                     }`}
                   >
@@ -88,7 +90,7 @@ export function AdminSidebar() {
           </div>
         ))}
       </nav>
-      <div className="mt-4 rounded-lg border border-[var(--admin-border)] bg-[var(--color-bg-warm)] p-2.5 text-xs leading-5 text-neutral-600 shadow-sm">
+      <div className="mt-4 rounded-lg border border-[var(--admin-border)] bg-[var(--color-bg-warm)] p-2.5 text-xs leading-5 text-neutral-600">
         <div className="font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
           Backend Focus
         </div>

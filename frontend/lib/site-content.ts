@@ -1914,6 +1914,7 @@ export const adminNav: AdminNavGroup[] = [
     items: [
       { href: "/admin/treatment-plans", label: "Treatment Plans" },
       { href: "/admin/treatment-plans/enrollments", label: "Enrollments" },
+      { href: "/admin/treatment-plans/attendance", label: "Attendance" },
       { href: "/admin/treatment-plans/cash-inflow", label: "Cash Inflow" },
       { href: "/admin/treatment-plans/payments", label: "Payments" }
     ]

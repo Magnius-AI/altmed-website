@@ -92,11 +92,11 @@ export default async function CashInflowPage() {
 
   return (
     <div className="grid gap-5">
-      <section className="admin-card p-5">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <section className="admin-card p-4">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <div className="admin-label">Cash Inflow</div>
-            <h2 className="mt-2 text-2xl font-semibold text-neutral-900">Patient payment overview</h2>
+            <h2 className="mt-1.5 text-xl font-semibold text-neutral-900">Patient payment overview</h2>
             <p className="mt-1 max-w-3xl text-sm leading-6 text-neutral-600">
               Track collected treatment-plan payments, pending checkout value, refunds, and recent patient receipts.
             </p>
@@ -111,28 +111,28 @@ export default async function CashInflowPage() {
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <div key={stat.label} className="admin-card p-5">
-              <div className="flex items-start justify-between gap-4">
+            <div key={stat.label} className="admin-card p-4">
+              <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="admin-label">{stat.label}</div>
-                  <div className="mt-3 text-3xl font-semibold text-neutral-900">{stat.value}</div>
+                  <div className="mt-2 text-2xl font-semibold text-neutral-900">{stat.value}</div>
                 </div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--color-primary)] text-white">
-                  <Icon className="h-5 w-5" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[var(--color-primary)] text-white">
+                  <Icon className="h-4 w-4" />
                 </div>
               </div>
-              <p className="mt-3 text-sm leading-6 text-neutral-600">{stat.detail}</p>
+              <p className="mt-2 text-sm leading-6 text-neutral-600">{stat.detail}</p>
             </div>
           );
         })}
       </section>
 
-      <section className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
-        <div className="admin-card p-5">
+      <section className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
+        <div className="admin-card p-4">
           <div className="flex items-center justify-between gap-4">
             <div>
               <div className="admin-label">Plan Revenue</div>
-              <h3 className="mt-2 text-xl font-semibold text-neutral-900">Collected by plan</h3>
+              <h3 className="mt-1.5 text-lg font-semibold text-neutral-900">Collected by plan</h3>
             </div>
             <ReceiptText className="h-5 w-5 text-[var(--color-primary)]" />
           </div>
@@ -151,10 +151,10 @@ export default async function CashInflowPage() {
         </div>
 
         <div className="admin-card overflow-hidden">
-          <div className="flex items-center justify-between gap-4 border-b border-slate-200 p-5">
+          <div className="flex items-center justify-between gap-4 border-b border-slate-200 p-4">
             <div>
               <div className="admin-label">Recent Payments</div>
-              <h3 className="mt-2 text-xl font-semibold text-neutral-900">Patient receipts</h3>
+              <h3 className="mt-1.5 text-lg font-semibold text-neutral-900">Patient receipts</h3>
             </div>
             <CreditCard className="h-5 w-5 text-[var(--color-primary)]" />
           </div>
@@ -162,7 +162,7 @@ export default async function CashInflowPage() {
             <table className="min-w-full text-left text-sm">
               <thead className="border-b border-slate-200 bg-slate-50 text-neutral-900">
                 <tr>
-                  {["Patient", "Plan", "Amount", "Date"].map((column) => (
+                  {["Patient", "Plan", "Method", "Amount", "Date"].map((column) => (
                     <th key={column} className="px-4 py-3 font-semibold">
                       {column}
                     </th>
@@ -175,8 +175,12 @@ export default async function CashInflowPage() {
                     <td className="px-4 py-3">
                       <div className="font-semibold text-neutral-900">{payment.patientName ?? "Patient"}</div>
                       <div className="text-xs text-neutral-500">{payment.patientEmail}</div>
+                      <div className="mt-1 font-mono text-xs font-semibold tracking-[0.08em] text-[var(--color-primary)]">
+                        {payment.enrollmentCode ?? payment.id}
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-neutral-700">{payment.plan?.name ?? payment.planId}</td>
+                    <td className="px-4 py-3 text-neutral-700">{payment.paymentMethod ?? "Not set"}</td>
                     <td className="px-4 py-3 font-semibold text-neutral-900">
                       {formatMoney(payment.amountPaidCents, payment.plan?.currency)}
                     </td>
@@ -187,7 +191,7 @@ export default async function CashInflowPage() {
                 ))}
                 {!recentPayments.length ? (
                   <tr>
-                    <td colSpan={4} className="px-4 py-10 text-center text-neutral-500">
+                    <td colSpan={5} className="px-4 py-10 text-center text-neutral-500">
                       No paid patient payments found.
                     </td>
                   </tr>

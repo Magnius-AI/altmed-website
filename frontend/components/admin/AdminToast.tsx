@@ -45,7 +45,7 @@ export function AdminToast({ message, durationMs = 4500, variant = "success" }: 
   }
 
   return (
-    <div role={variant === "error" ? "alert" : "status"} className={`fixed right-4 top-4 z-50 w-[min(calc(100vw-2rem),24rem)] rounded-lg border p-4 shadow-[var(--admin-shadow)] backdrop-blur ${tone.className}`}>
+    <div role={variant === "error" ? "alert" : "status"} className={`fixed right-4 top-4 z-50 w-[min(calc(100vw-2rem),24rem)] rounded-lg border p-3 shadow-[var(--admin-shadow)] ${tone.className}`}>
       <div className="flex items-start gap-3">
         <Icon className="mt-0.5 h-5 w-5 flex-none" aria-hidden="true" />
         <div className="min-w-0 flex-1">

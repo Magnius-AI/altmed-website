@@ -3,6 +3,8 @@ import { Roles } from "../../common/decorators/roles.decorator";
 import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard";
 import {
   CreateCheckoutDto,
+  CreateEnrollmentDto,
+  RecordAttendanceDto,
   CreateTreatmentPlanDto,
   UpdateEnrollmentDto,
   UpdateStripeSettingsDto,
@@ -31,6 +33,13 @@ export class TreatmentPlansController {
   @Roles("admin")
   findEnrollments(@Query("planId") planId?: string, @Query("status") status?: string) {
     return this.treatmentPlansService.findEnrollments({ planId, status });
+  }
+
+  @Get("admin/attendance")
+  @UseGuards(JwtAuthGuard)
+  @Roles("admin")
+  findAttendance(@Query("code") code?: string) {
+    return this.treatmentPlansService.findAttendance({ code });
   }
 
   @Get("admin/metrics")
@@ -66,6 +75,20 @@ export class TreatmentPlansController {
   @Roles("admin")
   create(@Body() dto: CreateTreatmentPlanDto) {
     return this.treatmentPlansService.create(dto);
+  }
+
+  @Post("admin/enrollments")
+  @UseGuards(JwtAuthGuard)
+  @Roles("admin")
+  createEnrollment(@Body() dto: CreateEnrollmentDto) {
+    return this.treatmentPlansService.createEnrollment(dto);
+  }
+
+  @Post("admin/attendance")
+  @UseGuards(JwtAuthGuard)
+  @Roles("admin")
+  recordAttendance(@Body() dto: RecordAttendanceDto) {
+    return this.treatmentPlansService.recordAttendance(dto);
   }
 
   @Patch("admin/enrollments/:id")

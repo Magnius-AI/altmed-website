@@ -241,11 +241,17 @@ export class PlanEnrollment {
   @Column({ type: "varchar", nullable: true })
   stripePaymentIntent!: string | null;
 
+  @Column({ type: "varchar", unique: true, nullable: true })
+  enrollmentCode!: string | null;
+
   @Column({ type: "varchar", default: "pending" })
   status!: string;
 
   @Column({ type: "integer", nullable: true })
   amountPaidCents!: number | null;
+
+  @Column({ type: "varchar", nullable: true })
+  paymentMethod!: string | null;
 
   @Column({ nullable: true, type: "timestamp" })
   enrolledAt!: Date | null;
@@ -255,6 +261,15 @@ export class PlanEnrollment {
 
   @Column({ nullable: true, type: "timestamp" })
   endsAt!: Date | null;
+
+  @Column({ type: "integer", default: 0 })
+  visitCount!: number;
+
+  @Column({ nullable: true, type: "timestamp" })
+  lastVisitAt!: Date | null;
+
+  @Column({ nullable: true, type: "timestamp" })
+  nextVisitAt!: Date | null;
 
   @Column("text", { nullable: true })
   notes!: string | null;
@@ -267,6 +282,32 @@ export class PlanEnrollment {
 
   @UpdateDateColumn()
   updatedAt!: Date;
+}
+
+@Entity("plan_attendance")
+export class PlanAttendance {
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
+
+  @Index()
+  @Column({ type: "uuid" })
+  enrollmentId!: string;
+
+  @Index()
+  @Column({ type: "varchar" })
+  enrollmentCode!: string;
+
+  @Column({ nullable: true, type: "timestamp" })
+  visitedAt!: Date | null;
+
+  @Column({ type: "varchar", nullable: true })
+  staffName!: string | null;
+
+  @Column("text", { nullable: true })
+  notes!: string | null;
+
+  @CreateDateColumn()
+  createdAt!: Date;
 }
 
 @Entity("stripe_settings")
