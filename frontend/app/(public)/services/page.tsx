@@ -20,7 +20,7 @@ export default function ServicesPage() {
           <div className="inline-flex rounded-full bg-[var(--color-bg-gray)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
             Services
           </div>
-          <h1 className="mt-6 text-4xl md:text-[3.35rem]">
+          <h1 className="mt-6 max-w-full break-words text-[2rem] leading-[1.1] [text-wrap:pretty] sm:text-[2.35rem] md:text-[3.05rem]">
             Urgent care, primary care, occupational medicine, and specialty support under one roof.
           </h1>
           <p className="mt-6 text-[1.03rem] leading-8 text-[var(--color-text-muted)]">
