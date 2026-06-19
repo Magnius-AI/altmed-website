@@ -2,6 +2,7 @@
 
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, UnauthorizedException, ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as supertest from 'supertest';
 import { HttpExceptionFilter } from '../src/common/filters/http-exception.filter';
 import { JwtAuthGuard } from '../src/common/guards/jwt-auth.guard';
@@ -47,6 +48,17 @@ describe('App E2E Tests', () => {
               .fn()
               .mockRejectedValue(new UnauthorizedException('Invalid credentials')),
             me: jest.fn(),
+          },
+        },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn((key: string) => {
+              if (key === 'app.environment') {
+                return 'test';
+              }
+              return undefined;
+            }),
           },
         },
         {
