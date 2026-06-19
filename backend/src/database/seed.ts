@@ -135,7 +135,9 @@ async function seed() {
         address: "8551 Rixlew Lane, Suite 140, Manassas, VA 20109",
         phone: "(703) 361-4357",
         email: "info@altmedfirst.com",
-        canonicalUrl: process.env.FRONTEND_URL ?? "http://localhost:3000"
+        canonicalUrl:
+          process.env.FRONTEND_URL ??
+          (process.env.NODE_ENV === "production" ? "https://altmedfirst.com" : "http://localhost:3000")
       }
     },
     {

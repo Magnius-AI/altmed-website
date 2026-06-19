@@ -1,12 +1,9 @@
 import "server-only";
 
 import { cookies } from "next/headers";
+import { getServerApiUrl } from "./server-api-url";
 
-const API_URL =
-  process.env.BACKEND_URL_INTERNAL ??
-  process.env.API_URL_INTERNAL ??
-  process.env.NEXT_PUBLIC_API_URL ??
-  "http://localhost:3001";
+const API_URL = getServerApiUrl();
 
 function formatErrorMessage(value: unknown): string {
   if (!value) {

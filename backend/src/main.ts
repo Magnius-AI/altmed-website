@@ -28,7 +28,7 @@ async function bootstrap(): Promise<void> {
   app.use(helmet());
   app.use(cookieParser());
   app.enableCors({
-    origin: configService.get<string>("app.frontendUrl") ?? "http://localhost:3000",
+    origin: configService.get<string>("app.frontendUrl") ?? (isDevelopment ? "http://localhost:3000" : "https://altmedfirst.com"),
     credentials: true
   });
   app.use("/uploads", express.static(join(process.cwd(), "uploads")));

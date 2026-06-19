@@ -1,4 +1,5 @@
 const LOCAL_ORIGIN = "http://localhost:3000";
+export const PRODUCTION_ORIGIN = "https://altmedfirst.com";
 
 type HeaderReader = {
   get(name: string): string | null;
@@ -8,17 +9,28 @@ function stripLeadingWww(hostname: string) {
   return hostname.replace(/^www\./i, "");
 }
 
+function getDefaultOrigin() {
+  return process.env.NODE_ENV === "production" ? PRODUCTION_ORIGIN : LOCAL_ORIGIN;
+}
+
 function normalizeOrigin(value?: string | null) {
+  const fallback = getDefaultOrigin();
+
   if (!value) {
-    return LOCAL_ORIGIN;
+    return fallback;
   }
 
   try {
     const url = new URL(value.includes("://") ? value : `https://${value}`);
     url.hostname = stripLeadingWww(url.hostname.toLowerCase());
+
+    if (process.env.NODE_ENV === "production" && isLocalHost(url.host)) {
+      return PRODUCTION_ORIGIN;
+    }
+
     return url.origin;
   } catch {
-    return LOCAL_ORIGIN;
+    return fallback;
   }
 }
 
@@ -36,6 +48,14 @@ export function getConfiguredSiteOrigin() {
       process.env.FRONTEND_URL ??
       process.env.VERCEL_URL
   );
+}
+
+export function isProductionHost(host: string) {
+  return getCanonicalHost(host).split(":")[0] === new URL(PRODUCTION_ORIGIN).hostname;
+}
+
+export function shouldNoIndexHost(host: string) {
+  return !isLocalHost(host) && !isProductionHost(host);
 }
 
 export function getOriginFromHeaders(headersList: HeaderReader) {

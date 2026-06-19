@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, BriefcaseBusiness, Check, ClipboardCheck, HeartPulse, Scale, Smartphone, Star, Stethoscope } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, Check, ClipboardCheck, HeartPulse, MapPin, Scale, Smartphone, Stethoscope } from "lucide-react";
 import { BlogCard } from "@/components/public/BlogCard";
 import { FAQAccordion } from "@/components/public/FAQAccordion";
 import { SchemaOrg } from "@/components/public/SchemaOrg";
@@ -117,8 +117,8 @@ const featuredServices = [
     title: "Medical Weight Loss",
     image: legacyAssets.doctorsOverview,
     body:
-      "We prescribe FDA-approved semaglutide and tirzepatide injections alongside a coached nutrition plan, not a one-size-fits-all diet sheet. Patients average 10-15% body weight reduction within six months.",
-    stat: "10-15% average body weight reduction"
+      "We discuss GLP-1 options such as semaglutide and tirzepatide when clinically appropriate, alongside nutrition planning, safety review, and follow-up visits.",
+    stat: "Physician-guided follow-up"
   }
 ] as const;
 
@@ -139,7 +139,7 @@ const testimonials = [
   },
   {
     quote:
-      "I'd tried losing weight on my own for years. The semaglutide program here came with actual check-ins, not just a prescription and a goodbye. Down 22 lbs in four months.",
+      "I'd tried losing weight on my own for years. The program here came with actual check-ins, not just a prescription and a goodbye.",
     name: "Tanya P.",
     city: "Gainesville, VA"
   },
@@ -257,12 +257,8 @@ export default async function HomePage() {
               </a>
             </div>
             <a href={clinic.mapUrl} className="mt-7 inline-flex items-center gap-3 text-sm font-bold text-[var(--color-text)]">
-              <span className="inline-flex text-[var(--color-primary)]">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <Star key={index} className="h-4 w-4 fill-current" />
-                ))}
-              </span>
-              Rated 4.8 by 30+ patients on Google
+              <MapPin className="h-4 w-4 text-[var(--color-primary)]" />
+              View Altmed on Google Maps
             </a>
             <div className="mt-7 grid gap-x-5 gap-y-3 text-sm font-semibold text-[var(--color-text)] sm:grid-cols-2 lg:flex lg:flex-wrap">
               {["Board-Certified Providers", "Walk-Ins Welcome", "Same-Day Availability", "Telehealth Options"].map((item) => (
@@ -465,8 +461,8 @@ export default async function HomePage() {
             ))}
           </div>
           <a href={clinic.mapUrl} className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-[var(--c-primary)] hover:underline">
-            <Star className="h-4 w-4 fill-current" />
-            Based on 30+ Google Reviews
+            <MapPin className="h-4 w-4" />
+            View Altmed on Google Maps
           </a>
         </div>
       </section>
