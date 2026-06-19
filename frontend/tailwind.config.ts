@@ -34,7 +34,7 @@ const config: Config = {
         warning: "#D69E2E"
       },
       fontFamily: {
-        heading: ["Instrument Serif", "Georgia", "serif"],
+        heading: ["Libre Baskerville", "Georgia", "serif"],
         sans: ["Plus Jakarta Sans", "sans-serif"]
       }
     }

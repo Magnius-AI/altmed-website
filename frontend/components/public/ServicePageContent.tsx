@@ -312,7 +312,7 @@ export function ServicePageContent({ page }: Props) {
               <div className="section-label">
                 {experience?.eyebrow ?? page.name}
               </div>
-              <h1 className="mt-6 max-w-2xl break-words text-[2.05rem] leading-[1.08] sm:text-[2.45rem] md:text-[2.95rem] lg:text-[3.2rem]">
+              <h1 className="mt-6 max-w-2xl break-words text-[1.9rem] leading-[1.1] [text-wrap:pretty] sm:text-[2.25rem] md:text-[2.75rem] lg:text-[3rem]">
                 {heroTitle}
               </h1>
               <div className="prose-lite mt-5 max-w-none" dangerouslySetInnerHTML={{ __html: heroIntroHtml }} />
@@ -332,7 +332,7 @@ export function ServicePageContent({ page }: Props) {
                     return (
                       <div key={item.label} className="min-w-0 rounded-[14px] border border-[rgba(18,52,77,0.08)] bg-white p-4 sm:p-5">
                         <Icon className="h-5 w-5 text-[var(--color-primary)]" />
-                        <div className="mt-3 break-words text-[clamp(1.28rem,3.2vw,1.85rem)] font-semibold leading-tight text-[var(--color-text-dark)]">
+                        <div className="mt-3 break-words text-[clamp(1.16rem,2.4vw,1.55rem)] font-semibold leading-tight text-[var(--color-text-dark)]">
                           {item.value}
                         </div>
                         <div className="mt-2 text-sm leading-6 text-[var(--color-text-muted)]">{item.label}</div>
