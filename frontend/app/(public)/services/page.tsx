@@ -1,7 +1,16 @@
+import type { Metadata } from "next";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { buildPageMetadata } from "@/lib/metadata";
 import { serviceCards, publicRoutes } from "@/lib/site-content";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Medical Services Manassas VA | Urgent Care, Primary Care & Occupational Health | Altmed",
+  description:
+    "Browse Altmed Medical Center services in Manassas VA, including urgent care, primary care, DOT physicals, occupational health, medical weight loss, and telehealth.",
+  path: "/services"
+});
 
 export default function ServicesPage() {
   return (

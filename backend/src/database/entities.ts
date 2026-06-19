@@ -455,6 +455,39 @@ export class Provider {
   isActive!: boolean;
 }
 
+@Entity("google_reviews")
+export class GoogleReview {
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
+
+  @Column()
+  reviewerName!: string;
+
+  @Column({ type: "integer" })
+  rating!: number;
+
+  @Column("text")
+  reviewText!: string;
+
+  @Column({ type: "timestamp", nullable: true })
+  reviewDate!: Date | null;
+
+  @Column({ type: "varchar", nullable: true })
+  sourceUrl!: string | null;
+
+  @Column({ default: 0 })
+  displayOrder!: number;
+
+  @Column({ default: true })
+  isActive!: boolean;
+
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
+}
+
 @Entity("site_settings")
 export class SiteSettings {
   @PrimaryGeneratedColumn("uuid")

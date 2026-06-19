@@ -1,7 +1,7 @@
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { buildBookingUrl, clinic, legacyAssets, publicRoutes } from "@/lib/site-content";
+import { aiAssets, buildBookingUrl, clinic, legacyAssets, publicRoutes } from "@/lib/site-content";
 
 export function HeroSection() {
   return (
@@ -60,8 +60,8 @@ export function HeroSection() {
           <div className="relative overflow-hidden rounded-[14px] border border-white/10 bg-white/10 p-4">
             <div className="relative aspect-[4/5] overflow-hidden rounded-[12px]">
               <Image
-                src={legacyAssets.heroDoctor}
-                alt="Professional healthcare hero image"
+                src={aiAssets.primaryCareConsultation}
+                alt="Altmed patient consultation in Manassas"
                 fill
                 className="object-cover"
                 priority

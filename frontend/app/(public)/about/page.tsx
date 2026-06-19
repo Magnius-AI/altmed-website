@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Award, HeartHandshake, ShieldCheck } from "lucide-react";
 import { getProviders } from "@/lib/api";
 import { buildPageMetadata } from "@/lib/metadata";
-import { clinic, legacyAssets } from "@/lib/site-content";
+import { aiAssets, clinic, legacyAssets } from "@/lib/site-content";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "About Altmed Medical Center | Medical Clinic Manassas VA",
@@ -118,7 +118,7 @@ export default async function AboutPage() {
             {providers.map((provider) => (
               <article key={provider.id} className="rounded-[14px] border border-[rgba(18,52,77,0.08)] bg-white p-7">
                 <div className="relative h-24 w-24 overflow-hidden rounded-full">
-                  <Image src={provider.photo || legacyAssets.doctorOne} alt={provider.name} fill className="object-cover" />
+                  <Image src={provider.photo || aiAssets.providerFallback} alt={provider.name} fill className="object-cover" />
                 </div>
                 <h3 className="mt-5 text-2xl">{provider.name}</h3>
                 <p className="mt-2 text-sm font-semibold text-[var(--color-primary)]">

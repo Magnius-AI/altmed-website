@@ -77,6 +77,16 @@ export const legacyAssets = {
   testimonialPhoto: "/legacy-assets/testimonials/testimonial-1.jpg"
 } as const;
 
+export const aiAssets = {
+  primaryCareConsultation: "/images/ai-generated/primary-care-consultation.jpg",
+  occupationalHealthExam: "/images/ai-generated/occupational-health-exam.jpg",
+  medicalWeightLossConsult: "/images/ai-generated/medical-weight-loss-consult.jpg",
+  functionalMedicineConsult: "/images/ai-generated/functional-medicine-consult.jpg",
+  addictionSupportConsult: "/images/ai-generated/addiction-support-consult.jpg",
+  employerComplianceReview: "/images/ai-generated/employer-compliance-review.jpg",
+  providerFallback: "/images/ai-generated/provider-generic-clinical-tools.jpg"
+} as const;
+
 export const publicRoutes = {
   home: "/",
   about: "/about",
@@ -142,49 +152,49 @@ export const serviceCards = [
     slug: "urgent-care-manassas-va",
     title: "Urgent Care",
     description: "Walk-in urgent care for minor illness, infections, injuries, and same-day care in Manassas.",
-    image: "/images/homepage/new/same-day-care.webp",
+    image: aiAssets.primaryCareConsultation,
     shortDescription: "Walk-in care for sudden health needs."
   },
   {
     slug: "primary-care-manassas-va",
     title: "Primary Care",
     description: "Family and preventive care, chronic condition management, physicals, and routine medical visits.",
-    image: legacyAssets.departmentThree,
+    image: aiAssets.primaryCareConsultation,
     shortDescription: "General checkups and long-term care."
   },
   {
     slug: "occupational-health-clinic-manassas",
     title: "Occupational Health",
     description: "Employer-based screenings, injury follow-up, DOT support, and workforce health services.",
-    image: "/images/occupational/occ-med-3.jpg",
+    image: aiAssets.occupationalHealthExam,
     shortDescription: "Workplace and employer health services."
   },
   {
     slug: "dot-physical-manassas-va",
     title: "DOT Physicals",
     description: "FMCSA-compliant CDL exams with same-day availability for drivers and fleet operators.",
-    image: legacyAssets.departmentFive,
+    image: aiAssets.occupationalHealthExam,
     shortDescription: "CDL and FMCSA medical exams."
   },
   {
     slug: "occupational-health/drug-alcohol-testing-manassas",
     title: "Drug & Alcohol Testing",
     description: "Pre-employment, random, post-accident, and DOT-compliant testing for employers and individuals.",
-    image: legacyAssets.heroDoctor,
+    image: aiAssets.employerComplianceReview,
     shortDescription: "Drug screens and alcohol testing."
   },
   {
     slug: "pre-employment-physical-drug-test-manassas",
     title: "Pre-Employment Physicals",
     description: "Same-day job physicals, drug tests, and employer screening support for new-hire onboarding.",
-    image: legacyAssets.departmentThree,
+    image: aiAssets.occupationalHealthExam,
     shortDescription: "New-hire physicals and drug tests."
   },
   {
     slug: "occupational-health/workers-compensation-injury-care-manassas",
     title: "Workers' Compensation",
     description: "Same-day injury evaluation, return-to-work planning, and workers' comp documentation support.",
-    image: legacyAssets.departmentFour,
+    image: aiAssets.occupationalHealthExam,
     shortDescription: "Work injury evaluation and follow-up."
   },
   {
@@ -198,49 +208,49 @@ export const serviceCards = [
     slug: "medical-weight-loss-manassas",
     title: "Medical Weight Loss",
     description: "Physician-guided weight loss plans with medications, injections, nutrition support, and monitoring.",
-    image: legacyAssets.doctorsOverview,
+    image: aiAssets.medicalWeightLossConsult,
     shortDescription: "B-12, semaglutide, and coached programs."
   },
   {
     slug: "semaglutide-weight-loss-manassas",
     title: "Semaglutide & GLP-1 Weight Loss",
     description: "Semaglutide, tirzepatide, Ozempic, Wegovy, and GLP-1 weight-loss consultations in Manassas.",
-    image: "/images/homepage/new/comprehensive-weight-loss.webp",
+    image: aiAssets.medicalWeightLossConsult,
     shortDescription: "GLP-1 medication consultations."
   },
   {
     slug: "functional-medicine-manassas",
     title: "Functional Medicine",
     description: "Root-cause evaluation for chronic symptoms, lifestyle factors, and personalized health planning.",
-    image: legacyAssets.doctorThree,
+    image: aiAssets.functionalMedicineConsult,
     shortDescription: "Holistic root-cause care."
   },
   {
     slug: "suboxone-treatment-manassas",
     title: "Addiction Management",
     description: "Compassionate addiction treatment and Suboxone support in a judgment-free setting.",
-    image: legacyAssets.heroDoctor,
+    image: aiAssets.addictionSupportConsult,
     shortDescription: "Confidential recovery support."
   },
   {
     slug: "third-party-administrator-service-manassas",
     title: "TPA Services",
     description: "Third-party administrator support for DOT compliance, random pools, reporting, and employer drug-testing programs.",
-    image: legacyAssets.doctorOne,
+    image: aiAssets.employerComplianceReview,
     shortDescription: "Employer compliance and program administration."
   },
   {
     slug: "mro-services-manassas",
     title: "MRO Services",
     description: "Medical Review Officer services for DOT and workplace drug-testing program review.",
-    image: legacyAssets.doctorFour,
+    image: aiAssets.employerComplianceReview,
     shortDescription: "Medical review officer support."
   },
   {
     slug: "corporate-wellness-programs-manassas",
     title: "Corporate Wellness & Health Fairs",
     description: "Onsite screenings, wellness campaigns, and employer-focused health fair support.",
-    image: legacyAssets.heroBackdrop,
+    image: aiAssets.employerComplianceReview,
     shortDescription: "Workplace wellness programs."
   }
 ] as const;
@@ -266,7 +276,7 @@ export const servicePageFallbackContent: Record<
     metaTitle: "Urgent Care Manassas VA | Walk-In Clinic Open Now | Altmed Medical Center",
     metaDescription: "Walk-in urgent care in Manassas VA with no appointment needed. Treat infections, injuries, flu, strep, and more. Shorter waits than the ER. Board-certified providers. Call (703) 361-4357.",
     metaKeywords: "urgent care Manassas VA, walk in clinic Manassas VA, flu treatment in Manassas, flu vaccine in Manassas, urgent care near me",
-    featuredImage: legacyAssets.heroClinic
+    featuredImage: aiAssets.primaryCareConsultation
   },
   "primary-care-manassas-va": {
     name: "Primary Care",
@@ -277,7 +287,7 @@ export const servicePageFallbackContent: Record<
     metaTitle: "Primary Care Doctor Manassas VA | Walk-In & Same-Day | Altmed Medical Center",
     metaDescription: "Primary care in Manassas VA with same-day appointments and walk-in availability. Annual physicals, chronic disease management, preventive care, and medication management. (703) 361-4357.",
     metaKeywords: "primary care doctor Manassas VA, medication management Manassas, hormone disorders Manassas, clinicas en Manassas VA",
-    featuredImage: legacyAssets.departmentThree
+    featuredImage: aiAssets.primaryCareConsultation
   },
   "occupational-health-clinic-manassas": {
     name: "Occupational Health",
@@ -288,7 +298,7 @@ export const servicePageFallbackContent: Record<
     metaTitle: "Occupational Health Clinic Manassas VA | Worker Injury & DOT Services | Altmed",
     metaDescription: "Occupational health services in Manassas VA for employers and employees. Work injury treatment, DOT physicals, drug testing, pre-employment physicals, and return-to-work evaluations. (703) 361-4357.",
     metaKeywords: "occupational health clinic Manassas VA, occupational injury clinic, workers comp urgent care, DOT services Manassas, employer drug testing",
-    featuredImage: legacyAssets.heroBackdrop
+    featuredImage: aiAssets.occupationalHealthExam
   },
   "dot-physical-manassas-va": {
     name: "DOT Physicals",
@@ -299,7 +309,7 @@ export const servicePageFallbackContent: Record<
     metaTitle: "DOT Physical Exam Manassas VA | $50 CDL Medical Exam | Altmed Medical Center",
     metaDescription: "Get your DOT/CDL physical exam in Manassas VA — FMCSA-certified medical examiners, same-day appointments, and results on the spot. Affordable pricing. Call (703) 361-4357.",
     metaKeywords: "$50 dot physical near me, DOT physical exam Manassas VA, CDL medical exam, FMCSA medical examiner, DOT clearance forms",
-    featuredImage: legacyAssets.departmentFive
+    featuredImage: aiAssets.occupationalHealthExam
   },
   "occupational-health/drug-alcohol-testing-manassas": {
     name: "Drug and Alcohol Testing",
@@ -310,7 +320,7 @@ export const servicePageFallbackContent: Record<
     metaTitle: "Drug & Alcohol Testing Manassas VA | DOT & Non-DOT | Altmed Medical Center",
     metaDescription: "Pre-employment, random, and post-accident drug and alcohol testing in Manassas VA. DOT-compliant, fast results, employer accounts available. Walk-in welcome. (703) 361-4357.",
     metaKeywords: "drug testing near me Manassas, alcohol testing near me, DOT testing near me, drug and alcohol testing Manassas VA",
-    featuredImage: legacyAssets.heroDoctor
+    featuredImage: aiAssets.employerComplianceReview
   },
   "occupational-health/workers-compensation-injury-care-manassas": {
     name: "Workers' Compensation",
@@ -343,7 +353,7 @@ export const servicePageFallbackContent: Record<
     metaTitle: "Pre Employment Physical & Drug Test | Manassas, VA",
     metaDescription: "Pre-employment physicals and drug testing in Manassas, VA for employers and job candidates, including vision, hearing, vitals, and workplace screening.",
     metaKeywords: "pre employment physical Manassas, pre employment drug screening, occupational physical, job physical exam",
-    featuredImage: legacyAssets.departmentThree
+    featuredImage: aiAssets.occupationalHealthExam
   },
   "pre-employment-physical-drug-test-manassas": {
     name: "Pre-Employment Physical & Drug Test",
@@ -354,7 +364,7 @@ export const servicePageFallbackContent: Record<
     metaTitle: "Pre-Employment Physical & Drug Test Manassas VA | Same-Day | Altmed",
     metaDescription: "Same-day pre-employment physicals and drug tests in Manassas VA for employers and job candidates. Fast paperwork, drug screening, and account setup.",
     metaKeywords: "pre employment physical Manassas VA, pre employment drug test Manassas, same day job physical, employer physicals Manassas",
-    featuredImage: legacyAssets.departmentThree
+    featuredImage: aiAssets.occupationalHealthExam
   },
   "occupational-health/lab-testing-manassas": {
     name: "Lab Testing",
@@ -365,7 +375,7 @@ export const servicePageFallbackContent: Record<
     metaTitle: "Lab Testing Manassas VA | Blood Work & Occupational Health Tests | Altmed",
     metaDescription: "Lab testing in Manassas VA for blood work, urinalysis, drug screening, occupational health tests, and routine diagnostics at Altmed Medical Center.",
     metaKeywords: "lab testing Manassas, blood work Manassas, drug screening, urinalysis, lab tests near me",
-    featuredImage: legacyAssets.heroDoctor
+    featuredImage: aiAssets.occupationalHealthExam
   },
   "occupational-health/breath-alcohol-test-manassas": {
     name: "Breath Alcohol Testing",
@@ -376,7 +386,7 @@ export const servicePageFallbackContent: Record<
     metaTitle: "Breath Alcohol Test Manassas | DOT & Workplace Testing – Altmed",
     metaDescription: "Breath alcohol testing in Manassas, VA for DOT compliance, workplace testing, post-accident evaluation, and employer programs.",
     metaKeywords: "breath alcohol test Manassas, BAT testing, DOT alcohol test, workplace alcohol screening",
-    featuredImage: legacyAssets.heroBackdrop
+    featuredImage: aiAssets.employerComplianceReview
   },
   "occupational-health/xray-service": {
     name: "X-Ray Services",
@@ -393,11 +403,11 @@ export const servicePageFallbackContent: Record<
     heroContent:
       "<h1>Medical Weight Loss Programs in Manassas, VA — Physician-Supervised, Real Results</h1><p>Physician-supervised weight loss with semaglutide, tirzepatide, B-12 injections, phentermine conversations, metabolic review, nutrition support, and structured follow-up.</p>",
     bodyContent:
-      "<h2>Physician-supervised weight loss in Manassas</h2><p>Altmed Medical Center helps patients who want more than a generic diet plan or an online prescription. The program starts with medical history, weight history, metabolic risk review, medication safety screening, goals, nutrition, activity, and follow-up planning.</p><h2>Semaglutide and GLP-1 weight loss</h2><p>Patients searching for semaglutide Manassas, Ozempic Manassas, Wegovy injections Manassas, and GLP-1 programs often want to understand whether medication is appropriate. Semaglutide is a GLP-1 medication class that can reduce appetite and support weight loss for qualified patients under medical supervision. Brand-name medications such as Ozempic and Wegovy have different FDA indications and insurance rules, so the right conversation starts with your health history.</p><h2>Tirzepatide and Mounjaro conversations</h2><p>Tirzepatide is another injectable medication class patients may ask about when comparing semaglutide vs tirzepatide or Mounjaro-style options. Altmed discusses benefits, risks, contraindications, expected follow-up, and realistic goals rather than treating injections as a quick fix.</p><h2>B-12 injections for weight loss support</h2><p>B-12 injections may be used as part of a broader wellness or weight-loss plan for selected patients. They are not a substitute for nutrition, activity, or medication review, but they can fit into a supervised program when the provider feels they are appropriate.</p><h2>Phentermine and appetite-control medication</h2><p>Patients searching for phentermine weight loss in Northern Virginia should be medically evaluated before using stimulant-style appetite medication. Blood pressure, heart history, current prescriptions, anxiety, sleep, and other risks matter. Altmed can discuss whether phentermine or a different plan is safer for your situation.</p><h2>Am I a candidate?</h2><ul><li>You have a BMI in a range where medical weight-loss treatment may be appropriate</li><li>You have weight-related health risks such as high blood pressure, prediabetes, diabetes, sleep apnea, or high cholesterol</li><li>You want provider monitoring instead of a one-time online order</li><li>You are ready for follow-up visits, nutrition changes, and long-term planning</li></ul><h2>Pricing and insurance transparency</h2><p>Coverage varies by medication, diagnosis, insurance plan, and pharmacy benefit. Altmed explains visit costs, self-pay options, and prescription considerations before treatment begins. Call <a href='tel:+17033614357'>(703) 361-4357</a> for current program pricing.</p><h2>Patient journey examples</h2><p>HIPAA-conscious stories help patients picture the process: Tanya from Gainesville used structured follow-ups and GLP-1 support to rebuild confidence after years of diet-only attempts. Maria from Manassas focused on appetite, meal timing, and lab follow-up. James used provider accountability to lower weight-related risk before a primary care follow-up. Individual results vary, and the best plan is personalized.</p><p>Helpful next steps: compare options on the <a href='/services/semaglutide-weight-loss-manassas'>semaglutide and GLP-1 page</a>, read the <a href='/health-blogs/semaglutide-glp-1-weight-loss-treatment-in-manassas-va'>semaglutide guide</a>, book an <a href='/appointment?service=medical-visit'>appointment</a>, or ask whether a <a href='/telehealth-manassas'>telehealth weight-loss consultation</a> is appropriate.</p>",
+      "<h2>Physician-supervised weight loss in Manassas</h2><p>Altmed Medical Center helps patients who want more than a generic diet plan or an online prescription. The program starts with medical history, weight history, metabolic risk review, medication safety screening, goals, nutrition, activity, and follow-up planning.</p><h2>Semaglutide and GLP-1 weight loss</h2><p>Patients searching for semaglutide Manassas, Ozempic Manassas, Wegovy injections Manassas, and GLP-1 programs often want to understand whether medication is appropriate. Semaglutide is a GLP-1 medication class that can reduce appetite and support weight loss for qualified patients under medical supervision. Brand-name medications such as Ozempic and Wegovy have different FDA indications and insurance rules, so the right conversation starts with your health history.</p><h2>Tirzepatide and Mounjaro conversations</h2><p>Tirzepatide is another injectable medication class patients may ask about when comparing semaglutide vs tirzepatide or Mounjaro-style options. Altmed discusses benefits, risks, contraindications, expected follow-up, and realistic goals rather than treating injections as a quick fix.</p><h2>B-12 injections for weight loss support</h2><p>B-12 injections may be used as part of a broader wellness or weight-loss plan for selected patients. They are not a substitute for nutrition, activity, or medication review, but they can fit into a supervised program when the provider feels they are appropriate.</p><h2>Phentermine and appetite-control medication</h2><p>Patients searching for phentermine weight loss in Northern Virginia should be medically evaluated before using stimulant-style appetite medication. Blood pressure, heart history, current prescriptions, anxiety, sleep, and other risks matter. Altmed can discuss whether phentermine or a different plan is safer for your situation.</p><h2>Am I a candidate?</h2><ul><li>You have a BMI in a range where medical weight-loss treatment may be appropriate</li><li>You have weight-related health risks such as high blood pressure, prediabetes, diabetes, sleep apnea, or high cholesterol</li><li>You want provider monitoring instead of a one-time online order</li><li>You are ready for follow-up visits, nutrition changes, and long-term planning</li></ul><h2>Pricing and insurance transparency</h2><p>Coverage varies by medication, diagnosis, insurance plan, and pharmacy benefit. Altmed explains visit costs, self-pay options, and prescription considerations before treatment begins. Call <a href='tel:+17033614357'>(703) 361-4357</a> for current program pricing.</p><h2>What follow-up can include</h2><p>Medical weight-loss care usually works best with regular check-ins, nutrition review, medication-safety monitoring, and realistic adjustments when progress is slower or faster than expected. Individual results vary, and the best plan is personalized to the patient's health history and goals.</p><p>Helpful next steps: compare options on the <a href='/services/semaglutide-weight-loss-manassas'>semaglutide and GLP-1 page</a>, read the <a href='/health-blogs/semaglutide-glp-1-weight-loss-treatment-in-manassas-va'>semaglutide guide</a>, book an <a href='/appointment?service=medical-visit'>appointment</a>, or ask whether a <a href='/telehealth-manassas'>telehealth weight-loss consultation</a> is appropriate.</p>",
     metaTitle: "Medical Weight Loss Manassas VA | Semaglutide & GLP-1 Programs | Altmed",
     metaDescription: "Physician-supervised weight loss in Manassas VA. Semaglutide (Ozempic/Wegovy), tirzepatide, B-12 injections, and personalized plans. Real results with medical support. Call (703) 361-4357.",
     metaKeywords: "medical weight loss Manassas VA, semaglutide Manassas, Ozempic Manassas, Wegovy injections Manassas, tirzepatide Manassas, phentermine Northern Virginia",
-    featuredImage: legacyAssets.doctorsOverview
+    featuredImage: aiAssets.medicalWeightLossConsult
   },
   "semaglutide-weight-loss-manassas": {
     name: "Semaglutide & GLP-1 Weight Loss",
@@ -408,7 +418,7 @@ export const servicePageFallbackContent: Record<
     metaTitle: "Semaglutide Weight Loss Manassas VA | Ozempic, Wegovy & GLP-1 | Altmed",
     metaDescription: "Semaglutide and GLP-1 weight loss in Manassas VA. Ask Altmed about Ozempic, Wegovy, tirzepatide, costs, candidacy, and physician monitoring.",
     metaKeywords: "semaglutide Manassas, Ozempic Manassas, Wegovy injections Manassas, tirzepatide Manassas, GLP-1 Manassas",
-    featuredImage: "/images/homepage/new/comprehensive-weight-loss.webp"
+    featuredImage: aiAssets.medicalWeightLossConsult
   },
   "functional-medicine-manassas": {
     name: "Functional Medicine",
@@ -419,7 +429,7 @@ export const servicePageFallbackContent: Record<
     metaTitle: "Functional Medicine Doctor Manassas VA | Root Cause Care | Altmed Medical Center",
     metaDescription: "Functional medicine doctor in Manassas VA for root-cause care, hormone disorders, fatigue, gut symptoms, metabolic concerns, and personalized wellness planning.",
     metaKeywords: "functional medicine doctor Manassas VA, functional medicine doctor near me, hormone disorders Manassas, root cause care Manassas",
-    featuredImage: legacyAssets.doctorThree
+    featuredImage: aiAssets.functionalMedicineConsult
   },
   "suboxone-treatment-manassas": {
     name: "Suboxone Treatment",
@@ -430,7 +440,7 @@ export const servicePageFallbackContent: Record<
     metaTitle: "Suboxone Treatment Manassas VA | Addiction Medicine | Altmed Medical Center",
     metaDescription: "Suboxone and buprenorphine treatment for opioid addiction in Manassas VA. Confidential, compassionate care from board-certified providers. Same-day evaluations available. (703) 361-4357.",
     metaKeywords: "Suboxone treatment Manassas, addiction management, opioid recovery, suboxone doctor",
-    featuredImage: legacyAssets.heroDoctor
+    featuredImage: aiAssets.addictionSupportConsult
   },
   "third-party-administrator-service-manassas": {
     name: "TPA Services",
@@ -441,7 +451,7 @@ export const servicePageFallbackContent: Record<
     metaTitle: "TPA Services in Manassas | Employer Drug Testing & Compliance",
     metaDescription: "Third-party administrator services in Manassas, VA for employer drug testing, DOT compliance, random pools, and occupational health program support.",
     metaKeywords: "TPA services Manassas, third party administrator service, employer drug testing, DOT compliance",
-    featuredImage: legacyAssets.doctorOne
+    featuredImage: aiAssets.employerComplianceReview
   },
   "mro-services-manassas": {
     name: "MRO Services",
@@ -452,7 +462,7 @@ export const servicePageFallbackContent: Record<
     metaTitle: "MRO Services Manassas | DOT Drug Test Review",
     metaDescription: "Medical Review Officer services in Manassas for DOT and workplace drug-testing compliance.",
     metaKeywords: "MRO services Manassas, medical review officer, DOT drug test review",
-    featuredImage: legacyAssets.doctorFour
+    featuredImage: aiAssets.employerComplianceReview
   },
   "corporate-wellness-programs-manassas": {
     name: "Corporate Wellness Programs",
@@ -462,7 +472,7 @@ export const servicePageFallbackContent: Record<
     metaTitle: "Corporate Wellness Programs in Manassas | Onsite Health Fairs",
     metaDescription: "Corporate wellness programs and onsite health fairs in Manassas, VA for employers, schools, and HR teams.",
     metaKeywords: "corporate wellness programs Manassas, health fairs, employer wellness, onsite screenings",
-    featuredImage: legacyAssets.heroBackdrop
+    featuredImage: aiAssets.employerComplianceReview
   }
 };
 
@@ -513,7 +523,7 @@ export const serviceExperienceContent: Record<
           "Convenient follow-up planning when a patient also needs primary care support",
           "A local clinic identity that helps build trust with returning patients"
         ],
-        image: legacyAssets.heroDoctor
+        image: aiAssets.primaryCareConsultation
       }
     ]
   },
@@ -539,7 +549,7 @@ export const serviceExperienceContent: Record<
           "Support for diabetes, blood pressure, thyroid concerns, and everyday health maintenance",
           "A practical option for new patients who want easier access in Manassas"
         ],
-        image: legacyAssets.departmentThree
+        image: aiAssets.primaryCareConsultation
       },
       {
         title: "Designed for real life in Northern Virginia",
@@ -576,7 +586,7 @@ export const serviceExperienceContent: Record<
           "Workers' compensation evaluation and return-to-work communication",
           "Preventive screenings, vaccines, and workforce wellness planning"
         ],
-        image: legacyAssets.heroBackdrop
+        image: aiAssets.occupationalHealthExam
       },
       {
         title: "Built for both urgent issues and ongoing employer programs",
@@ -587,7 +597,7 @@ export const serviceExperienceContent: Record<
           "Faster workflows that help reduce delays for employees and supervisors",
           "Straightforward communication with employers about next steps and restrictions"
         ],
-        image: legacyAssets.doctorFour
+        image: aiAssets.employerComplianceReview
       }
     ]
   },
@@ -613,7 +623,7 @@ export const serviceExperienceContent: Record<
           "Blood pressure, pulse, urinalysis, and general physical exam",
           "Medical history review with attention to documentation that may be needed for clearance"
         ],
-        image: legacyAssets.departmentThree
+        image: aiAssets.occupationalHealthExam
       },
       {
         title: "Come prepared and avoid unnecessary delays",
@@ -624,7 +634,7 @@ export const serviceExperienceContent: Record<
           "Have a current medication list available",
           "If you use corrective lenses or hearing devices, bring them to the exam"
         ],
-        image: legacyAssets.heroDoctor
+        image: aiAssets.occupationalHealthExam
       }
     ]
   },
@@ -650,7 +660,7 @@ export const serviceExperienceContent: Record<
           "Helps employers keep hiring and compliance workflows moving",
           "Useful for local transportation, logistics, construction, and safety-sensitive roles"
         ],
-        image: legacyAssets.heroBackdrop
+        image: aiAssets.employerComplianceReview
       },
       {
         title: "Clear handling for both employers and individual patients",
@@ -661,7 +671,7 @@ export const serviceExperienceContent: Record<
           "Urine, oral-fluid, and alcohol-related workflows as needed",
           "A local option for patients who do not want the friction of a distant testing center"
         ],
-        image: legacyAssets.departmentThree
+        image: aiAssets.employerComplianceReview
       }
     ]
   },
@@ -687,7 +697,7 @@ export const serviceExperienceContent: Record<
           "Communication around restrictions, progress, and next steps",
           "Support for getting employees back to work safely rather than prematurely"
         ],
-        image: legacyAssets.doctorOne
+        image: aiAssets.occupationalHealthExam
       },
       {
         title: "A practical local choice for injured workers",
@@ -761,7 +771,7 @@ export const serviceExperienceContent: Record<
           "Useful for physically demanding, regulated, or safety-sensitive positions",
           "Employer paperwork and job-specific requirements can be incorporated into the visit"
         ],
-        image: legacyAssets.departmentThree
+        image: aiAssets.occupationalHealthExam
       },
       {
         title: "Prepared visits lead to fewer delays",
@@ -772,7 +782,7 @@ export const serviceExperienceContent: Record<
           "Can be paired with drug screening and related occupational services",
           "Part of the broader employer-services infrastructure at Altmed"
         ],
-        image: legacyAssets.heroDoctor
+        image: aiAssets.occupationalHealthExam
       }
     ]
   },
@@ -798,7 +808,7 @@ export const serviceExperienceContent: Record<
           "Drug-screen and occupational-health related lab workflows",
           "Useful for both routine and problem-focused visits"
         ],
-        image: legacyAssets.departmentThree
+        image: aiAssets.occupationalHealthExam
       },
       {
         title: "Practical for patients who want fewer extra stops",
@@ -835,7 +845,7 @@ export const serviceExperienceContent: Record<
           "Relevant for DOT and other safety-sensitive programs",
           "Built to reduce friction when employers need answers promptly"
         ],
-        image: legacyAssets.heroBackdrop
+        image: aiAssets.employerComplianceReview
       },
       {
         title: "Why employers want a dependable local option",
@@ -846,7 +856,7 @@ export const serviceExperienceContent: Record<
           "Supports better coordination with broader occupational services",
           "Can be part of a larger employer testing and compliance relationship"
         ],
-        image: legacyAssets.heroDoctor
+        image: aiAssets.employerComplianceReview
       }
     ]
   },
@@ -872,7 +882,7 @@ export const serviceExperienceContent: Record<
           "Nutrition support and realistic activity planning",
           "Medication conversations handled under physician supervision rather than guesswork"
         ],
-        image: legacyAssets.doctorTwo
+        image: aiAssets.medicalWeightLossConsult
       },
       {
         title: "A better fit for patients comparing GLP-1 options in Manassas",
@@ -883,7 +893,7 @@ export const serviceExperienceContent: Record<
           "Can be paired with B-12 or lipotropic support as part of a larger plan",
           "Designed to help patients understand next steps before they commit"
         ],
-        image: legacyAssets.heroDoctor
+        image: aiAssets.medicalWeightLossConsult
       }
     ]
   },
@@ -909,7 +919,7 @@ export const serviceExperienceContent: Record<
           "Discussion of nutrition, sleep, stress, and other health patterns",
           "Care planning that complements ongoing primary or specialty care"
         ],
-        image: legacyAssets.doctorThree
+        image: aiAssets.functionalMedicineConsult
       },
       {
         title: "Personalized plans rather than generic advice",
@@ -946,7 +956,7 @@ export const serviceExperienceContent: Record<
           "Medication-assisted treatment support when clinically appropriate",
           "A clinic environment designed to be respectful, local, and accessible"
         ],
-        image: legacyAssets.heroDoctor
+        image: aiAssets.addictionSupportConsult
       },
       {
         title: "Support that fits real life",
@@ -957,7 +967,7 @@ export const serviceExperienceContent: Record<
           "Telehealth follow-up can reduce barriers for some ongoing visits",
           "Focused on stabilizing care and helping patients rebuild momentum"
         ],
-        image: legacyAssets.doctorsOverview
+        image: aiAssets.addictionSupportConsult
       }
     ]
   },
@@ -983,7 +993,7 @@ export const serviceExperienceContent: Record<
           "Useful for transportation, logistics, construction, and similar employers",
           "Supports a smoother relationship between compliance requirements and day-to-day operations"
         ],
-        image: legacyAssets.doctorOne
+        image: aiAssets.employerComplianceReview
       },
       {
         title: "Designed to work alongside occupational health and MRO workflows",
@@ -994,7 +1004,7 @@ export const serviceExperienceContent: Record<
           "Helpful for employers who want one point of contact where possible",
           "Supports both compliance and employee workflow efficiency"
         ],
-        image: legacyAssets.heroBackdrop
+        image: aiAssets.employerComplianceReview
       }
     ]
   },
@@ -1020,7 +1030,7 @@ export const serviceExperienceContent: Record<
           "Protects confidentiality while clarifying result interpretation",
           "Useful for DOT, transportation, and other regulated employers"
         ],
-        image: legacyAssets.doctorFour
+        image: aiAssets.employerComplianceReview
       },
       {
         title: "Part of a broader employer-services system",
@@ -1031,7 +1041,7 @@ export const serviceExperienceContent: Record<
           "Helps businesses keep compliance programs organized",
           "Offers a more complete local solution for employer health operations"
         ],
-        image: legacyAssets.doctorOne
+        image: aiAssets.employerComplianceReview
       }
     ]
   },
@@ -1057,7 +1067,7 @@ export const serviceExperienceContent: Record<
           "Can include nutrition, stress, burnout, fitness, and preventive-health topics",
           "Useful for one-time events or longer-term wellness planning"
         ],
-        image: legacyAssets.heroBackdrop
+        image: aiAssets.employerComplianceReview
       },
       {
         title: "A stronger retention and culture story for employers",
@@ -1068,7 +1078,7 @@ export const serviceExperienceContent: Record<
           "Can be paired with occupational testing and preventive services",
           "Built for local employers who want a flexible, clinic-based partner"
         ],
-        image: legacyAssets.doctorTwo
+        image: aiAssets.employerComplianceReview
       }
     ]
   }
@@ -1520,29 +1530,7 @@ export const blogCategories = [
   "Addiction Management"
 ];
 
-export const homepageTestimonials = [
-  {
-    quote:
-      "We were in and out quickly, and the provider explained the treatment plan clearly. It felt far more personal than a chain urgent care.",
-    name: "Maria",
-    location: "Manassas",
-    source: "Urgent Care"
-  },
-  {
-    quote:
-      "Our team uses Altmed for DOT and workplace services because they make the process simple and responsive.",
-    name: "James",
-    location: "Prince William County",
-    source: "Employer Client"
-  },
-  {
-    quote:
-      "The weight management program felt structured, realistic, and medically supervised rather than generic.",
-    name: "Tanya",
-    location: "Gainesville",
-    source: "Weight Loss"
-  }
-] as const;
+export const homepageTestimonials = [] as const;
 
 export const featuredDoctors = [
   {
@@ -1550,21 +1538,21 @@ export const featuredDoctors = [
     specialty: "Medical Director",
     experience: "20+ years",
     cta: "Schedule with Dr. Lee",
-    image: legacyAssets.doctorOne
+    image: aiAssets.providerFallback
   },
   {
     name: "Garima Pokhrel, FNP-C, MSN",
     specialty: "Medical Provider",
     experience: "Primary & Occupational Care",
     cta: "Schedule with Garima",
-    image: legacyAssets.doctorTwo
+    image: aiAssets.providerFallback
   },
   {
     name: "Madhu Panthi",
     specialty: "Medical Provider Assistant",
     experience: "Patient Support & Clinical Coordination",
     cta: "Meet Our Team",
-    image: legacyAssets.doctorsOverview
+    image: aiAssets.providerFallback
   }
 ] as const;
 
@@ -1937,6 +1925,7 @@ export const adminNav: AdminNavGroup[] = [
       { href: "/admin/blog/categories", label: "Categories" },
       { href: "/admin/blog/tags", label: "Tags" },
       { href: "/admin/faq", label: "FAQs" },
+      { href: "/admin/google-reviews", label: "Google Reviews" },
       { href: "/admin/announcements", label: "Notices & Updates" }
     ]
   },

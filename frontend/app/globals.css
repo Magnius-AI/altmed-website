@@ -66,6 +66,12 @@
   --leading-loose: 1.75;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
@@ -80,12 +86,6 @@ body {
   letter-spacing: 0;
   text-wrap: pretty;
   overflow-x: hidden;
-}
-
-@media (max-width: 1023px) {
-  body {
-    padding-bottom: 68px;
-  }
 }
 
 ::selection {
@@ -175,8 +175,23 @@ a {
     transform 180ms ease;
 }
 
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+main,
+main section,
+main article,
+main aside,
+main div {
+  min-width: 0;
+}
+
 .container-shell {
-  @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+  @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
 }
 
 .skip-link {
@@ -185,6 +200,10 @@ a {
 
 .focus-ring {
   @apply outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg-white)];
+}
+
+summary::-webkit-details-marker {
+  display: none;
 }
 
 .section-pad {
@@ -228,6 +247,17 @@ a {
   border-radius: var(--radius-sm);
   line-height: 1.25;
   box-shadow: none;
+}
+
+@media (max-width: 420px) {
+  .btn {
+    width: 100%;
+    justify-content: center;
+    white-space: normal;
+    padding-inline: 0.9rem;
+    text-align: center;
+    letter-spacing: 0.06em;
+  }
 }
 
 .btn-primary {
@@ -446,10 +476,6 @@ a {
 .nav-link:focus-visible::after,
 .nav-link-active::after {
   transform: scaleX(1);
-}
-
-.mobile-action-bar {
-  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
 }
 
 .prose-lite ul,

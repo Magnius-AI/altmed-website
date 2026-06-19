@@ -1,7 +1,7 @@
 import Image from "next/image";
 import type { Route } from "next";
 import Link from "next/link";
-import { publicRoutes } from "@/lib/site-content";
+import { aiAssets, publicRoutes } from "@/lib/site-content";
 
 type Props = {
   post: {
@@ -22,7 +22,7 @@ export function BlogCard({ post }: Props) {
     <article className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-white transition hover:-translate-y-1">
       <div className="relative h-48 bg-[var(--color-surface-alt)]">
         <Image
-          src={post.featuredImage ?? "/legacy-assets/homepage/top.jpg"}
+          src={post.featuredImage ?? aiAssets.primaryCareConsultation}
           alt={`${post.title} from Altmed Medical Center in Manassas VA`}
           fill
           className="site-photo object-cover transition duration-300 hover:scale-[1.03]"

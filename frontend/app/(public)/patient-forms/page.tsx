@@ -5,9 +5,9 @@ import type { Route } from "next";
 import { ArrowDownToLine, ExternalLink, FileStack, FolderOpen, ShieldCheck } from "lucide-react";
 import { buildPageMetadata } from "@/lib/metadata";
 import {
+  aiAssets,
   clinic,
   formsSections,
-  legacyAssets,
   preservedPdfDownloads,
   publicRoutes
 } from "@/lib/site-content";
@@ -17,7 +17,7 @@ export const metadata: Metadata = buildPageMetadata({
   description:
     "Download patient, occupational health, DOT clearance, addiction, wellness, and medical-release forms from Altmed Medical Center in Manassas, VA.",
   path: "/patient-forms",
-  image: legacyAssets.doctorsOverview
+  image: aiAssets.providerFallback
 });
 
 export default function PatientFormsPage() {
@@ -55,8 +55,8 @@ export default function PatientFormsPage() {
           </div>
           <div className="relative min-h-[380px] overflow-hidden rounded-[18px] border border-[rgba(18,52,77,0.08)]">
             <Image
-              src={legacyAssets.doctorsOverview}
-              alt="Altmed Medical Center care team and patient services"
+              src={aiAssets.providerFallback}
+              alt="Altmed Medical Center patient forms and clinical paperwork"
               fill
               className="object-cover"
             />

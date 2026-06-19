@@ -4,13 +4,15 @@ import Link from "next/link";
 import { FAQAccordion } from "@/components/public/FAQAccordion";
 import { SchemaOrg } from "@/components/public/SchemaOrg";
 import { FaqItem, getFaqSchema, getFaqs } from "@/lib/api";
+import { buildPageMetadata } from "@/lib/metadata";
 import { buildBookingUrl, publicRoutes } from "@/lib/site-content";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildPageMetadata({
   title: "FAQs | Altmed Medical Center in Manassas, VA",
   description:
-    "Read frequently asked questions about Altmed Medical Center, including urgent care, appointments, occupational health, insurance, and services in Manassas, Virginia."
-};
+    "Read frequently asked questions about Altmed Medical Center, including urgent care, appointments, occupational health, insurance, and services in Manassas, Virginia.",
+  path: "/faq"
+});
 
 export default async function FaqPage() {
   const [faqs, schema] = await Promise.all([getFaqs(), getFaqSchema()]);

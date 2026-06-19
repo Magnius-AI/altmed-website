@@ -13,9 +13,7 @@ function getDefaultOrigin() {
   return process.env.NODE_ENV === "production" ? PRODUCTION_ORIGIN : LOCAL_ORIGIN;
 }
 
-function normalizeOrigin(value?: string | null) {
-  const fallback = getDefaultOrigin();
-
+function normalizeOrigin(value?: string | null, fallback = getDefaultOrigin()) {
   if (!value) {
     return fallback;
   }
@@ -25,7 +23,7 @@ function normalizeOrigin(value?: string | null) {
     url.hostname = stripLeadingWww(url.hostname.toLowerCase());
 
     if (process.env.NODE_ENV === "production" && isLocalHost(url.host)) {
-      return PRODUCTION_ORIGIN;
+      return fallback;
     }
 
     return url.origin;
@@ -39,19 +37,27 @@ export function isLocalHost(host: string) {
   return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "0.0.0.0" || hostname === "[::1]";
 }
 
-export function getConfiguredSiteOrigin() {
-  return normalizeOrigin(
+function getConfiguredOriginValue() {
+  return (
     process.env.NEXT_PUBLIC_SITE_URL ??
-      process.env.NEXT_PUBLIC_APP_URL ??
-      process.env.SITE_URL ??
-      process.env.APP_URL ??
-      process.env.FRONTEND_URL ??
-      process.env.VERCEL_URL
+    process.env.NEXT_PUBLIC_APP_URL ??
+    process.env.SITE_URL ??
+    process.env.APP_URL ??
+    process.env.FRONTEND_URL ??
+    process.env.VERCEL_URL
   );
 }
 
+export function getConfiguredSiteOrigin() {
+  return normalizeOrigin(getConfiguredOriginValue());
+}
+
+function getConfiguredProductionOrigin() {
+  return normalizeOrigin(getConfiguredOriginValue(), PRODUCTION_ORIGIN);
+}
+
 export function isProductionHost(host: string) {
-  return getCanonicalHost(host).split(":")[0] === new URL(PRODUCTION_ORIGIN).hostname;
+  return getCanonicalHost(host).split(":")[0] === new URL(getConfiguredProductionOrigin()).hostname;
 }
 
 export function shouldNoIndexHost(host: string) {
