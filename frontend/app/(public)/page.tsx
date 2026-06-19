@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, BriefcaseBusiness, Check, ClipboardCheck, HeartPulse, MapPin, Scale, Smartphone, Stethoscope } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, Check, ClipboardCheck, HeartPulse, MapPin, Scale, Smartphone, Star, Stethoscope } from "lucide-react";
 import { BlogCard } from "@/components/public/BlogCard";
 import { FAQAccordion } from "@/components/public/FAQAccordion";
 import { SchemaOrg } from "@/components/public/SchemaOrg";
-import { getBlogPosts } from "@/lib/api";
+import { getBlogPosts, getGoogleReviews } from "@/lib/api";
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildFaqSchema } from "@/lib/schema";
-import { buildBookingUrl, clinic, legacyAssets, publicRoutes, serviceCards } from "@/lib/site-content";
+import { aiAssets, buildBookingUrl, clinic, legacyAssets, publicRoutes, serviceCards } from "@/lib/site-content";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Walk-In Clinic Manassas VA | Same-Day Urgent Care | Altmed Medical Center",
@@ -59,7 +59,7 @@ const careCards = [
 ] as const;
 
 const trustStats = [
-  "15+ Years Serving Manassas",
+  "25+ Years Serving Manassas",
   "Board-Certified Physicians",
   "10+ Services Under One Roof",
   "Same-Day Appointments",
@@ -99,7 +99,7 @@ const featuredServices = [
   {
     slug: "urgent-care-manassas-va",
     title: "Urgent Care",
-    image: legacyAssets.departmentThree,
+    image: aiAssets.primaryCareConsultation,
     body:
       "Most patients are seen the same day, without an appointment. We treat respiratory infections, sprains, lacerations, UTIs, rashes, and over 50 common conditions so you can get care without a three-hour ER wait.",
     stat: "50+ common conditions treated"
@@ -107,7 +107,7 @@ const featuredServices = [
   {
     slug: "dot-physical-manassas-va",
     title: "DOT Physicals",
-    image: legacyAssets.departmentFive,
+    image: aiAssets.occupationalHealthExam,
     body:
       "Our FMCSA-certified medical examiner conducts CDL physicals, vision and hearing tests, and urinalysis on-site. Most drivers are in and out in under an hour with their medical certificate in hand.",
     stat: "FMCSA-certified examiner"
@@ -115,7 +115,7 @@ const featuredServices = [
   {
     slug: "medical-weight-loss-manassas",
     title: "Medical Weight Loss",
-    image: legacyAssets.doctorsOverview,
+    image: aiAssets.medicalWeightLossConsult,
     body:
       "We discuss GLP-1 options such as semaglutide and tirzepatide when clinically appropriate, alongside nutrition planning, safety review, and follow-up visits.",
     stat: "Physician-guided follow-up"
@@ -123,39 +123,6 @@ const featuredServices = [
 ] as const;
 
 const providerBadges = ["MD", "PhD", "Obesity Medicine", "Addiction Medicine", "Pain Management", "Preventive Care"] as const;
-
-const testimonials = [
-  {
-    quote:
-      "I came in without an appointment on a Tuesday morning and was seen within 20 minutes. The doctor actually explained my diagnosis instead of just handing me a prescription.",
-    name: "Maria S.",
-    city: "Manassas, VA"
-  },
-  {
-    quote:
-      "We send our CDL drivers here for DOT physicals. The turnaround is fast, the paperwork is always in order, and the staff is easy to coordinate with.",
-    name: "James R.",
-    city: "Fleet Manager, Prince William County"
-  },
-  {
-    quote:
-      "I'd tried losing weight on my own for years. The program here came with actual check-ins, not just a prescription and a goodbye.",
-    name: "Tanya P.",
-    city: "Gainesville, VA"
-  },
-  {
-    quote:
-      "I needed a same-day appointment for a recurring blood pressure issue. The visit felt calm, thorough, and connected to a longer-term primary care plan.",
-    name: "Robert M.",
-    city: "Manassas Park, VA"
-  },
-  {
-    quote:
-      "The staff helped us sort out forms before a work physical and drug test. That saved our HR team a lot of back and forth.",
-    name: "Nina K.",
-    city: "Haymarket, VA"
-  }
-] as const;
 
 const serviceAreas = ["Manassas", "Manassas Park", "Gainesville", "Bristow", "Haymarket", "Centreville", "Woodbridge", "Prince William County"] as const;
 
@@ -228,9 +195,31 @@ function serviceChip(slug: string) {
   return service ? { title: service.title, href: publicRoutes.service(slug) } : null;
 }
 
+function getInitials(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+}
+
+function formatReviewDate(value?: string | null) {
+  if (!value) {
+    return "Google review";
+  }
+
+  return new Date(value).toLocaleDateString("en-US", {
+    month: "short",
+    year: "numeric"
+  });
+}
+
 export default async function HomePage() {
-  const posts = await getBlogPosts();
+  const [posts, googleReviews] = await Promise.all([getBlogPosts(), getGoogleReviews()]);
   const featuredPosts = posts.slice(0, 3);
+  const visibleReviews = googleReviews.filter((review) => review.rating >= 4).slice(0, 6);
 
   return (
     <main>
@@ -238,21 +227,23 @@ export default async function HomePage() {
 
       <section className="overflow-hidden bg-[var(--c-bg)]">
         <div className="container-shell grid gap-10 py-10 md:py-14 lg:grid-cols-[minmax(0,0.92fr)_minmax(380px,0.88fr)] lg:items-center lg:py-16">
-          <div className="max-w-[700px]">
+          <div className="w-full max-w-[22rem] sm:max-w-[700px]">
             <div className="section-label">Walk-In Clinic in Manassas, VA</div>
-            <h1 className="mt-5 max-w-2xl text-[2.55rem] leading-[1.08] text-dark-800 md:text-[3.35rem] lg:text-[3.95rem]">
-              Same-Day Urgent Care and Primary Care in Manassas, VA
+            <h1 className="mt-5 max-w-full break-words text-[2.05rem] leading-[1.08] text-dark-800 [text-wrap:pretty] sm:text-[2.25rem] md:max-w-2xl md:text-[3.35rem] lg:text-[3.95rem]">
+              <span className="block sm:inline">Same-Day Urgent Care and </span>
+              <span className="block sm:inline">Primary Care in </span>
+              <span className="block sm:inline">Manassas, VA</span>
             </h1>
-            <p className="mt-6 max-w-2xl text-[1.03rem] leading-8 text-[var(--color-text-muted)] md:text-[1.08rem]">
+            <p className="mt-6 max-w-2xl text-base leading-7 text-[var(--color-text-muted)] md:text-[1.08rem] md:leading-8">
               Walk in for urgent care, DOT physicals, primary care, medical weight loss,
               telehealth, and employer health services at Altmed Medical Center on Rixlew Lane.
               No referral needed.
             </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <Link href={buildBookingUrl("home_hero", "book-appointment") as Route} className="btn-primary">
+            <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
+              <Link href={buildBookingUrl("home_hero", "book-appointment") as Route} className="btn-primary w-full justify-center sm:w-auto">
                 Book Appointment <ArrowRight className="h-4 w-4" />
               </Link>
-              <a href={`tel:${clinic.phone}`} className="btn-outline-dark">
+              <a href={`tel:${clinic.phone}`} className="btn-outline-dark w-full justify-center sm:w-auto">
                 Call {clinic.phone}
               </a>
             </div>
@@ -410,8 +401,8 @@ export default async function HomePage() {
           <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <div className="relative min-h-[430px] overflow-hidden rounded-[var(--radius-lg)]">
               <Image
-                src={legacyAssets.doctorOne}
-                alt="Dr. Gerald K. Lee caring for patients at Altmed Medical Center in Manassas VA"
+                src={aiAssets.providerFallback}
+                alt="Clinical tools representing the Altmed care team in Manassas VA"
                 fill
                 className="clinic-img object-cover"
                 sizes="(min-width: 1024px) 42vw, 100vw"
@@ -419,15 +410,19 @@ export default async function HomePage() {
             </div>
             <div>
               <div className="section-label">Your Care Team</div>
-              <h2 className="mt-3">Led by a board-certified physician with 15+ years in Manassas.</h2>
+              <h2 className="mt-3">Led by a board-certified physician with over two decades of experience.</h2>
               <p className="mt-5 text-base leading-8 text-[var(--c-muted)]">
-                Dr. Gerald K. Lee, MD, PhD, has been caring for patients in Northern Virginia for
-                over fifteen years. He is board-certified in Obesity Medicine, Addiction Medicine,
-                and Pain Management, disciplines that rarely coexist in a single walk-in clinic.
-                His clinical model is built around connecting the dots: treating the condition in
-                front of you while addressing the patterns that keep bringing patients back. That&apos;s
-                why Altmed offers weight management, addiction recovery, occupational health, and
-                urgent care under the same roof.
+                Dr. Gerald K. Lee, M.D., Ph.D., leads Altmed Medical Center with board
+                certifications in Obesity Medicine, Addiction Medicine, and Pain Management. His
+                background spans family practice, occupational health, chronic disease management,
+                Suboxone treatment, senior preventive care, and evidence-based medicine.
+              </p>
+              <p className="mt-4 text-base leading-8 text-[var(--c-muted)]">
+                Dr. Lee earned his M.D. from The Chicago Medical School, a Ph.D. in Biostatistics
+                from The Ohio State University, and a master&apos;s degree in Epidemiology from Harvard
+                University. His research background includes publications in breast cancer, chronic
+                pain, diabetes, and elder abuse, which supports Altmed&apos;s model of combining science
+                with compassionate, whole-person care.
               </p>
               <div className="mt-6 flex flex-wrap gap-2">
                 {providerBadges.map((badge) => (
@@ -436,36 +431,53 @@ export default async function HomePage() {
                   </span>
                 ))}
               </div>
+              <a href="https://www.patientfusion.com/doctor/jerry-lee-md-phd-08966" target="_blank" rel="noreferrer" className="mt-7 inline-flex font-bold text-[var(--c-primary)] underline-offset-4 hover:underline">
+                Schedule with Dr. Lee
+              </a>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="bg-[var(--c-surface-tint)]">
-        <div className="container-shell section-pad">
-          <div className="max-w-3xl">
-            <div className="section-label">Patient Stories</div>
-            <h2 className="mt-3">Hear from patients and employers across Prince William County.</h2>
+      {visibleReviews.length ? (
+        <section className="bg-[var(--c-surface-tint)]">
+          <div className="container-shell section-pad">
+            <div className="max-w-3xl">
+              <div className="section-label">Google Reviews</div>
+              <h2 className="mt-3">What patients say on Google.</h2>
+            </div>
+            <div className="mt-10 grid gap-6 lg:grid-cols-3">
+              {visibleReviews.map((review) => (
+                <article key={review.id} className="rounded-[var(--radius-md)] border border-[var(--c-border)] border-l-4 border-l-[var(--c-primary)] bg-white p-6">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--c-surface-tint)] text-sm font-bold text-[var(--c-primary)]">
+                      {getInitials(review.reviewerName)}
+                    </div>
+                    <div className="flex gap-1 text-[var(--c-accent)]" aria-label={`${review.rating} star Google review`}>
+                      {Array.from({ length: review.rating }).map((_, index) => (
+                        <Star key={index} className="h-4 w-4 fill-current" />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="mt-5 font-heading text-lg italic leading-8 text-[var(--c-text)]">&ldquo;{review.reviewText}&rdquo;</p>
+                  <p className="mt-5 text-xs font-bold uppercase tracking-[0.12em] text-[var(--c-muted)]">
+                    {review.reviewerName} · {formatReviewDate(review.reviewDate)}
+                  </p>
+                  {review.sourceUrl ? (
+                    <a href={review.sourceUrl} className="mt-4 inline-flex text-sm font-bold text-[var(--c-primary)] hover:underline">
+                      View on Google
+                    </a>
+                  ) : null}
+                </article>
+              ))}
+            </div>
+            <a href={clinic.mapUrl} className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-[var(--c-primary)] hover:underline">
+              <MapPin className="h-4 w-4" />
+              View Altmed on Google Maps
+            </a>
           </div>
-          <div className="mt-10 grid gap-6 lg:grid-cols-3">
-            {testimonials.map((item) => (
-              <article key={item.name} className="rounded-[var(--radius-md)] border border-[var(--c-border)] border-l-4 border-l-[var(--c-primary)] bg-white p-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--c-surface-tint)] text-sm font-bold text-[var(--c-primary)]">
-                  {item.name.split(" ").map((part) => part[0]).join("")}
-                </div>
-                <p className="mt-5 font-heading text-lg italic leading-8 text-[var(--c-text)]">&ldquo;{item.quote}&rdquo;</p>
-                <p className="mt-5 text-xs font-bold uppercase tracking-[0.12em] text-[var(--c-muted)]">
-                  {item.name} · {item.city}
-                </p>
-              </article>
-            ))}
-          </div>
-          <a href={clinic.mapUrl} className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-[var(--c-primary)] hover:underline">
-            <MapPin className="h-4 w-4" />
-            View Altmed on Google Maps
-          </a>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       <section className="bg-[var(--c-bg)]">
         <div className="container-shell section-pad">

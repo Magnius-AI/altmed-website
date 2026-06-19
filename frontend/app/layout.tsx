@@ -33,6 +33,14 @@ export const metadata: Metadata = {
       "Walk-in urgent care, primary care, DOT physicals, telehealth, occupational health, and weight loss services in Manassas, Virginia.",
     images: ["/assets/img/logo.png"]
   },
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/legacy-assets/altmed-logo.png", type: "image/png" }
+    ],
+    shortcut: "/icon.svg",
+    apple: "/icon.svg"
+  },
   other: {
     "geo.region": "US-VA",
     "geo.placename": "Manassas, Virginia",

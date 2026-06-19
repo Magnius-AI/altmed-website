@@ -7,7 +7,7 @@ import { SchemaOrg } from "@/components/public/SchemaOrg";
 import { getProviders, type Provider } from "@/lib/api";
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildBreadcrumbSchema } from "@/lib/schema";
-import { clinic, legacyAssets, publicRoutes } from "@/lib/site-content";
+import { aiAssets, clinic, publicRoutes } from "@/lib/site-content";
 
 type ProviderProfile = {
   id: string;
@@ -36,7 +36,7 @@ export const metadata: Metadata = buildPageMetadata({
   description:
     "Meet Altmed Medical Center providers in Manassas VA and schedule DOT physicals, drug testing, or medical visits with the right provider.",
   path: "/providers",
-  image: legacyAssets.doctorOne
+  image: aiAssets.providerFallback
 });
 
 const serviceOptions = [
@@ -55,7 +55,7 @@ function providerFromApi(provider: Provider): ProviderProfile {
     specialties: provider.specialties?.length ? provider.specialties : ["Primary Care"],
     education: "Credential details are maintained by the Altmed team.",
     statement: provider.personalNote || provider.bio || "Provider profile details are maintained by the Altmed team.",
-    image: provider.photo || legacyAssets.doctorOne,
+    image: provider.photo || aiAssets.providerFallback,
     scheduleServices: provider.scheduleServices ?? [],
     appointmentUrl: provider.appointmentUrl,
     scheduleStatus: provider.scheduleStatus,

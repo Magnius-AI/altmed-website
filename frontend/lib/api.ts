@@ -1,4 +1,5 @@
 import {
+  aiAssets,
   blogCategories,
   clinic,
   defaultNavigationMenu,
@@ -92,6 +93,19 @@ export type ContactStats = {
   unreviewed: number;
 };
 
+export type GoogleReview = {
+  id: string;
+  reviewerName: string;
+  rating: 4 | 5;
+  reviewText: string;
+  reviewDate?: string | null;
+  sourceUrl?: string | null;
+  displayOrder?: number;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 export type SiteSetting = {
   id?: string;
   key: string;
@@ -126,6 +140,7 @@ export type AdminDashboardData = {
   contactSubmissions: ContactSubmission[];
   contactStats: ContactStats;
   providers: Provider[];
+  googleReviews: GoogleReview[];
   servicePages: ServicePage[];
   settings: SiteSetting[];
   analytics: AnalyticsSummary;
@@ -222,14 +237,21 @@ function normalizeAssetPath(path?: string | null) {
   }
 
   const assetMap: Record<string, string> = {
-    "/images/dr-lee-placeholder.webp": "/legacy-assets/doctors/doc-1.png",
-    "/images/urgent-care.webp": "/legacy-assets/homepage/clinic-front-view.jpg",
-    "/images/primary-care.webp": "/legacy-assets/departments/departments-3.jpg",
-    "/images/occupational-health.webp": "/legacy-assets/homepage/hero-bg.jpg",
-    "/images/weight-loss.webp": "/legacy-assets/doctors/doc-2.jpg",
-    "/images/addiction-medicine.webp": "/legacy-assets/homepage/top.jpg",
-    "/images/telehealth.webp": "/legacy-assets/homepage/top.jpg",
-    "/images/tpa-services.webp": "/legacy-assets/doctors/doctors-2.jpg",
+    "/images/dr-lee-placeholder.webp": aiAssets.providerFallback,
+    "/legacy-assets/doctors/doc-1.png": aiAssets.providerFallback,
+    "/legacy-assets/doctors/doc-2.jpg": aiAssets.providerFallback,
+    "/legacy-assets/doctors/doctors-1.jpg": aiAssets.providerFallback,
+    "/legacy-assets/doctors/doctors-2.jpg": aiAssets.providerFallback,
+    "/legacy-assets/doctors/doctors-3.jpg": aiAssets.providerFallback,
+    "/legacy-assets/doctors/doctors-4.jpg": aiAssets.providerFallback,
+    "/legacy-assets/homepage/top.jpg": aiAssets.primaryCareConsultation,
+    "/images/urgent-care.webp": aiAssets.primaryCareConsultation,
+    "/images/primary-care.webp": aiAssets.primaryCareConsultation,
+    "/images/occupational-health.webp": aiAssets.occupationalHealthExam,
+    "/images/weight-loss.webp": aiAssets.medicalWeightLossConsult,
+    "/images/addiction-medicine.webp": aiAssets.addictionSupportConsult,
+    "/images/telehealth.webp": aiAssets.primaryCareConsultation,
+    "/images/tpa-services.webp": aiAssets.employerComplianceReview,
     "/images/og-default.webp": "/legacy-assets/homepage/clinic-front-view.jpg"
   };
 
@@ -251,9 +273,40 @@ function normalizeProvider(provider: Provider): Provider {
 }
 
 function normalizeServicePage(page: ServicePage): ServicePage {
+  const normalizedImage = normalizeAssetPath(page.featuredImage);
+  const card = serviceCards.find((item) => item.slug === page.slug);
+  const oldServiceImagePaths = new Set([
+    "/legacy-assets/doctors/doc-1.png",
+    "/legacy-assets/doctors/doc-2.jpg",
+    "/legacy-assets/doctors/doctors-1.jpg",
+    "/legacy-assets/doctors/doctors-2.jpg",
+    "/legacy-assets/doctors/doctors-3.jpg",
+    "/legacy-assets/doctors/doctors-4.jpg",
+    "/legacy-assets/homepage/top.jpg",
+    "/legacy-assets/homepage/hero-bg.jpg",
+    "/legacy-assets/departments/departments-3.jpg",
+    "/legacy-assets/departments/departments-4.jpg",
+    "/legacy-assets/departments/departments-5.jpg",
+    "/images/homepage/new/comprehensive-weight-loss.webp",
+    "/images/occupational/occ-med-3.jpg",
+    "/images/urgent-care.webp",
+    "/images/primary-care.webp",
+    "/images/occupational-health.webp",
+    "/images/weight-loss.webp",
+    "/images/addiction-medicine.webp",
+    "/images/telehealth.webp",
+    "/images/tpa-services.webp"
+  ]);
+  const replacementImage =
+    card?.image &&
+    (oldServiceImagePaths.has(page.featuredImage ?? "") ||
+      oldServiceImagePaths.has(normalizedImage ?? ""))
+      ? card.image
+      : undefined;
+
   return {
     ...page,
-    featuredImage: normalizeAssetPath(page.featuredImage) ?? "/legacy-assets/homepage/clinic-front-view.jpg"
+    featuredImage: replacementImage ?? normalizedImage ?? "/legacy-assets/homepage/clinic-front-view.jpg"
   };
 }
 
@@ -355,7 +408,7 @@ export async function getBlogPosts() {
       tags: ["semaglutide", "weight loss", "glp-1"],
       author: "Dr. Gerald K. Lee",
       publishedAt: "2026-04-08T09:00:00.000Z",
-      featuredImage: "/legacy-assets/doctors/doc-2.jpg",
+      featuredImage: aiAssets.medicalWeightLossConsult,
       metaTitle: "Semaglutide GLP-1 Weight Loss Treatment in Manassas, VA",
       metaDescription:
         "Learn how semaglutide and GLP-1 weight loss treatment works in Manassas, VA, and what to expect from physician-supervised care at Altmed Medical Center.",
@@ -372,7 +425,7 @@ export async function getBlogPosts() {
       tags: ["telehealth", "virtual care"],
       author: "Dr. Gerald K. Lee",
       publishedAt: "2026-04-15T09:00:00.000Z",
-      featuredImage: "/legacy-assets/homepage/top.jpg",
+      featuredImage: aiAssets.primaryCareConsultation,
       metaTitle: "Telehealth in Manassas: Convenient Care from Altmed Medical Center",
       metaDescription:
         "Explore telehealth options in Manassas, VA for urgent care follow-up, primary care check-ins, and convenient virtual visits from Altmed Medical Center.",
@@ -518,6 +571,14 @@ export async function getAdminProviders() {
   return providers.map(normalizeProvider);
 }
 
+export async function getGoogleReviews() {
+  return safeFetch<GoogleReview[]>("/api/google-reviews", []);
+}
+
+export async function getAdminGoogleReviews() {
+  return safeAdminFetch<GoogleReview[]>("/api/google-reviews/admin", []);
+}
+
 export async function getAdminAnalyticsSummary() {
   return safeAdminFetch<AnalyticsSummary>("/api/analytics/summary", {
     total: 0,
@@ -560,6 +621,7 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
     contactSubmissions,
     contactStats,
     providers,
+    googleReviews,
     servicePages,
     settings,
     analytics,
@@ -572,6 +634,7 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
     getAdminContactSubmissions(),
     getAdminContactStats(),
     getAdminProviders(),
+    getAdminGoogleReviews(),
     safeFetch<ServicePage[]>("/api/services-pages", []),
     getAdminSiteSettings(),
     getAdminAnalyticsSummary(),
@@ -586,6 +649,7 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
     contactSubmissions,
     contactStats,
     providers,
+    googleReviews,
     servicePages: servicePages.map(normalizeServicePage),
     settings,
     analytics,

@@ -10,6 +10,7 @@ import {
   BlogTag,
   ContactSubmission,
   FAQ,
+  GoogleReview,
   Provider,
   ServicePage,
   SiteSettings,
@@ -38,6 +39,7 @@ const dataSource = new DataSource({
     ContactSubmission,
     ServicePage,
     Provider,
+    GoogleReview,
     SiteSettings,
     AnalyticsEvent
   ],

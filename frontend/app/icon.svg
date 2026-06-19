@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Altmed Medical Center">
+  <rect width="512" height="512" rx="96" fill="#ffffff"/>
+  <rect x="36" y="36" width="440" height="440" rx="64" fill="none" stroke="#45bea2" stroke-width="22"/>
+  <path fill="#ef1742" d="M286 110h52l112 244h-76l-24-56H238l-26 56h-77L286 110Zm39 132-30-72-30 72h60Z"/>
+  <path fill="#ef1742" d="M80 280h92l25-52h91l-25 52h65l-31 66h-66l-25 52h-91l25-52H49l31-66Z"/>
+</svg>

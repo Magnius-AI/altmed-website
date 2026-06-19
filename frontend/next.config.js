@@ -185,7 +185,8 @@ const nextConfig = {
     const csp = [
       "default-src 'self'",
       `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://www.google.com https://www.gstatic.com`,
-      "style-src 'self' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' data: https://fonts.gstatic.com",
       "img-src 'self' data: https:",
       "frame-src https://www.google.com https://www.google.com/maps https://form.jotform.com https://hipaa.jotform.com https://www.jotform.com",
       `connect-src ${connectSrc.join(" ")}`

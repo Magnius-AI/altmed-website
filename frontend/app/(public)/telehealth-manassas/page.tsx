@@ -6,14 +6,14 @@ import { FAQAccordion } from "@/components/public/FAQAccordion";
 import { SchemaOrg } from "@/components/public/SchemaOrg";
 import { buildPageMetadata } from "@/lib/metadata";
 import { buildFaqSchema } from "@/lib/schema";
-import { buildBookingUrl, clinic, legacyAssets } from "@/lib/site-content";
+import { aiAssets, buildBookingUrl, clinic } from "@/lib/site-content";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Telehealth Manassas VA | Virtual Doctor Visits | Altmed Medical Center",
   description:
     "Virtual doctor visits from Altmed Medical Center in Manassas VA. See a board-certified provider from home for urgent care, primary care, weight loss, and prescription refills. Book online.",
   path: "/telehealth-manassas",
-  image: legacyAssets.doctorsOverview
+  image: aiAssets.primaryCareConsultation
 });
 
 const telehealthUseCases = [
@@ -112,7 +112,7 @@ export default function TelehealthPage() {
           </div>
           <div className="relative min-h-[420px] overflow-hidden rounded-[16px] border border-[rgba(18,52,77,0.08)] bg-[var(--color-bg-gray)]">
             <Image
-              src={legacyAssets.doctorsOverview}
+              src={aiAssets.primaryCareConsultation}
               alt="Altmed provider ready for a telehealth visit"
               fill
               className="object-cover object-center"

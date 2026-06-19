@@ -16,6 +16,7 @@ import { AnalyticsModule } from "./modules/analytics/analytics.module";
 import { UploadsModule } from "./modules/uploads/uploads.module";
 import { HealthModule } from "./modules/health/health.module";
 import { TreatmentPlansModule } from "./modules/treatment-plans/treatment-plans.module";
+import { GoogleReviewsModule } from "./modules/google-reviews/google-reviews.module";
 
 @Module({
   imports: [
@@ -43,7 +44,8 @@ import { TreatmentPlansModule } from "./modules/treatment-plans/treatment-plans.
     AnalyticsModule,
     UploadsModule,
     HealthModule,
-    TreatmentPlansModule
+    TreatmentPlansModule,
+    GoogleReviewsModule
   ]
 })
 export class AppModule {}

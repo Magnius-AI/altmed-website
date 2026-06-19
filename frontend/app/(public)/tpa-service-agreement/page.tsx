@@ -1,3 +1,13 @@
+import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/metadata";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "TPA Service Agreement | Employer Drug Testing Program | Altmed",
+  description:
+    "Review Altmed Medical Center's TPA service agreement information for employer drug and alcohol testing programs, random pools, DOT support, and compliance services.",
+  path: "/tpa-service-agreement"
+});
+
 export default function TpaAgreementPage() {
   return (
     <main className="container-shell py-20">

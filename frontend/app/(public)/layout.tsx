@@ -23,6 +23,7 @@ export default async function PublicLayout({ children }: { children: React.React
       <AnnouncementBanner announcement={announcement} />
       <div id="main-content">{children}</div>
       <Footer />
+      <div className="h-[calc(3.5rem+env(safe-area-inset-bottom))] lg:hidden" aria-hidden="true" />
     </>
   );
 }

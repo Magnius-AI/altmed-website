@@ -1,3 +1,13 @@
+import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/metadata";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Privacy Policy | Altmed Medical Center",
+  description:
+    "Read Altmed Medical Center's privacy policy for patient health information, records, data security, and privacy questions in Manassas, VA.",
+  path: "/privacy-policy"
+});
+
 export default function PrivacyPolicyPage() {
   return (
     <main className="container-shell py-20">

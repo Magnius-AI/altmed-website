@@ -16,6 +16,7 @@ import { FAQAccordion } from "./FAQAccordion";
 import { SchemaOrg } from "./SchemaOrg";
 import { buildBreadcrumbSchema, buildFaqSchema, buildServiceSchema } from "@/lib/schema";
 import {
+  aiAssets,
   buildBookingUrl,
   clinic,
   clinicHighlights,
@@ -287,7 +288,7 @@ export function ServicePageContent({ page }: Props) {
   const expectationSteps = getExpectationSteps(page.slug);
 
   return (
-    <main className="bg-[var(--color-bg)]">
+    <main className="overflow-x-clip bg-[var(--color-bg)]">
       <SchemaOrg
         schema={buildBreadcrumbSchema([
           { name: "Home", item: clinic.canonicalUrl },
@@ -306,30 +307,32 @@ export function ServicePageContent({ page }: Props) {
 
       <section className="bg-[var(--color-surface-alt)]">
         <div className="container-shell py-16 md:py-20">
-          <div className="grid gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
-            <div>
+          <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)] lg:items-center lg:gap-10">
+            <div className="min-w-0">
               <div className="section-label">
                 {experience?.eyebrow ?? page.name}
               </div>
-              <h1 className="mt-6 max-w-2xl">{heroTitle}</h1>
+              <h1 className="mt-6 max-w-2xl break-words text-[2.05rem] leading-[1.08] sm:text-[2.45rem] md:text-[2.95rem] lg:text-[3.2rem]">
+                {heroTitle}
+              </h1>
               <div className="prose-lite mt-5 max-w-none" dangerouslySetInnerHTML={{ __html: heroIntroHtml }} />
-              <div className="mt-8 flex flex-wrap gap-4">
-                <a href={buildBookingUrl("service_page", page.slug)} className="btn-primary">
+              <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap">
+                <a href={buildBookingUrl("service_page", page.slug)} className="btn-primary justify-center sm:w-auto">
                   Book This Service
                 </a>
-                <a href={`tel:${clinic.phone}`} className="btn-outline-dark">
+                <a href={`tel:${clinic.phone}`} className="btn-outline-dark justify-center sm:w-auto">
                   Call {clinic.phone}
                 </a>
               </div>
 
               {experience ? (
-                <div className="mt-8 grid gap-4 md:grid-cols-3">
+                <div className="mt-8 grid min-w-0 gap-3 sm:grid-cols-3 md:gap-4">
                   {experience.stats.map((item, index) => {
                     const Icon = featureIcons[index % featureIcons.length];
                     return (
-                      <div key={item.label} className="rounded-[14px] border border-[rgba(18,52,77,0.08)] bg-white p-5">
+                      <div key={item.label} className="min-w-0 rounded-[14px] border border-[rgba(18,52,77,0.08)] bg-white p-4 sm:p-5">
                         <Icon className="h-5 w-5 text-[var(--color-primary)]" />
-                        <div className="mt-3 text-[2rem] font-semibold tracking-[-0.03em] text-[var(--color-text-dark)]">
+                        <div className="mt-3 break-words text-[clamp(1.28rem,3.2vw,1.85rem)] font-semibold leading-tight text-[var(--color-text-dark)]">
                           {item.value}
                         </div>
                         <div className="mt-2 text-sm leading-6 text-[var(--color-text-muted)]">{item.label}</div>
@@ -340,17 +343,17 @@ export function ServicePageContent({ page }: Props) {
               ) : null}
             </div>
 
-            <div className="relative">
-              <div className="relative min-h-[440px] overflow-hidden rounded-[16px] border border-[rgba(18,52,77,0.08)] bg-white">
+            <div className="relative min-w-0">
+              <div className="relative min-h-[280px] overflow-hidden rounded-[16px] border border-[rgba(18,52,77,0.08)] bg-white sm:min-h-[360px] lg:min-h-[440px]">
                 <Image
-                  src={page.featuredImage ?? "/legacy-assets/homepage/top.jpg"}
+                  src={page.featuredImage ?? aiAssets.primaryCareConsultation}
                   alt={`${page.name} care at Altmed Medical Center in Manassas, Virginia`}
                   fill
                   className="site-photo object-cover"
                   priority
                 />
               </div>
-              <div className="mt-4 rounded-[14px] border border-[rgba(18,52,77,0.08)] bg-white p-6">
+              <div className="mt-4 min-w-0 rounded-[14px] border border-[rgba(18,52,77,0.08)] bg-white p-5 sm:p-6">
                 <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
                   Why patients choose Altmed
                 </div>
@@ -372,8 +375,8 @@ export function ServicePageContent({ page }: Props) {
       </section>
 
       <section className="container-shell py-12 md:py-16">
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
-          <div className="space-y-6">
+        <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,320px)] lg:items-start">
+          <div className="min-w-0 space-y-6">
             <article className="prose-lite max-w-none rounded-[16px] border border-[rgba(18,52,77,0.08)] bg-white p-6 md:p-8">
               <div dangerouslySetInnerHTML={{ __html: page.bodyContent }} />
               {prioritySections.map((section) => (
@@ -402,8 +405,8 @@ export function ServicePageContent({ page }: Props) {
                 telehealth, and specialty programs share one roof, your visit can connect to the
                 next right step instead of ending with vague instructions.
               </p>
-              <section className="not-prose mt-10 grid gap-5 md:grid-cols-2">
-                <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
+              <section className="not-prose mt-10 grid min-w-0 gap-5 md:grid-cols-2">
+                <div className="min-w-0 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
                   <h2 className="text-2xl">What it is</h2>
                   <p className="mt-3 text-base leading-8 text-[var(--color-text-secondary)]">
                     {page.name} at Altmed Medical Center is designed for patients and employers who
@@ -417,7 +420,7 @@ export function ServicePageContent({ page }: Props) {
                     clinic after the first visit instead of starting over elsewhere.
                   </p>
                 </div>
-                <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
+                <div className="min-w-0 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
                   <h2 className="text-2xl">Who it is for</h2>
                   <ul className="mt-4 space-y-3 text-base leading-7 text-[var(--color-text-secondary)]">
                     {audienceItems.map((item) => (
@@ -428,7 +431,7 @@ export function ServicePageContent({ page }: Props) {
                     ))}
                   </ul>
                 </div>
-                <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
+                <div className="min-w-0 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
                   <h2 className="text-2xl">What to expect</h2>
                   <ol className="mt-4 space-y-3 text-base leading-7 text-[var(--color-text-secondary)]">
                     {expectationSteps.map((item, index) => (
@@ -441,13 +444,13 @@ export function ServicePageContent({ page }: Props) {
                     ))}
                   </ol>
                 </div>
-                <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
+                <div className="min-w-0 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
                   <h2 className="text-2xl">Cost & Insurance</h2>
                   <p className="mt-3 text-base leading-8 text-[var(--color-text-secondary)]">
                     We accept most major insurances including Aetna, CareFirst, Cigna, and United.
                     Self-pay rates available.
                   </p>
-                  <a href={buildBookingUrl("service_specific_cta", page.slug)} className="btn-primary mt-5">
+                  <a href={buildBookingUrl("service_specific_cta", page.slug)} className="btn-primary mt-5 justify-center sm:w-auto">
                     Book This Service
                   </a>
                 </div>
@@ -463,7 +466,7 @@ export function ServicePageContent({ page }: Props) {
               </div>
             </article>
 
-            <section className="rounded-[16px] border border-[rgba(18,52,77,0.08)] bg-[var(--color-bg-gray)] p-6">
+            <section className="min-w-0 rounded-[16px] border border-[rgba(18,52,77,0.08)] bg-[var(--color-bg-gray)] p-5 sm:p-6">
               <div className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-primary)]">
                 Continue Exploring
               </div>
@@ -474,7 +477,7 @@ export function ServicePageContent({ page }: Props) {
                     <Link
                       key={item.href}
                       href={item.href as Route}
-                      className="rounded-[14px] border border-[rgba(18,52,77,0.08)] bg-white p-5 transition hover:border-[rgba(0,166,166,0.22)]"
+                      className="min-w-0 rounded-[14px] border border-[rgba(18,52,77,0.08)] bg-white p-5 transition hover:border-[rgba(0,166,166,0.22)]"
                     >
                       <Icon className="h-5 w-5 text-[var(--color-primary)]" />
                       <div className="mt-3 text-lg font-semibold text-[var(--color-text-dark)]">{item.label}</div>
@@ -488,7 +491,7 @@ export function ServicePageContent({ page }: Props) {
             </section>
 
             {faqs.length ? (
-              <section className="rounded-[16px] border border-[rgba(18,52,77,0.08)] bg-white p-6 md:p-8">
+              <section className="min-w-0 rounded-[16px] border border-[rgba(18,52,77,0.08)] bg-white p-6 md:p-8">
                 <div className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-primary)]">
                   Service FAQs
                 </div>
@@ -507,7 +510,7 @@ export function ServicePageContent({ page }: Props) {
             ) : null}
           </div>
 
-          <aside className="space-y-5 lg:sticky lg:top-28">
+          <aside className="min-w-0 space-y-5 lg:sticky lg:top-28">
             <div className="rounded-[16px] border border-[rgba(18,52,77,0.08)] bg-white p-6">
               <div className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-primary)]">
                 Quick details
@@ -588,18 +591,18 @@ export function ServicePageContent({ page }: Props) {
                 return (
                   <div
                     key={section.title}
-                    className={`grid gap-8 rounded-[16px] border border-[rgba(18,52,77,0.08)] bg-white p-6 lg:items-center ${
+                    className={`grid min-w-0 gap-6 rounded-[16px] border border-[rgba(18,52,77,0.08)] bg-white p-5 sm:p-6 lg:items-center lg:gap-8 ${
                       shouldShowFeatureImage(index) ? "lg:grid-cols-[0.95fr_1.05fr]" : ""
                     }`}
                   >
-                    <div className={shouldShowFeatureImage(index) && index % 2 === 1 ? "lg:order-2" : ""}>
+                    <div className={`min-w-0 ${shouldShowFeatureImage(index) && index % 2 === 1 ? "lg:order-2" : ""}`}>
                       <div className="text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-primary)]">
                         Service Focus
                       </div>
                       <div className="mt-4 inline-flex h-11 w-11 items-center justify-center rounded-[12px] bg-[var(--color-primary)] text-white">
                         <Icon className="h-5 w-5" />
                       </div>
-                      <h2 className="mt-3 text-3xl">{section.title}</h2>
+                      <h2 className="mt-3 break-words text-[1.7rem] leading-tight sm:text-3xl">{section.title}</h2>
                       <p className="mt-4 text-[1.12rem] leading-8 text-[var(--color-text-dark)]">{section.body}</p>
                       <ul className="mt-6 space-y-4 text-[1.05rem] leading-8 text-[var(--color-text-dark)]">
                         {section.points.map((point) => (
@@ -608,7 +611,7 @@ export function ServicePageContent({ page }: Props) {
                       </ul>
                     </div>
                     {shouldShowFeatureImage(index) ? (
-                      <div className={`relative min-h-[320px] overflow-hidden rounded-[12px] ${index % 2 === 1 ? "lg:order-1" : ""}`}>
+                      <div className={`relative min-h-[240px] overflow-hidden rounded-[12px] sm:min-h-[320px] ${index % 2 === 1 ? "lg:order-1" : ""}`}>
                         <Image
                           src={section.image}
                           alt={`${section.title} for ${page.name.toLowerCase()} in Manassas, Virginia`}
@@ -639,7 +642,7 @@ export function ServicePageContent({ page }: Props) {
               under one local Manassas clinic.
             </p>
           </div>
-          <div className="mt-7 grid items-stretch gap-5 md:grid-cols-3">
+          <div className="mt-7 grid min-w-0 items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((service) => (
               <Link
                 key={service.slug}

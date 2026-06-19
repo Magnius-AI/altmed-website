@@ -4,14 +4,14 @@ import Link from "next/link";
 import { BlogCard } from "@/components/public/BlogCard";
 import { BlogPost, getBlogPosts } from "@/lib/api";
 import { buildPageMetadata } from "@/lib/metadata";
-import { buildBookingUrl, legacyAssets, publicRoutes } from "@/lib/site-content";
+import { aiAssets, buildBookingUrl, publicRoutes } from "@/lib/site-content";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Health Blog | Medical Tips & Manassas VA Health News | Altmed Medical Center",
   description:
     "Patient-friendly articles on urgent care, weight loss, occupational health, telehealth, and preventive care from Altmed Medical Center in Manassas.",
   path: "/health-blogs",
-  image: legacyAssets.heroDoctor
+  image: aiAssets.primaryCareConsultation
 });
 
 export default async function BlogPage() {
@@ -65,7 +65,7 @@ export default async function BlogPage() {
           </div>
           <div
             className="site-photo min-h-[340px] rounded-lg border border-[var(--color-border)] bg-cover bg-center"
-            style={{ backgroundImage: `url(${featured.featuredImage ?? legacyAssets.heroDoctor})` }}
+            style={{ backgroundImage: `url(${featured.featuredImage ?? aiAssets.primaryCareConsultation})` }}
           />
         </section>
       ) : null}

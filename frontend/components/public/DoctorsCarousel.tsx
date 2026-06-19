@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Provider } from "@/lib/api";
-import { buildBookingUrl, featuredDoctors } from "@/lib/site-content";
+import { aiAssets, buildBookingUrl, featuredDoctors } from "@/lib/site-content";
 
 type Props = {
   providers?: Provider[];
@@ -16,7 +16,7 @@ export function DoctorsCarousel({ providers }: Props) {
     providers?.length
       ? providers.map((provider) => ({
           name: provider.name,
-          image: provider.photo || "/legacy-assets/doctors/doc-1.png",
+          image: provider.photo || aiAssets.providerFallback,
           specialty: [provider.credentials, provider.title].filter(Boolean).join(" • "),
           experience: provider.personalNote || provider.bio || "Altmed Medical Center",
           cta: "Book with this provider"

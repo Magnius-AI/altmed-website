@@ -16,6 +16,7 @@ import {
   Megaphone,
   MessageCircleQuestion,
   Settings,
+  Star,
   Tags,
   Users
 } from "lucide-react";
@@ -29,6 +30,7 @@ const iconMap: Record<string, ComponentType<{ className?: string }>> = {
   Categories: FolderTree,
   Tags,
   FAQs: MessageCircleQuestion,
+  "Google Reviews": Star,
   "Notices & Updates": Megaphone,
   Settings,
   "Contact Inbox": Bell,
