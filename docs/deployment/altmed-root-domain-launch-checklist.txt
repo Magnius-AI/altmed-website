@@ -1,0 +1,392 @@
+AltMed Root Domain Launch Checklist
+===================================
+
+Goal
+----
+Move the new AltMed website from:
+
+  https://stage.altmedfirst.com
+
+to the main production domain:
+
+  https://altmedfirst.com
+
+The current stage site already points to the AWS Application Load Balancer. What is still needed is:
+
+1. Make the root domain and www domain point to the same AWS ALB.
+2. Make sure the ALB has an SSL certificate that covers the root domain.
+3. Update ECS task definition environment variables from stage URLs to production URLs.
+4. Deploy new ECS task revisions.
+5. Verify HTTPS, redirects, canonical URLs, robots, sitemap, and app health.
+
+
+Current Known Setup
+-------------------
+AWS ALB DNS:
+
+  altmed-website-frontend-alb-1517886270.us-east-1.elb.amazonaws.com
+
+Current Hostinger DNS stage record:
+
+  CNAME stage -> altmed-website-frontend-alb-1517886270.us-east-1.elb.amazonaws.com
+
+That means:
+
+  stage.altmedfirst.com -> AWS ALB -> ECS frontend/backend
+
+This is why staging works.
+
+
+What Is Missing
+---------------
+The main domain is not fully pointed to the ALB yet:
+
+  altmedfirst.com
+  www.altmedfirst.com
+
+The app task definition also currently has stage/ALB HTTP values such as:
+
+  NEXTAUTH_URL=https://stage.altmedfirst.com
+  API_URL_INTERNAL=http://altmed-website-frontend-alb-1517886270.us-east-1.elb.amazonaws.com
+  NEXT_PUBLIC_API_URL=http://altmed-website-frontend-alb-1517886270.us-east-1.elb.amazonaws.com
+
+For production, the app should know its public URL is:
+
+  https://altmedfirst.com
+
+
+Step 1 - Confirm Or Create The Correct ACM Certificate
+-----------------------------------------------------
+AWS service:
+
+  AWS Certificate Manager, region us-east-1
+
+The certificate attached to the ALB HTTPS listener must include:
+
+  altmedfirst.com
+  *.altmedfirst.com
+
+Why:
+
+  *.altmedfirst.com covers subdomains like:
+
+    www.altmedfirst.com
+    stage.altmedfirst.com
+
+  But a wildcard certificate usually does not cover the root domain:
+
+    altmedfirst.com
+
+  For root HTTPS to work cleanly, the certificate must explicitly include altmedfirst.com.
+
+What to do:
+
+1. Open AWS ACM in us-east-1.
+2. Check the existing wildcard certificate for *.altmedfirst.com.
+3. Look at its domain names / Subject Alternative Names.
+4. If it does not include altmedfirst.com, request a new public certificate with:
+
+     altmedfirst.com
+     *.altmedfirst.com
+
+5. Choose DNS validation.
+6. Add the DNS validation CNAME records in Hostinger.
+7. Wait until ACM shows the certificate as Issued.
+
+Important:
+
+  Do not delete ACM validation CNAME records from DNS. AWS uses them for automatic certificate renewal.
+
+
+Step 2 - Attach The Certificate To The ALB HTTPS Listener
+--------------------------------------------------------
+AWS service:
+
+  EC2 -> Load Balancers
+
+ALB:
+
+  altmed-website-frontend-alb-1517886270
+
+What to do if HTTPS listener already exists:
+
+1. Go to AWS Console.
+2. Open EC2.
+3. Left menu: Load Balancers.
+4. Select:
+
+     altmed-website-frontend-alb-1517886270
+
+5. Open the Listeners and rules tab.
+6. Select the HTTPS : 443 listener.
+7. Open the Certificates tab.
+8. Choose Change default.
+9. Select the ACM certificate that includes:
+
+     altmedfirst.com
+     *.altmedfirst.com
+
+10. Save as default.
+
+What to do if HTTPS listener does not exist:
+
+1. On the ALB Listeners and rules tab, choose Add listener.
+2. Protocol: HTTPS
+3. Port: 443
+4. Certificate: choose the ACM certificate.
+5. Default action: forward to the frontend target group.
+6. Save.
+
+Why:
+
+  DNS only sends traffic to the ALB. The ALB must also know which SSL certificate to present when someone visits https://altmedfirst.com.
+
+
+Step 3 - Point DNS To The ALB
+----------------------------
+DNS provider:
+
+  Hostinger currently manages DNS.
+
+Keep the stage record:
+
+  CNAME stage -> altmed-website-frontend-alb-1517886270.us-east-1.elb.amazonaws.com
+
+Add or confirm the www record:
+
+  CNAME www -> altmed-website-frontend-alb-1517886270.us-east-1.elb.amazonaws.com
+
+Root domain:
+
+  altmedfirst.com
+
+The root domain is the tricky part. AWS ALB does not have fixed IP addresses, so do not point root DNS to copied ALB IP addresses.
+
+Best option:
+
+  Move DNS hosting to Route 53 and create:
+
+    A ALIAS altmedfirst.com -> ALB
+    A ALIAS www.altmedfirst.com -> ALB
+
+Why Route 53 is recommended:
+
+  Route 53 supports AWS ALIAS records. These are made for pointing root domains to ALBs safely. If the ALB IPs change, Route 53 handles it.
+
+If staying with Hostinger:
+
+  Check whether Hostinger supports an ALIAS, ANAME, or CNAME flattening record for the root domain. If it does, point altmedfirst.com to the ALB DNS name using that feature.
+
+  If Hostinger only supports A records for the root domain, Route 53 is the cleaner and safer production choice.
+
+
+Step 4 - Update ECS Frontend Task Definition
+-------------------------------------------
+AWS service:
+
+  ECS -> Task definitions -> altmed-website-frontend
+
+Current task family:
+
+  altmed-website-frontend
+
+Container name:
+
+  altmed-website-frontend
+
+Create a new task definition revision and set environment variables to:
+
+  NODE_ENV=production
+  NEXTAUTH_URL=https://altmedfirst.com
+  FRONTEND_URL=https://altmedfirst.com
+  NEXT_PUBLIC_SITE_URL=https://altmedfirst.com
+  API_URL_INTERNAL=https://altmedfirst.com
+  NEXT_PUBLIC_API_URL=https://altmedfirst.com
+
+Keep NEXTAUTH_SECRET, but rotate it because it was pasted into chat. Ideally store it in AWS Secrets Manager instead of plain environment variables.
+
+Why these are needed:
+
+  NODE_ENV=production
+    Makes the app run with production behavior.
+
+  NEXTAUTH_URL=https://altmedfirst.com
+    Makes auth/session redirects use the main domain instead of stage.
+
+  FRONTEND_URL=https://altmedfirst.com
+    Gives server-side code the public frontend URL.
+
+  NEXT_PUBLIC_SITE_URL=https://altmedfirst.com
+    Makes frontend metadata, canonicals, and structured data use the production domain.
+
+  API_URL_INTERNAL=https://altmedfirst.com
+    Lets server-side Next.js routes call the backend through the ALB. In ECS, do not use http://backend:3001 unless service discovery or an internal backend ALB is configured.
+
+  NEXT_PUBLIC_API_URL=https://altmedfirst.com
+    Gives browser-facing code the public API base URL.
+
+Remove or replace these old values:
+
+  NEXTAUTH_URL=https://stage.altmedfirst.com
+  API_URL_INTERNAL=http://altmed-website-frontend-alb-1517886270.us-east-1.elb.amazonaws.com
+  NEXT_PUBLIC_API_URL=http://altmed-website-frontend-alb-1517886270.us-east-1.elb.amazonaws.com
+
+Why not use the raw ALB HTTP URL:
+
+  It causes public URLs, API URLs, cookies, redirects, and mixed HTTP/HTTPS behavior to drift away from the final production domain.
+
+
+Step 5 - Update ECS Backend Task Definition
+------------------------------------------
+AWS service:
+
+  ECS -> Task definitions -> altmed-website-backend
+
+Create a new task definition revision and set or confirm:
+
+  NODE_ENV=production
+  FRONTEND_URL=https://altmedfirst.com
+  BASE_URL=https://altmedfirst.com
+
+Why these are needed:
+
+  NODE_ENV=production
+    Makes backend config use production behavior.
+
+  FRONTEND_URL=https://altmedfirst.com
+    Controls CORS and backend-generated public URLs.
+
+  BASE_URL=https://altmedfirst.com
+    Used for payment and webhook related public URLs.
+
+
+Step 6 - Update ECS Services To Use The New Task Revisions
+---------------------------------------------------------
+AWS service:
+
+  ECS -> Clusters -> altmed-website-cluster
+
+Services:
+
+  altmed-website-frontend
+  altmed-website-backend
+
+For each service:
+
+1. Open the service.
+2. Choose Update.
+3. Select the new task definition revision.
+4. Deploy.
+5. Wait until the service is stable.
+
+Why:
+
+  Creating a task definition revision does not automatically update the running service. The ECS service must be told to use the new revision.
+
+
+Step 7 - GitHub CI/CD Note
+-------------------------
+Current workflow:
+
+  .github/workflows/deploy.yml
+
+The workflow currently builds and pushes images, then runs:
+
+  aws ecs update-service --force-new-deployment
+
+Why this matters:
+
+  A force new deployment restarts tasks using the task definition revision currently assigned to the ECS service. It does not automatically create a new task definition revision with new environment variables.
+
+What this means:
+
+  After you manually update the ECS service to the corrected task definition revision, GitHub deploys should keep using that revision unless the workflow is later changed to register task definitions.
+
+Recommended future improvement:
+
+  Update the GitHub workflow so it renders/registers ECS task definitions from a checked-in template or from GitHub environment variables/secrets. That makes env changes repeatable and avoids manual AWS console drift.
+
+
+Step 8 - Verification After Deploy
+----------------------------------
+Run these checks after DNS and ECS deploy are complete.
+
+Check HTTPS root:
+
+  https://altmedfirst.com
+
+Expected:
+
+  Site loads successfully.
+  Browser shows valid HTTPS lock.
+
+Check www:
+
+  https://www.altmedfirst.com
+
+Expected:
+
+  Redirects to https://altmedfirst.com
+
+Check stage:
+
+  https://stage.altmedfirst.com
+
+Expected:
+
+  Either still loads staging but sends noindex headers, or is kept only for internal testing.
+
+Check robots:
+
+  https://altmedfirst.com/robots.txt
+
+Expected:
+
+  Allows public crawling and references:
+
+    Sitemap: https://altmedfirst.com/sitemap.xml
+
+Check sitemap:
+
+  https://altmedfirst.com/sitemap.xml
+
+Expected:
+
+  URLs use https://altmedfirst.com only.
+  No localhost URLs.
+  No stage.altmedfirst.com URLs.
+
+Check page source:
+
+  View source on https://altmedfirst.com
+
+Expected:
+
+  Canonical URL is https://altmedfirst.com
+  JSON-LD URLs use https://altmedfirst.com
+  No localhost URLs.
+  No stage URLs.
+
+Check old routes:
+
+  https://altmedfirst.com/blog/semaglutide-glp-1-weight-loss-treatment-in-manassas-va
+  https://altmedfirst.com/services/occupational-health/x-ray-service
+
+Expected:
+
+  They redirect to the correct current URLs.
+
+
+Simple Final Order
+------------------
+1. Request or confirm ACM cert for altmedfirst.com and *.altmedfirst.com.
+2. Add ACM validation CNAME records in Hostinger.
+3. Attach the issued cert to the ALB HTTPS listener.
+4. Point www.altmedfirst.com to the ALB.
+5. Point root altmedfirst.com to the ALB, preferably using Route 53 A ALIAS.
+6. Update frontend ECS task definition env vars.
+7. Update backend ECS task definition env vars.
+8. Update ECS services to use the new task revisions.
+9. Deploy.
+10. Verify root domain, www redirect, robots, sitemap, canonicals, JSON-LD, and old URL redirects.
+
