@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { getCanonicalHost, isLocalHost, shouldNoIndexHost } from "@/lib/site-url";
 
 const NOINDEX_HEADER = "noindex, nofollow, noarchive";
+const HEALTH_CHECK_PATH = "/healthz";
 
 function getJwtExpiry(token: string) {
   try {
@@ -47,6 +48,10 @@ export function middleware(request: NextRequest) {
   const shouldNoIndex = shouldNoIndexHost(host);
   const shouldCanonicalizeHost = host !== canonicalHost;
   const shouldCanonicalizeProtocol = protocol !== "https" && !isLocalHost(host);
+
+  if (request.nextUrl.pathname === HEALTH_CHECK_PATH) {
+    return NextResponse.next();
+  }
 
   if (shouldNoIndex && request.nextUrl.pathname === "/sitemap.xml") {
     return new NextResponse("Not found", {
