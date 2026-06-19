@@ -169,7 +169,7 @@ export class TreatmentPlansService {
       })
     );
 
-    const baseUrl = this.configService.get<string>("payments.baseUrl") ?? "http://localhost:3000";
+    const baseUrl = this.configService.get<string>("payments.baseUrl") ?? "https://altmedfirst.com";
     try {
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
@@ -265,7 +265,7 @@ export class TreatmentPlansService {
       stripeSecretKeyLast4: this.maskSecretLast4(settings?.stripeSecretKeyEnc),
       stripeWebhookSecretLast4: this.maskSecretLast4(settings?.stripeWebhookSecretEnc),
       stripeWebhookEndpointUrl:
-        settings?.stripeWebhookEndpointUrl ?? `${this.configService.get<string>("payments.baseUrl") ?? "http://localhost:3000"}/api/webhooks/stripe`,
+        settings?.stripeWebhookEndpointUrl ?? `${this.configService.get<string>("payments.baseUrl") ?? "https://altmedfirst.com"}/api/webhooks/stripe`,
       isLiveMode: settings?.isLiveMode ?? false
     };
   }
@@ -365,7 +365,7 @@ export class TreatmentPlansService {
     const dateFormatter = new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric" });
     const enrolledDate = enrollment.enrolledAt ? dateFormatter.format(enrollment.enrolledAt) : dateFormatter.format(new Date());
     const endDate = enrollment.endsAt ? dateFormatter.format(enrollment.endsAt) : null;
-    const baseUrl = this.configService.get<string>("payments.baseUrl") ?? "http://localhost:3000";
+    const baseUrl = this.configService.get<string>("payments.baseUrl") ?? "https://altmedfirst.com";
 
     const transport = nodemailer.createTransport({
       host,

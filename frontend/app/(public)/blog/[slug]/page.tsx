@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { FAQAccordion } from "@/components/public/FAQAccordion";
 import { SchemaOrg } from "@/components/public/SchemaOrg";
 import { getBlogPost, getBlogPosts } from "@/lib/api";
@@ -15,6 +16,10 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   const post = await getBlogPost(params.slug);
+  if (!post) {
+    notFound();
+  }
+
   return buildPageMetadata({
     title: post.metaTitle ?? post.title,
     description: post.metaDescription ?? post.excerpt ?? "Health article from Altmed Medical Center in Manassas VA.",
@@ -26,6 +31,10 @@ export async function generateMetadata({
 
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
   const [post, posts] = await Promise.all([getBlogPost(params.slug), getBlogPosts()]);
+  if (!post) {
+    notFound();
+  }
+
   const related = posts.filter((entry: { slug: string }) => entry.slug !== post.slug).slice(0, 3);
   const headings = Array.from(post.body.matchAll(/<h2>(.*?)<\/h2>/g)).map((match) => match[1]);
   const blogFaqs = (post.faqs ?? []).filter((faq) => faq.question && faq.answer);

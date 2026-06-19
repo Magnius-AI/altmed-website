@@ -2,6 +2,11 @@
 const path = require("path");
 
 const isDev = process.env.NODE_ENV !== "production";
+const connectSrc = ["'self'", "https:", "ws:", "wss:"];
+
+if (isDev) {
+  connectSrc.splice(1, 0, "http://localhost:3001", "http://127.0.0.1:3001");
+}
 
 const nextConfig = {
   experimental: {
@@ -42,6 +47,7 @@ const nextConfig = {
         permanent: false
       },
       { source: "/blog", destination: "/health-blogs", permanent: true },
+      { source: "/blog/:slug", destination: "/health-blogs/:slug", permanent: true },
       { source: "/blogs", destination: "/health-blogs", permanent: true },
       { source: "/blogs/:slug", destination: "/health-blogs/:slug", permanent: true },
       { source: "/altmed-blogs", destination: "/health-blogs", permanent: true },
@@ -109,8 +115,18 @@ const nextConfig = {
         permanent: true
       },
       {
+        source: "/services/occupational-health/breath-alcohol-testing",
+        destination: "/services/occupational-health/drug-alcohol-testing-manassas",
+        permanent: true
+      },
+      {
         source: "/services/occupational-health/breath-alcohol-test-manassas",
         destination: "/services/occupational-health/drug-alcohol-testing-manassas",
+        permanent: true
+      },
+      {
+        source: "/services/occupational-health/x-ray-service",
+        destination: "/services/occupational-health/xray-service",
         permanent: true
       },
       {
@@ -172,7 +188,7 @@ const nextConfig = {
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https:",
       "frame-src https://www.google.com https://www.google.com/maps https://form.jotform.com https://hipaa.jotform.com https://www.jotform.com",
-      "connect-src 'self' http://localhost:3001 https: ws: wss:"
+      `connect-src ${connectSrc.join(" ")}`
     ].join("; ");
 
     return [

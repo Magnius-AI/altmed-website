@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getCanonicalHost, isLocalHost } from "@/lib/site-url";
+import { getCanonicalHost, isLocalHost, shouldNoIndexHost } from "@/lib/site-url";
+
+const NOINDEX_HEADER = "noindex, nofollow, noarchive";
 
 function getJwtExpiry(token: string) {
   try {
@@ -19,19 +21,53 @@ function getJwtExpiry(token: string) {
   }
 }
 
+function getCloudflareVisitorScheme(request: NextRequest) {
+  const value = request.headers.get("cf-visitor");
+
+  if (!value) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(value) as { scheme?: string };
+    return parsed.scheme ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export function middleware(request: NextRequest) {
-  const host = request.nextUrl.host.toLowerCase();
+  const host =
+    (request.headers.get("x-forwarded-host")?.split(",")[0]?.trim() ||
+      request.headers.get("host")?.split(",")[0]?.trim() ||
+      request.nextUrl.host).toLowerCase();
   const forwardedProto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim();
-  const protocol = forwardedProto || request.nextUrl.protocol.replace(":", "");
+  const protocol = getCloudflareVisitorScheme(request) || forwardedProto || request.nextUrl.protocol.replace(":", "");
   const canonicalHost = getCanonicalHost(host);
+  const shouldNoIndex = shouldNoIndexHost(host);
   const shouldCanonicalizeHost = host !== canonicalHost;
   const shouldCanonicalizeProtocol = protocol !== "https" && !isLocalHost(host);
 
+  if (shouldNoIndex && request.nextUrl.pathname === "/sitemap.xml") {
+    return new NextResponse("Not found", {
+      status: 404,
+      headers: {
+        "X-Robots-Tag": NOINDEX_HEADER
+      }
+    });
+  }
+
   if (shouldCanonicalizeHost || shouldCanonicalizeProtocol) {
     const canonicalUrl = request.nextUrl.clone();
-    canonicalUrl.host = canonicalHost;
+    const [hostname, port] = canonicalHost.split(":");
+    canonicalUrl.hostname = hostname;
+    canonicalUrl.port = port ?? "";
     canonicalUrl.protocol = isLocalHost(host) ? request.nextUrl.protocol : "https";
-    return NextResponse.redirect(canonicalUrl, 301);
+    const response = NextResponse.redirect(canonicalUrl, 301);
+    if (shouldNoIndex) {
+      response.headers.set("X-Robots-Tag", NOINDEX_HEADER);
+    }
+    return response;
   }
 
   if (
@@ -59,7 +95,11 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+  if (shouldNoIndex) {
+    response.headers.set("X-Robots-Tag", NOINDEX_HEADER);
+  }
+  return response;
 }
 
 export const config = {

@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerApiUrl } from "@/lib/server-api-url";
 
-const API_URL =
-  process.env.API_URL_INTERNAL ??
-  process.env.NEXT_PUBLIC_API_URL ??
-  "http://localhost:3001";
+const API_URL = getServerApiUrl();
 const secureCookies = process.env.NODE_ENV === "production";
 
 function getTokenPayload(payload: unknown) {

@@ -1,8 +1,11 @@
+const defaultFrontendUrl =
+  process.env.NODE_ENV === "production" ? "https://altmedfirst.com" : "http://localhost:3000";
+
 export default () => ({
   app: {
     port: Number(process.env.PORT ?? 3001),
     apiPrefix: process.env.API_PREFIX ?? "api",
-    frontendUrl: process.env.FRONTEND_URL ?? "http://localhost:3000",
+    frontendUrl: process.env.FRONTEND_URL ?? defaultFrontendUrl,
     environment: process.env.NODE_ENV ?? "development"
   },
   database: {
@@ -39,7 +42,7 @@ export default () => ({
     publicBaseUrl: process.env.AWS_S3_PUBLIC_BASE_URL ?? ""
   },
   payments: {
-    baseUrl: process.env.BASE_URL ?? process.env.FRONTEND_URL ?? "http://localhost:3000",
+    baseUrl: process.env.BASE_URL ?? process.env.FRONTEND_URL ?? defaultFrontendUrl,
     encryptionKey: process.env.PAYMENTS_ENCRYPTION_KEY ?? process.env.JWT_SECRET ?? "dev_payment_key_change_in_prod"
   }
 });

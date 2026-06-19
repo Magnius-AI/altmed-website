@@ -5,6 +5,8 @@ import { create } from "xmlbuilder2";
 import { Repository } from "typeorm";
 import { BlogPost, ServicePage, SiteSettings, TreatmentPlan } from "../../database/entities";
 
+const PUBLIC_SITE_ORIGIN = "https://altmedfirst.com";
+
 @Injectable()
 export class SeoService {
   constructor(
@@ -19,13 +21,16 @@ export class SeoService {
   ) {}
 
   private getBaseUrl() {
-    const configured = this.configService.get<string>("app.frontendUrl") ?? "http://localhost:3000";
+    const configured = this.configService.get<string>("app.frontendUrl") ?? PUBLIC_SITE_ORIGIN;
     try {
       const url = new URL(configured);
       url.hostname = url.hostname.replace(/^www\./i, "");
+      if (this.configService.get<string>("app.environment") === "production" && url.hostname === "localhost") {
+        return PUBLIC_SITE_ORIGIN;
+      }
       return url.origin;
     } catch {
-      return "http://localhost:3000";
+      return PUBLIC_SITE_ORIGIN;
     }
   }
 

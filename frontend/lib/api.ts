@@ -10,12 +10,9 @@ import {
   serviceCards
 } from "./site-content";
 import { cookies } from "next/headers";
+import { getServerApiUrl } from "./server-api-url";
 
-const API_URL =
-  process.env.BACKEND_URL_INTERNAL ??
-  process.env.API_URL_INTERNAL ??
-  process.env.NEXT_PUBLIC_API_URL ??
-  "http://localhost:3001";
+const API_URL = getServerApiUrl();
 
 export type Announcement = {
   id?: string;
@@ -389,7 +386,7 @@ export async function getBlogPosts() {
 
 export async function getBlogPost(slug: string) {
   const posts = await getBlogPosts();
-  return posts.find((post) => post.slug === slug) ?? posts[0];
+  return posts.find((post) => post.slug === slug) ?? null;
 }
 
 export async function getFaqs() {
@@ -490,7 +487,7 @@ export async function getStripeSettingsSummary() {
     stripePublishableKey: "",
     stripeSecretKeyLast4: "",
     stripeWebhookSecretLast4: "",
-    stripeWebhookEndpointUrl: "http://localhost:3000/api/webhooks/stripe",
+    stripeWebhookEndpointUrl: `${clinic.canonicalUrl}/api/webhooks/stripe`,
     isLiveMode: false
   });
 }

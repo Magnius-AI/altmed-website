@@ -1,11 +1,9 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { getServerApiUrl } from "@/lib/server-api-url";
 
-const API_URL =
-  process.env.API_URL_INTERNAL ??
-  process.env.NEXT_PUBLIC_API_URL ??
-  "http://localhost:3001";
+const API_URL = getServerApiUrl();
 
 export async function enrollInPlanAction(slug: string, formData: FormData) {
   const response = await fetch(`${API_URL}/api/treatment-plans/checkout/${slug}`, {

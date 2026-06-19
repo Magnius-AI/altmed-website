@@ -1,10 +1,8 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { getServerApiUrl } from "@/lib/server-api-url";
 
-const API_URL =
-  process.env.API_URL_INTERNAL ??
-  process.env.NEXT_PUBLIC_API_URL ??
-  "http://localhost:3001";
+const API_URL = getServerApiUrl();
 
 export async function GET() {
   const accessToken = cookies().get("altmed_admin_access_token")?.value;
