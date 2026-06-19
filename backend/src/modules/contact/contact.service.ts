@@ -29,6 +29,15 @@ function asNumber(value: unknown, fallback: number) {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
 
+function escapeHtml(value: unknown) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 @Injectable()
 export class ContactService {
   private readonly logger = new Logger(ContactService.name);
@@ -155,6 +164,7 @@ export class ContactService {
     const fromName = asString(smtpSettings.fromName) || "Altmed Medical Center";
     const secure =
       typeof smtpSettings.secure === "boolean" ? smtpSettings.secure : port === 465;
+    const frontendUrl = this.configService.get<string>("app.frontendUrl") ?? "https://altmedfirst.com";
 
     const transport = nodemailer.createTransport({
       host,
@@ -163,20 +173,41 @@ export class ContactService {
       auth: { user, pass }
     });
 
+    const subject = submission.subject ?? "General Inquiry";
+    const preferredContact = submission.preferredContactMethod ?? "Not specified";
+
     await transport.sendMail({
       from: `${fromName} <${fromEmail}>`,
       to: recipient,
       replyTo: smtpSettings.replyToSender === false ? undefined : submission.email,
-      subject: `Altmed contact form: ${submission.subject ?? "General Inquiry"}`,
+      subject: `Altmed contact form: ${subject}`,
       text: [
+        `Submission ID: ${submission.id}`,
         `Name: ${submission.fullName}`,
         `Email: ${submission.email}`,
         `Phone: ${submission.phone}`,
-        `Preferred contact: ${submission.preferredContactMethod ?? "Not specified"}`,
-        `Subject: ${submission.subject ?? "General Inquiry"}`,
+        `Preferred contact: ${preferredContact}`,
+        `Subject: ${subject}`,
         "",
-        submission.message
-      ].join("\n")
+        submission.message,
+        "",
+        `Admin inbox: ${frontendUrl}/admin/contact-submissions`
+      ].join("\n"),
+      html: `
+        <div style="font-family:Arial,sans-serif;color:#12344d;line-height:1.6">
+          <h2 style="margin:0 0 12px">New Altmed contact form message</h2>
+          <table style="border-collapse:collapse;margin:18px 0">
+            <tr><td style="padding:6px 16px 6px 0;color:#526679">Submission ID</td><td style="padding:6px 0;font-weight:700">${escapeHtml(submission.id)}</td></tr>
+            <tr><td style="padding:6px 16px 6px 0;color:#526679">Name</td><td style="padding:6px 0">${escapeHtml(submission.fullName)}</td></tr>
+            <tr><td style="padding:6px 16px 6px 0;color:#526679">Email</td><td style="padding:6px 0">${escapeHtml(submission.email)}</td></tr>
+            <tr><td style="padding:6px 16px 6px 0;color:#526679">Phone</td><td style="padding:6px 0">${escapeHtml(submission.phone)}</td></tr>
+            <tr><td style="padding:6px 16px 6px 0;color:#526679">Preferred contact</td><td style="padding:6px 0">${escapeHtml(preferredContact)}</td></tr>
+            <tr><td style="padding:6px 16px 6px 0;color:#526679">Subject</td><td style="padding:6px 0">${escapeHtml(subject)}</td></tr>
+          </table>
+          <p style="white-space:pre-wrap">${escapeHtml(submission.message)}</p>
+          <p><a href="${frontendUrl}/admin/contact-submissions" style="color:#229653;font-weight:700">Open contact inbox</a></p>
+        </div>
+      `
     });
   }
 }

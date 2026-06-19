@@ -123,6 +123,9 @@ export type TreatmentPlanMetrics = {
   totalEnrolled: number;
   revenueMtdCents: number;
   activeMembers: number;
+  pendingEnrollments: number;
+  followUpsDue: number;
+  visitsThisMonth: number;
 };
 
 export type AdminUser = {
@@ -208,15 +211,31 @@ export type PlanEnrollment = {
   patientPhone?: string | null;
   stripeSessionId?: string | null;
   stripePaymentIntent?: string | null;
+  enrollmentCode?: string | null;
   status: string;
   amountPaidCents?: number | null;
+  paymentMethod?: string | null;
   enrolledAt?: string | null;
   startsAt?: string | null;
   endsAt?: string | null;
+  visitCount?: number;
+  lastVisitAt?: string | null;
+  nextVisitAt?: string | null;
   notes?: string | null;
   createdAt?: string;
   updatedAt?: string;
   plan?: TreatmentPlan | null;
+};
+
+export type PlanAttendance = {
+  id: string;
+  enrollmentId: string;
+  enrollmentCode: string;
+  visitedAt?: string | null;
+  staffName?: string | null;
+  notes?: string | null;
+  createdAt?: string;
+  enrollment?: PlanEnrollment | null;
 };
 
 export type StripeSettingsSummary = {
@@ -526,12 +545,24 @@ export async function getAdminPlanEnrollments(filters?: { planId?: string; statu
   return safeAdminFetch<PlanEnrollment[]>(`/api/treatment-plans/admin/enrollments${suffix}`, []);
 }
 
+export async function getAdminPlanAttendance(filters?: { code?: string }) {
+  const params = new URLSearchParams();
+  if (filters?.code) {
+    params.set("code", filters.code);
+  }
+  const suffix = params.toString() ? `?${params.toString()}` : "";
+  return safeAdminFetch<PlanAttendance[]>(`/api/treatment-plans/admin/attendance${suffix}`, []);
+}
+
 export async function getTreatmentPlanMetrics() {
   return safeAdminFetch<TreatmentPlanMetrics>("/api/treatment-plans/admin/metrics", {
     activePlans: 0,
     totalEnrolled: 0,
     revenueMtdCents: 0,
-    activeMembers: 0
+    activeMembers: 0,
+    pendingEnrollments: 0,
+    followUpsDue: 0,
+    visitsThisMonth: 0
   });
 }
 

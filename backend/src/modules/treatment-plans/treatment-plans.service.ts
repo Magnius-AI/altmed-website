@@ -11,9 +11,12 @@ import { createCipheriv, createDecipheriv, createHash, randomBytes } from "crypt
 import nodemailer from "nodemailer";
 import Stripe = require("stripe");
 import { In, Repository } from "typeorm";
-import { PlanEnrollment, StripeSettings, TreatmentPlan } from "../../database/entities";
+import { PlanAttendance, PlanEnrollment, StripeSettings, TreatmentPlan } from "../../database/entities";
+import { SiteSettingsService } from "../site-settings/site-settings.service";
 import {
   CreateCheckoutDto,
+  CreateEnrollmentDto,
+  RecordAttendanceDto,
   CreateTreatmentPlanDto,
   UpdateEnrollmentDto,
   UpdateStripeSettingsDto,
@@ -21,6 +24,39 @@ import {
 } from "./dto";
 
 const PAID_STATUSES = ["paid", "active", "completed"];
+const UNPAID_STATUSES = ["pending", "failed"];
+const ACTIVE_ATTENDANCE_STATUSES = ["paid", "active"];
+
+type SmtpSettingValue = {
+  enabled?: boolean;
+  host?: string;
+  port?: number | string;
+  secure?: boolean;
+  username?: string;
+  password?: string;
+  fromEmail?: string;
+  fromName?: string;
+  recipientEmail?: string;
+  replyToSender?: boolean;
+};
+
+function asString(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function asNumber(value: unknown, fallback: number) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function escapeHtml(value: unknown) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 @Injectable()
 export class TreatmentPlansService {
@@ -29,8 +65,10 @@ export class TreatmentPlansService {
   constructor(
     @InjectRepository(TreatmentPlan) private readonly plans: Repository<TreatmentPlan>,
     @InjectRepository(PlanEnrollment) private readonly enrollments: Repository<PlanEnrollment>,
+    @InjectRepository(PlanAttendance) private readonly attendance: Repository<PlanAttendance>,
     @InjectRepository(StripeSettings) private readonly settings: Repository<StripeSettings>,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly siteSettingsService: SiteSettingsService
   ) {}
 
   async findPublic() {
@@ -106,13 +144,55 @@ export class TreatmentPlansService {
       where.planId = filters.planId;
     }
     if (filters.status && filters.status !== "all") {
-      where.status = filters.status;
+      if (filters.status === "paid") {
+        where.status = In(PAID_STATUSES);
+      } else if (filters.status === "unpaid") {
+        where.status = In(UNPAID_STATUSES);
+      } else {
+        where.status = filters.status;
+      }
     }
     const rows = await this.enrollments.find({ where, order: { createdAt: "DESC" } });
-    const planIds = Array.from(new Set(rows.map((row) => row.planId)));
+    const codedRows = await Promise.all(rows.map((row) => this.ensureEnrollmentCode(row)));
+    const planIds = Array.from(new Set(codedRows.map((row) => row.planId)));
     const plans = planIds.length ? await this.plans.find({ where: { id: In(planIds) } }) : [];
     const planMap = new Map(plans.map((plan) => [plan.id, plan]));
-    return rows.map((row) => ({ ...row, plan: planMap.get(row.planId) ?? null }));
+    return codedRows.map((row) => ({ ...row, plan: planMap.get(row.planId) ?? null }));
+  }
+
+  async createEnrollment(dto: CreateEnrollmentDto) {
+    const plan = await this.findById(dto.planId);
+    const status = dto.status ?? "active";
+    const startsAt = this.parseOptionalDate(dto.startsAt) ?? (PAID_STATUSES.includes(status) ? new Date() : null);
+    const endsAt =
+      this.parseOptionalDate(dto.endsAt) ??
+      (startsAt && plan.durationDays ? new Date(startsAt.getTime() + plan.durationDays * 86_400_000) : null);
+
+    const enrollment = await this.enrollments.save(
+      this.enrollments.create({
+        planId: plan.id,
+        patientName: dto.patientName?.trim() || null,
+        patientEmail: dto.patientEmail.trim().toLowerCase(),
+        patientPhone: dto.patientPhone?.trim() || null,
+        enrollmentCode: await this.createUniqueEnrollmentCode(),
+        status,
+        amountPaidCents: dto.amountPaidCents ?? (PAID_STATUSES.includes(status) ? plan.priceCents : 0),
+        paymentMethod: dto.paymentMethod?.trim() || null,
+        enrolledAt: PAID_STATUSES.includes(status) ? new Date() : null,
+        startsAt,
+        endsAt,
+        visitCount: dto.visitCount ?? 0,
+        lastVisitAt: this.parseOptionalDate(dto.lastVisitAt),
+        nextVisitAt: this.parseOptionalDate(dto.nextVisitAt),
+        notes: dto.notes?.trim() || null
+      })
+    );
+
+    if (PAID_STATUSES.includes(status)) {
+      await this.sendEnrollmentEmails(enrollment, plan, "manual");
+    }
+
+    return enrollment;
   }
 
   async updateEnrollment(id: string, dto: UpdateEnrollmentDto) {
@@ -120,15 +200,117 @@ export class TreatmentPlansService {
     if (!enrollment) {
       throw new NotFoundException("Enrollment not found");
     }
+    const nextStatus = dto.status ?? enrollment.status;
+    const plan = PAID_STATUSES.includes(nextStatus) ? await this.findById(enrollment.planId) : null;
     Object.assign(enrollment, {
-      status: dto.status ?? enrollment.status,
+      status: nextStatus,
+      patientName: dto.patientName !== undefined ? dto.patientName.trim() || null : enrollment.patientName,
+      patientPhone: dto.patientPhone !== undefined ? dto.patientPhone.trim() || null : enrollment.patientPhone,
+      enrollmentCode: enrollment.enrollmentCode ?? (await this.createUniqueEnrollmentCode()),
+      amountPaidCents: dto.amountPaidCents ?? enrollment.amountPaidCents ?? (plan ? plan.priceCents : null),
+      paymentMethod: dto.paymentMethod !== undefined ? dto.paymentMethod.trim() || null : enrollment.paymentMethod,
+      startsAt: dto.startsAt !== undefined ? this.parseOptionalDate(dto.startsAt) : enrollment.startsAt,
+      endsAt: dto.endsAt !== undefined ? this.parseOptionalDate(dto.endsAt) : enrollment.endsAt,
+      visitCount: dto.visitCount ?? enrollment.visitCount,
+      lastVisitAt: dto.lastVisitAt !== undefined ? this.parseOptionalDate(dto.lastVisitAt) : enrollment.lastVisitAt,
+      nextVisitAt: dto.nextVisitAt !== undefined ? this.parseOptionalDate(dto.nextVisitAt) : enrollment.nextVisitAt,
       notes: dto.notes !== undefined ? dto.notes.trim() || null : enrollment.notes
     });
-    return this.enrollments.save(enrollment);
+    if (!enrollment.enrolledAt && PAID_STATUSES.includes(nextStatus)) {
+      enrollment.enrolledAt = new Date();
+    }
+    if (plan && !enrollment.startsAt) {
+      enrollment.startsAt = enrollment.enrolledAt ?? new Date();
+    }
+    if (plan && !enrollment.endsAt && enrollment.startsAt && plan.durationDays) {
+      enrollment.endsAt = new Date(enrollment.startsAt.getTime() + plan.durationDays * 86_400_000);
+    }
+
+    const shouldSendWelcome = Boolean(plan && !enrollment.confirmationEmailSentAt && PAID_STATUSES.includes(nextStatus));
+    const saved = await this.enrollments.save(enrollment);
+    if (plan && shouldSendWelcome) {
+      await this.sendEnrollmentEmails(saved, plan, "status_update");
+    }
+    return saved;
+  }
+
+  async findAttendance(filters: { code?: string } = {}) {
+    const where: Record<string, unknown> = {};
+    const code = this.normalizeEnrollmentCode(filters.code);
+    if (code) {
+      where.enrollmentCode = code;
+    }
+
+    const rows = await this.attendance.find({
+      where,
+      order: { visitedAt: "DESC", createdAt: "DESC" },
+      take: 100
+    });
+    const enrollmentIds = Array.from(new Set(rows.map((row) => row.enrollmentId)));
+    const enrollments = enrollmentIds.length ? await this.enrollments.find({ where: { id: In(enrollmentIds) } }) : [];
+    const codedEnrollments = await Promise.all(enrollments.map((enrollment) => this.ensureEnrollmentCode(enrollment)));
+    const planIds = Array.from(new Set(codedEnrollments.map((enrollment) => enrollment.planId)));
+    const plans = planIds.length ? await this.plans.find({ where: { id: In(planIds) } }) : [];
+    const planMap = new Map(plans.map((plan) => [plan.id, plan]));
+    const enrollmentMap = new Map(codedEnrollments.map((enrollment) => [enrollment.id, enrollment]));
+
+    return rows.map((row) => {
+      const enrollment = enrollmentMap.get(row.enrollmentId) ?? null;
+      return {
+        ...row,
+        enrollment: enrollment ? { ...enrollment, plan: planMap.get(enrollment.planId) ?? null } : null
+      };
+    });
+  }
+
+  async recordAttendance(dto: RecordAttendanceDto) {
+    const code = this.normalizeEnrollmentCode(dto.enrollmentCode);
+    if (!code) {
+      throw new BadRequestException("Enter an enrollment code");
+    }
+    if (!/^AM-[A-F0-9]{4}-[A-F0-9]{4}$/.test(code)) {
+      throw new BadRequestException("Enrollment code must look like AM-1234-ABCD");
+    }
+
+    const enrollment = await this.enrollments.findOne({ where: { enrollmentCode: code } });
+    if (!enrollment) {
+      throw new NotFoundException("No enrollment found for that code");
+    }
+    if (!ACTIVE_ATTENDANCE_STATUSES.includes(enrollment.status)) {
+      throw new BadRequestException("Payment must be paid or active before recording attendance");
+    }
+
+    const codedEnrollment = await this.ensureEnrollmentCode(enrollment);
+    const visitedAt = this.parseOptionalDate(dto.visitedAt) ?? new Date();
+    const tomorrow = new Date(Date.now() + 36 * 60 * 60 * 1000);
+    if (visitedAt.getTime() > tomorrow.getTime()) {
+      throw new BadRequestException("Visit date is too far in the future");
+    }
+    const attendance = await this.attendance.save(
+      this.attendance.create({
+        enrollmentId: codedEnrollment.id,
+        enrollmentCode: codedEnrollment.enrollmentCode ?? code,
+        visitedAt,
+        staffName: dto.staffName?.trim() || null,
+        notes: dto.notes?.trim() || null
+      })
+    );
+
+    codedEnrollment.visitCount = (codedEnrollment.visitCount ?? 0) + 1;
+    codedEnrollment.lastVisitAt = visitedAt;
+    await this.enrollments.save(codedEnrollment);
+
+    const plan = await this.findById(codedEnrollment.planId);
+    return {
+      attendance,
+      enrollment: { ...codedEnrollment, plan },
+      paymentStatus: PAID_STATUSES.includes(codedEnrollment.status) ? "paid" : "unpaid"
+    };
   }
 
   async metrics() {
-    const [activePlans, totalEnrolled, activeMembers, paidEnrollments] = await Promise.all([
+    const weekFromNow = new Date(Date.now() + 7 * 86_400_000);
+    const [activePlans, totalEnrolled, activeMembers, paidEnrollments, pendingEnrollments, followUpsDue, visitsThisMonth] = await Promise.all([
       this.plans.count({ where: { isActive: true } }),
       this.enrollments.count({ where: { status: In(PAID_STATUSES) } }),
       this.enrollments
@@ -140,13 +322,27 @@ export class TreatmentPlansService {
         .createQueryBuilder("enrollment")
         .where("enrollment.status IN (:...statuses)", { statuses: PAID_STATUSES })
         .andWhere("enrollment.enrolledAt >= :monthStart", { monthStart: this.monthStart() })
-        .getMany()
+        .getMany(),
+      this.enrollments.count({ where: { status: "pending" } }),
+      this.enrollments
+        .createQueryBuilder("enrollment")
+        .where("enrollment.status IN (:...statuses)", { statuses: ACTIVE_ATTENDANCE_STATUSES })
+        .andWhere("enrollment.nextVisitAt IS NOT NULL")
+        .andWhere("enrollment.nextVisitAt <= :weekFromNow", { weekFromNow })
+        .getCount(),
+      this.attendance
+        .createQueryBuilder("attendance")
+        .where("attendance.visitedAt >= :monthStart", { monthStart: this.monthStart() })
+        .getCount()
     ]);
 
     return {
       activePlans,
       totalEnrolled,
       activeMembers,
+      pendingEnrollments,
+      followUpsDue,
+      visitsThisMonth,
       revenueMtdCents: paidEnrollments.reduce((sum, item) => sum + (item.amountPaidCents ?? 0), 0)
     };
   }
@@ -165,6 +361,7 @@ export class TreatmentPlansService {
         patientName: dto.name.trim(),
         patientEmail: dto.email.trim().toLowerCase(),
         patientPhone: dto.phone?.trim() || null,
+        enrollmentCode: await this.createUniqueEnrollmentCode(),
         status: "pending"
       })
     );
@@ -190,6 +387,7 @@ export class TreatmentPlansService {
         ],
         metadata: {
           enrollment_id: enrollment.id,
+          enrollment_code: enrollment.enrollmentCode ?? "",
           plan_id: plan.id,
           patient_name: enrollment.patientName ?? "",
           patient_phone: enrollment.patientPhone ?? ""
@@ -319,15 +517,18 @@ export class TreatmentPlansService {
 
     const now = new Date();
     const endsAt = new Date(now.getTime() + (plan.durationDays ?? 0) * 86_400_000);
+    const enrollmentCode = enrollment.enrollmentCode ?? (await this.createUniqueEnrollmentCode());
     await this.enrollments.update(
       { id: enrollmentId },
       {
         status: "paid",
+        enrollmentCode,
         stripePaymentIntent:
           typeof session.payment_intent === "string"
             ? session.payment_intent
             : session.payment_intent?.id ?? null,
         amountPaidCents: session.amount_total ?? plan.priceCents,
+        paymentMethod: "Stripe",
         enrolledAt: now,
         startsAt: now,
         endsAt: plan.durationDays ? endsAt : null
@@ -335,29 +536,28 @@ export class TreatmentPlansService {
     );
 
     if (!enrollment.confirmationEmailSentAt) {
-      await this.sendPaymentConfirmation(
+      await this.sendEnrollmentEmails(
         {
           ...enrollment,
           status: "paid",
+          enrollmentCode,
           amountPaidCents: session.amount_total ?? plan.priceCents,
+          paymentMethod: "Stripe",
           enrolledAt: now,
           startsAt: now,
           endsAt: plan.durationDays ? endsAt : null
         },
-        plan
+        plan,
+        "stripe"
       );
     }
   }
 
-  private async sendPaymentConfirmation(enrollment: PlanEnrollment, plan: TreatmentPlan) {
-    const host = this.configService.get<string>("email.host");
-    const port = this.configService.get<number>("email.port");
-    const user = this.configService.get<string>("email.user");
-    const pass = this.configService.get<string>("email.pass");
-    if (!host || !user || !pass) {
+  private async sendEnrollmentEmails(enrollment: PlanEnrollment, plan: TreatmentPlan, source: "manual" | "status_update" | "stripe") {
+    const mailer = await this.getMailer();
+    if (!mailer) {
       return;
     }
-
     const amount = new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: plan.currency.toUpperCase()
@@ -366,28 +566,30 @@ export class TreatmentPlansService {
     const enrolledDate = enrollment.enrolledAt ? dateFormatter.format(enrollment.enrolledAt) : dateFormatter.format(new Date());
     const endDate = enrollment.endsAt ? dateFormatter.format(enrollment.endsAt) : null;
     const baseUrl = this.configService.get<string>("payments.baseUrl") ?? "https://altmedfirst.com";
-
-    const transport = nodemailer.createTransport({
-      host,
-      port,
-      secure: false,
-      auth: { user, pass }
-    });
+    const enrollmentCode = enrollment.enrollmentCode ?? enrollment.id;
+    const patientName = enrollment.patientName ?? "there";
+    const paymentStatus = PAID_STATUSES.includes(enrollment.status) ? "Paid/active" : enrollment.status;
+    const adminSubject =
+      source === "stripe"
+        ? `Paid treatment plan enrollment: ${enrollmentCode}`
+        : `Treatment plan enrollment added: ${enrollmentCode}`;
 
     try {
-      await transport.sendMail({
-        from: user,
+      await mailer.transport.sendMail({
+        from: mailer.from,
         to: enrollment.patientEmail,
-        bcc: this.configService.get<string>("email.recipient"),
-        subject: `Altmed plan confirmation: ${plan.name}`,
+        subject: `Welcome to your Altmed plan: ${plan.name}`,
         text: [
           `Hi ${enrollment.patientName ?? "there"},`,
           "",
-          `Your payment for ${plan.name} was received.`,
-          `Amount charged: ${amount}`,
+          `Welcome to ${plan.name} at Altmed Medical Center.`,
+          `Enrollment ID: ${enrollmentCode}`,
+          `Payment status: ${PAID_STATUSES.includes(enrollment.status) ? "Paid/active" : enrollment.status}`,
+          `Amount recorded: ${amount}`,
           `Enrollment date: ${enrolledDate}`,
           endDate ? `Plan valid through: ${endDate}` : "",
           "",
+          "Please keep this Enrollment ID. Our front desk can use it to check attendance for your treatment-plan visits.",
           "Our clinic team will contact you with the next steps. You can also call us at (703) 361-4357.",
           "",
           `Plan page: ${baseUrl}/plans/${plan.slug}`,
@@ -398,32 +600,117 @@ export class TreatmentPlansService {
           .join("\n"),
         html: `
           <div style="font-family:Arial,sans-serif;color:#12344d;line-height:1.6">
-            <h2 style="margin:0 0 12px">Your Altmed plan payment was received</h2>
-            <p>Hi ${enrollment.patientName ?? "there"},</p>
-            <p>Your payment for <strong>${plan.name}</strong> was received.</p>
+            <h2 style="margin:0 0 12px">Welcome to your Altmed treatment plan</h2>
+            <p>Hi ${escapeHtml(patientName)},</p>
+            <p>Your enrollment for <strong>${escapeHtml(plan.name)}</strong> has been recorded.</p>
+            <p style="font-size:20px;font-weight:700;letter-spacing:0.08em;color:#0f5f4c;margin:16px 0">Enrollment ID: ${escapeHtml(enrollmentCode)}</p>
             <table style="border-collapse:collapse;margin:18px 0">
-              <tr><td style="padding:6px 16px 6px 0;color:#526679">Amount charged</td><td style="padding:6px 0;font-weight:700">${amount}</td></tr>
-              <tr><td style="padding:6px 16px 6px 0;color:#526679">Enrollment date</td><td style="padding:6px 0">${enrolledDate}</td></tr>
+              <tr><td style="padding:6px 16px 6px 0;color:#526679">Payment status</td><td style="padding:6px 0;font-weight:700">${escapeHtml(paymentStatus)}</td></tr>
+              <tr><td style="padding:6px 16px 6px 0;color:#526679">Amount recorded</td><td style="padding:6px 0;font-weight:700">${escapeHtml(amount)}</td></tr>
+              <tr><td style="padding:6px 16px 6px 0;color:#526679">Enrollment date</td><td style="padding:6px 0">${escapeHtml(enrolledDate)}</td></tr>
               ${
                 endDate
-                  ? `<tr><td style="padding:6px 16px 6px 0;color:#526679">Plan valid through</td><td style="padding:6px 0">${endDate}</td></tr>`
+                  ? `<tr><td style="padding:6px 16px 6px 0;color:#526679">Plan valid through</td><td style="padding:6px 0">${escapeHtml(endDate)}</td></tr>`
                   : ""
               }
             </table>
+            <p>Please keep this Enrollment ID. Our front desk can use it to check attendance for your treatment-plan visits.</p>
             <p>Our clinic team will contact you with the next steps. You can also call us at <strong>(703) 361-4357</strong>.</p>
             <p><a href="${baseUrl}/plans/${plan.slug}" style="color:#229653;font-weight:700">View plan details</a></p>
             <p>Altmed Medical Center</p>
           </div>
         `
       });
+
+      await mailer.transport.sendMail({
+        from: mailer.from,
+        to: mailer.adminRecipient,
+        replyTo: enrollment.patientEmail,
+        subject: adminSubject,
+        text: [
+          `Enrollment ID: ${enrollmentCode}`,
+          `Patient: ${enrollment.patientName ?? "Patient"}`,
+          `Email: ${enrollment.patientEmail}`,
+          `Phone: ${enrollment.patientPhone ?? "Not provided"}`,
+          `Plan: ${plan.name}`,
+          `Status: ${enrollment.status}`,
+          `Amount recorded: ${amount}`,
+          `Payment method: ${enrollment.paymentMethod ?? "Not set"}`,
+          `Enrollment date: ${enrolledDate}`,
+          endDate ? `Plan valid through: ${endDate}` : "",
+          "",
+          `Admin attendance: ${baseUrl}/admin/treatment-plans/attendance?code=${encodeURIComponent(enrollmentCode)}`
+        ]
+          .filter(Boolean)
+          .join("\n")
+      });
+
       await this.enrollments.update({ id: enrollment.id }, { confirmationEmailSentAt: new Date() });
     } catch (error) {
       this.logger.warn(
-        `Payment confirmation email failed for enrollment ${enrollment.id}: ${
+        `Enrollment email failed for enrollment ${enrollment.id}: ${
           error instanceof Error ? error.message : "Unknown error"
         }`
       );
     }
+  }
+
+  private async getMailer() {
+    const siteSetting = await this.siteSettingsService.findByKey("smtp");
+    const smtpSettings = (siteSetting?.value ?? {}) as SmtpSettingValue;
+    const hasAdminSettings = Object.keys(smtpSettings).length > 0;
+    const enabled = hasAdminSettings ? smtpSettings.enabled === true : true;
+    const host = asString(smtpSettings.host) || this.configService.get<string>("email.host");
+    const port = asNumber(smtpSettings.port, this.configService.get<number>("email.port") ?? 587);
+    const user = asString(smtpSettings.username) || this.configService.get<string>("email.user");
+    const pass = asString(smtpSettings.password) || this.configService.get<string>("email.pass");
+    const adminRecipient =
+      asString(smtpSettings.recipientEmail) ||
+      this.configService.get<string>("email.recipient") ||
+      user;
+
+    if (!enabled || !host || !user || !pass || !adminRecipient) {
+      return null;
+    }
+
+    const fromEmail = asString(smtpSettings.fromEmail) || user;
+    const fromName = asString(smtpSettings.fromName) || "Altmed Medical Center";
+    const secure = typeof smtpSettings.secure === "boolean" ? smtpSettings.secure : port === 465;
+
+    return {
+      transport: nodemailer.createTransport({
+        host,
+        port,
+        secure,
+        auth: { user, pass }
+      }),
+      from: `${fromName} <${fromEmail}>`,
+      adminRecipient
+    };
+  }
+
+  private async ensureEnrollmentCode(enrollment: PlanEnrollment) {
+    if (enrollment.enrollmentCode) {
+      return enrollment;
+    }
+    enrollment.enrollmentCode = await this.createUniqueEnrollmentCode();
+    return this.enrollments.save(enrollment);
+  }
+
+  private async createUniqueEnrollmentCode() {
+    for (let attempt = 0; attempt < 8; attempt += 1) {
+      const token = randomBytes(4).toString("hex").toUpperCase();
+      const code = `AM-${token.slice(0, 4)}-${token.slice(4)}`;
+      const existing = await this.enrollments.findOne({ where: { enrollmentCode: code } });
+      if (!existing) {
+        return code;
+      }
+    }
+    throw new InternalServerErrorException("Could not create a unique enrollment code");
+  }
+
+  private normalizeEnrollmentCode(value?: string | null) {
+    return value?.trim().toUpperCase().replace(/\s+/g, "") || "";
   }
 
   private async syncStripePrice(plan: TreatmentPlan) {
@@ -500,6 +787,15 @@ export class TreatmentPlansService {
 
   private normalizeChecklist(items?: string[]) {
     return (items ?? []).map((item) => item.trim()).filter(Boolean);
+  }
+
+  private parseOptionalDate(value?: string | null) {
+    if (!value) {
+      return null;
+    }
+    const trimmed = value.trim();
+    const parsed = /^\d{4}-\d{2}-\d{2}$/.test(trimmed) ? new Date(`${trimmed}T12:00:00`) : new Date(trimmed);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
   }
 
   private slugify(value: string) {

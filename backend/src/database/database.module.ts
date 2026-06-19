@@ -13,6 +13,7 @@ import {
   Provider,
   ServicePage,
   SiteSettings,
+  PlanAttendance,
   PlanEnrollment,
   StripeSettings,
   TreatmentPlan,
@@ -48,6 +49,7 @@ import {
           SiteSettings,
           AnalyticsEvent,
           TreatmentPlan,
+          PlanAttendance,
           PlanEnrollment,
           StripeSettings
         ],

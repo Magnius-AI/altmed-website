@@ -67,11 +67,11 @@ export function TreatmentPlanForm({ plan, action, submitLabel }: Props) {
       </div>
       <label className="block">
         <span className="mb-1 block text-sm font-medium text-neutral-700">Description</span>
-        <textarea name="description" rows={4} defaultValue={plan?.description ?? ""} className="input min-h-[110px]" />
+        <textarea name="description" rows={3} defaultValue={plan?.description ?? ""} className="input min-h-[84px]" />
       </label>
       <input type="hidden" name="currency" value={plan?.currency ?? "usd"} />
-      <div className="card bg-slate-50">
-        <div className="mb-3 flex items-center justify-between gap-3">
+      <div className="rounded-lg border border-[var(--admin-border)] bg-[var(--color-bg-gray)] p-3">
+        <div className="mb-2 flex items-center justify-between gap-3">
           <div className="text-sm font-semibold text-neutral-900">Checklist Items</div>
           <button
             type="button"

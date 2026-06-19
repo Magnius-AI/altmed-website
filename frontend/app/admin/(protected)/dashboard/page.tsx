@@ -28,10 +28,10 @@ const quickLinks: Array<{
   icon: LucideIcon;
 }> = [
   {
-    href: "/admin/treatment-plans/enrollments" as Route,
-    label: "Enrollments",
-    description: "Review patient enrollment status and payment details.",
-    icon: Users
+    href: "/admin/treatment-plans/attendance" as Route,
+    label: "Attendance",
+    description: "Record treatment visits by enrollment code.",
+    icon: CalendarCheck2
   },
   {
     href: "/admin/announcements" as Route,
@@ -116,16 +116,28 @@ export default async function AdminDashboardPage() {
       icon: ClipboardList
     },
     {
-      label: "Total Enrolled",
-      value: planMetrics.totalEnrolled,
-      detail: "Paid, active, or completed enrollments",
+      label: "Active Members",
+      value: planMetrics.activeMembers,
+      detail: "Patients currently inside a treatment window",
       icon: Users
     },
     {
-      label: "Active Members",
-      value: planMetrics.activeMembers,
-      detail: `${formatMoney(planMetrics.revenueMtdCents)} revenue this month`,
+      label: "Follow-Ups Due",
+      value: planMetrics.followUpsDue,
+      detail: "Next visits due within the next 7 days",
+      icon: CalendarCheck2
+    },
+    {
+      label: "Visits This Month",
+      value: planMetrics.visitsThisMonth,
+      detail: `${formatMoney(planMetrics.revenueMtdCents)} collected this month`,
       icon: DollarSign
+    },
+    {
+      label: "Pending Enrollments",
+      value: planMetrics.pendingEnrollments,
+      detail: "Checkout or manual records not paid yet",
+      icon: CreditCard
     },
     {
       label: "Published Posts",
@@ -159,54 +171,93 @@ export default async function AdminDashboardPage() {
   return (
     <div className="grid gap-4">
       <section className="admin-card overflow-hidden">
-        <div className="grid gap-5 bg-[linear-gradient(135deg,#ffffff_0%,var(--color-bg-gray)_62%,#fff4eb_100%)] p-6 lg:grid-cols-[minmax(0,1fr)_minmax(380px,520px)] lg:items-center">
+        <div className="grid gap-4 bg-white p-4 lg:grid-cols-[minmax(0,1fr)_minmax(360px,500px)] lg:items-center">
           <div>
             <div className="admin-label">Operations Dashboard</div>
-            <h2 className="mt-2 font-heading text-[2.2rem] font-normal leading-tight text-neutral-950">Welcome{data.user?.name ? `, ${data.user.name}` : ""}</h2>
+            <h2 className="mt-1.5 text-[1.7rem] font-semibold leading-tight text-neutral-950">Welcome{data.user?.name ? `, ${data.user.name}` : ""}</h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-neutral-600">
               A focused control room for enrollments, payments, notices, blog content, provider scheduling, and clinic operations.
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-lg bg-white/95 p-4 shadow-sm ring-1 ring-[var(--admin-border)]">
+            <div className="rounded-lg border border-[var(--admin-border)] bg-white p-3">
               <div className="flex items-center justify-between gap-3">
                 <Users className="h-5 w-5 text-[var(--color-primary)]" />
                 <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-neutral-500">Enrollments</div>
               </div>
-              <div className="mt-3 text-3xl font-semibold leading-none text-neutral-950">{formatNumber(planMetrics.totalEnrolled)}</div>
+              <div className="mt-2 text-2xl font-semibold leading-none text-neutral-950">{formatNumber(planMetrics.totalEnrolled)}</div>
             </div>
-            <div className="rounded-lg bg-white/95 p-4 shadow-sm ring-1 ring-[var(--admin-border)]">
+            <div className="rounded-lg border border-[var(--admin-border)] bg-white p-3">
               <div className="flex items-center justify-between gap-3">
-                <Bell className="h-5 w-5 text-[var(--color-accent)]" />
-                <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-neutral-500">Notices</div>
+                <CalendarCheck2 className="h-5 w-5 text-[var(--color-primary)]" />
+                <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-neutral-500">Follow-ups</div>
               </div>
-              <div className="mt-3 text-3xl font-semibold leading-none text-neutral-950">{formatNumber(activeAnnouncements)}</div>
+              <div className="mt-2 text-2xl font-semibold leading-none text-neutral-950">{formatNumber(planMetrics.followUpsDue)}</div>
             </div>
-            <div className="rounded-lg bg-white/95 p-4 shadow-sm ring-1 ring-[var(--admin-border)]">
+            <div className="rounded-lg border border-[var(--admin-border)] bg-white p-3">
               <div className="flex items-center justify-between gap-3">
                 <Activity className="h-5 w-5 text-[var(--color-primary-dark)]" />
-                <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-neutral-500">Posts</div>
+                <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-neutral-500">Revenue MTD</div>
               </div>
-              <div className="mt-3 text-3xl font-semibold leading-none text-neutral-950">{formatNumber(publishedPosts)}</div>
+              <div className="mt-2 text-2xl font-semibold leading-none text-neutral-950">{formatMoney(planMetrics.revenueMtdCents)}</div>
             </div>
           </div>
         </div>
+      </section>
+
+      <section className="grid gap-4 lg:grid-cols-3">
+        <Link href={"/admin/treatment-plans/attendance" as Route} className="admin-card group p-4 transition hover:border-[rgba(22,122,91,0.28)]">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="admin-label">Today’s Treatment Work</div>
+              <h3 className="mt-1.5 text-lg font-semibold text-neutral-950">Follow-ups and attendance</h3>
+              <p className="mt-2 text-sm leading-6 text-neutral-600">
+                Review next visits, last visits, and attendance counts for active treatment patients.
+              </p>
+            </div>
+            <ArrowRight className="h-5 w-5 text-neutral-400 transition group-hover:text-[var(--color-primary)]" />
+          </div>
+        </Link>
+        <Link href={"/admin/treatment-plans/cash-inflow" as Route} className="admin-card group p-4 transition hover:border-[rgba(22,122,91,0.28)]">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="admin-label">Payment Tracking</div>
+              <h3 className="mt-1.5 text-lg font-semibold text-neutral-950">{formatMoney(planMetrics.revenueMtdCents)} this month</h3>
+              <p className="mt-2 text-sm leading-6 text-neutral-600">
+                Track paid, pending, refunded, and failed treatment-plan payments from one cash view.
+              </p>
+            </div>
+            <ArrowRight className="h-5 w-5 text-neutral-400 transition group-hover:text-[var(--color-primary)]" />
+          </div>
+        </Link>
+        <Link href={"/admin/treatment-plans" as Route} className="admin-card group p-4 transition hover:border-[rgba(22,122,91,0.28)]">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="admin-label">Plan Setup</div>
+              <h3 className="mt-1.5 text-lg font-semibold text-neutral-950">{formatNumber(planMetrics.activePlans)} active plans</h3>
+              <p className="mt-2 text-sm leading-6 text-neutral-600">
+                Build plans with pricing, duration, checklist items, and public enrollment links.
+              </p>
+            </div>
+            <ArrowRight className="h-5 w-5 text-neutral-400 transition group-hover:text-[var(--color-primary)]" />
+          </div>
+        </Link>
       </section>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
         {quickLinks.map((link) => {
           const Icon = link.icon;
           return (
-            <Link key={link.href} href={link.href} className="admin-card group flex min-h-[132px] flex-col justify-between p-4 transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--admin-shadow)]">
+            <Link key={link.href} href={link.href} className="admin-card group flex min-h-[112px] flex-col justify-between p-3 transition duration-200 hover:border-[rgba(22,122,91,0.28)]">
               <div className="flex items-start justify-between gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-bg-gray)] text-[var(--color-primary)] transition group-hover:bg-[var(--color-primary)] group-hover:text-white">
-                  <Icon className="h-5 w-5" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[var(--color-bg-gray)] text-[var(--color-primary)] transition group-hover:bg-[var(--color-primary)] group-hover:text-white">
+                  <Icon className="h-4 w-4" />
                 </div>
-                <ArrowRight className="mt-1 h-4 w-4 text-neutral-400 transition group-hover:translate-x-0.5 group-hover:text-[var(--color-accent)]" />
+                <ArrowRight className="mt-1 h-4 w-4 text-neutral-400 transition group-hover:text-[var(--color-primary)]" />
               </div>
               <div>
                 <div className="font-semibold text-neutral-950">{link.label}</div>
-                <p className="mt-1.5 text-sm leading-6 text-neutral-600">{link.description}</p>
+                <p className="mt-1 text-sm leading-5 text-neutral-600">{link.description}</p>
               </div>
             </Link>
           );
@@ -216,20 +267,15 @@ export default async function AdminDashboardPage() {
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {stats.map((stat, index) => {
           const Icon = stat.icon;
-          const tone =
-            index % 3 === 1
-              ? "bg-[var(--color-accent-light)] text-[var(--color-accent)]"
-              : index % 3 === 2
-                ? "bg-[var(--color-bg-gray)] text-[var(--color-primary-dark)]"
-                : "bg-[var(--color-primary)] text-white";
+          const tone = index % 2 === 0 ? "bg-[var(--color-primary)] text-white" : "bg-[var(--color-bg-gray)] text-[var(--color-primary)]";
           return (
-            <div key={stat.label} className="admin-card group p-4 transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--admin-shadow)]">
+            <div key={stat.label} className="admin-card group p-3 transition duration-200 hover:border-[rgba(22,122,91,0.28)]">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="admin-label">{stat.label}</div>
-                  <div className="mt-2 font-heading text-[2rem] font-normal leading-none text-neutral-950">{formatNumber(stat.value)}</div>
+                  <div className="mt-2 text-2xl font-semibold leading-none text-neutral-950">{formatNumber(stat.value)}</div>
                 </div>
-                <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${tone}`}>
+                <div className={`flex h-8 w-8 items-center justify-center rounded-md ${tone}`}>
                   <Icon className="h-4 w-4" />
                 </div>
               </div>
@@ -252,7 +298,7 @@ export default async function AdminDashboardPage() {
             </p>
           </div>
           <form action={updateTreatmentPlansVisibilityAction} className="flex items-center gap-2">
-            <label className="flex items-center gap-2 rounded-md border border-[var(--admin-border)] bg-[var(--color-bg-gray)] px-3 py-2 text-sm font-semibold text-neutral-700 shadow-inner">
+            <label className="flex items-center gap-2 rounded-md border border-[var(--admin-border)] bg-[var(--color-bg-gray)] px-3 py-2 text-sm font-semibold text-neutral-700">
               <input type="checkbox" name="treatmentPlansEnabled" defaultChecked={treatmentPlansEnabled} className="h-4 w-4 accent-[var(--color-primary)]" />
               Show plans
             </label>
