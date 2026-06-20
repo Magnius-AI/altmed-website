@@ -240,7 +240,7 @@ export default async function HomePage() {
               No referral needed.
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
-              <Link href={buildBookingUrl("home_hero", "book-appointment") as Route} className="btn-primary w-full justify-center sm:w-auto">
+              <Link href={buildBookingUrl("home_hero", "book-appointment") as Route} className="btn-accent w-full justify-center sm:w-auto">
                 Book Appointment <ArrowRight className="h-4 w-4" />
               </Link>
               <a href={`tel:${clinic.phone}`} className="btn-outline-dark w-full justify-center sm:w-auto">

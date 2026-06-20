@@ -9,7 +9,7 @@ type Props = {
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <button type="submit" className="btn btn-primary btn-lg w-full justify-center" disabled={pending}>
+    <button type="submit" className="btn-accent btn-lg w-full justify-center" disabled={pending}>
       {pending ? "Opening checkout..." : "Enroll Now"}
     </button>
   );

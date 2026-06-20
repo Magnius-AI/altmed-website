@@ -317,7 +317,7 @@ export function ServicePageContent({ page }: Props) {
               </h1>
               <div className="prose-lite mt-5 max-w-none" dangerouslySetInnerHTML={{ __html: heroIntroHtml }} />
               <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap">
-                <a href={buildBookingUrl("service_page", page.slug)} className="btn-primary justify-center sm:w-auto">
+                <a href={buildBookingUrl("service_page", page.slug)} className="btn-accent justify-center sm:w-auto">
                   Book This Service
                 </a>
                 <a href={`tel:${clinic.phone}`} className="btn-outline-dark justify-center sm:w-auto">
@@ -332,7 +332,7 @@ export function ServicePageContent({ page }: Props) {
                     return (
                       <div key={item.label} className="min-w-0 rounded-[14px] border border-[rgba(18,52,77,0.08)] bg-white p-4 sm:p-5">
                         <Icon className="h-5 w-5 text-[var(--color-primary)]" />
-                        <div className="mt-3 break-words text-[clamp(1.16rem,2.4vw,1.55rem)] font-semibold leading-tight text-[var(--color-text-dark)]">
+                        <div className="mt-3 max-w-full whitespace-normal text-[clamp(1.05rem,1.45vw,1.38rem)] font-semibold leading-tight text-[var(--color-text-dark)] [hyphens:none] [overflow-wrap:normal] [text-wrap:normal] [word-break:normal]">
                           {item.value}
                         </div>
                         <div className="mt-2 text-sm leading-6 text-[var(--color-text-muted)]">{item.label}</div>
@@ -450,7 +450,7 @@ export function ServicePageContent({ page }: Props) {
                     We accept most major insurances including Aetna, CareFirst, Cigna, and United.
                     Self-pay rates available.
                   </p>
-                  <a href={buildBookingUrl("service_specific_cta", page.slug)} className="btn-primary mt-5 justify-center sm:w-auto">
+                  <a href={buildBookingUrl("service_specific_cta", page.slug)} className="btn-accent mt-5 justify-center sm:w-auto">
                     Book This Service
                   </a>
                 </div>
@@ -546,7 +546,7 @@ export function ServicePageContent({ page }: Props) {
               <div className="mt-5 flex flex-wrap gap-4">
                 <a
                   href={`tel:${clinic.phone}`}
-                  className="focus-ring inline-flex min-h-[44px] items-center justify-center rounded-md border border-[var(--color-accent)] bg-[var(--color-accent)] px-5 py-2.5 text-sm font-bold uppercase tracking-[0.08em] text-white shadow-[0_10px_22px_rgba(217,123,58,0.22)] transition hover:border-[var(--color-accent-hover)] hover:bg-[var(--color-accent-hover)]"
+                  className="btn-accent min-h-[44px] justify-center px-5 py-2.5"
                 >
                   Call {clinic.phone}
                 </a>

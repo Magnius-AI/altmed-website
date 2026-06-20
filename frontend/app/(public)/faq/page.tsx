@@ -35,7 +35,7 @@ export default async function FaqPage() {
               drivers, and employer clients.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <Link href={buildBookingUrl("faq_page", "book-appointment") as Route} className="btn-primary">
+              <Link href={buildBookingUrl("faq_page", "book-appointment") as Route} className="btn-accent">
                 Book Appointment
               </Link>
               <Link href={publicRoutes.contact as Route} className="btn-outline-dark">

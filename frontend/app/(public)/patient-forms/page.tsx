@@ -45,7 +45,7 @@ export default function PatientFormsPage() {
               before your visit and our team can guide you.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <Link href={publicRoutes.appointment as Route} className="btn-primary">
+              <Link href={publicRoutes.appointment as Route} className="btn-accent">
                 Book Appointment
               </Link>
               <a href={`tel:${clinic.phone}`} className="btn-outline-dark">

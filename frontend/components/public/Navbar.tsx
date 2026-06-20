@@ -241,7 +241,7 @@ export function Navbar({ menu, showTreatmentPlans = true }: Props) {
                   >
                     Not sure? Browse all services
                   </Link>
-                  <Link href={buildBookingUrl("nav_mega", "book-appointment") as Route} className="btn-primary">
+                  <Link href={buildBookingUrl("nav_mega", "book-appointment") as Route} className="btn-accent">
                     Book Appointment
                   </Link>
                 </div>
@@ -298,7 +298,7 @@ export function Navbar({ menu, showTreatmentPlans = true }: Props) {
           <div className="hidden items-center justify-end gap-4 lg:flex">
             <Link
               href={buildBookingUrl("nav", "book-appointment") as Route}
-              className="btn-primary min-w-[168px] justify-center px-6"
+              className="btn-accent min-w-[168px] justify-center px-6"
             >
               Book Appointment
             </Link>

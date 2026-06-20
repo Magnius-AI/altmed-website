@@ -183,7 +183,7 @@ export default async function ProvidersPage({ searchParams }: ProvidersPageProps
                           ) : null}
                         </div>
                         {href ? (
-                          <a href={href} target="_blank" rel="noreferrer" className="btn-primary justify-center">
+                          <a href={href} target="_blank" rel="noreferrer" className="btn-accent justify-center">
                             <CalendarCheck2 className="h-4 w-4" />
                             Schedule
                           </a>
@@ -253,7 +253,7 @@ export default async function ProvidersPage({ searchParams }: ProvidersPageProps
                     ))}
                   </div>
                   {provider.isSchedulable && provider.appointmentUrl ? (
-                    <a href={getAppointmentHref(provider.appointmentUrl)} target="_blank" rel="noreferrer" className="btn-primary mt-5">
+                    <a href={getAppointmentHref(provider.appointmentUrl)} target="_blank" rel="noreferrer" className="btn-accent mt-5">
                       <CalendarCheck2 className="h-4 w-4" />
                       Schedule
                     </a>
@@ -285,7 +285,7 @@ export default async function ProvidersPage({ searchParams }: ProvidersPageProps
             <a href={`tel:${clinic.phone}`} className="btn-primary">
               Call {clinic.phone}
             </a>
-            <Link href={publicRoutes.appointment as Route} className="btn-outline-light">
+            <Link href={publicRoutes.appointment as Route} className="btn-accent">
               Book Appointment
             </Link>
           </div>
