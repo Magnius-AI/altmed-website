@@ -387,7 +387,7 @@ export default async function HomePage() {
                   <p className="mt-4 text-base leading-8 text-[var(--c-muted)]">{service.body}</p>
                   <div className="mt-5 text-xs font-bold uppercase tracking-[0.12em] text-[var(--c-primary)]">{service.stat}</div>
                   <Link href={publicRoutes.service(service.slug) as Route} className="mt-5 inline-flex items-center gap-2 font-bold text-[var(--c-primary)] hover:underline">
-                    Learn more <ArrowRight className="h-4 w-4" />
+                    Learn more about {service.title} <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
               </article>
