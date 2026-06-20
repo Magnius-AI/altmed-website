@@ -247,6 +247,7 @@ summary::-webkit-details-marker {
   border-radius: var(--radius-sm);
   line-height: 1.25;
   box-shadow: none;
+  max-width: 100%;
 }
 
 @media (max-width: 420px) {
@@ -256,7 +257,7 @@ summary::-webkit-details-marker {
     white-space: normal;
     padding-inline: 0.9rem;
     text-align: center;
-    letter-spacing: 0.06em;
+    letter-spacing: 0;
   }
 }
 
@@ -271,6 +272,20 @@ summary::-webkit-details-marker {
 .btn-primary:hover {
   background: var(--color-primary-dark);
   border-color: var(--color-primary-dark);
+  color: #fff !important;
+}
+
+.btn-accent {
+  @apply btn text-white;
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff !important;
+  box-shadow: 0 10px 22px rgba(183, 90, 29, 0.18);
+}
+
+.btn-accent:hover {
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
   color: #fff !important;
 }
 

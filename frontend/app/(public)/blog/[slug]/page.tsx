@@ -125,7 +125,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
               telehealth, and medical weight-loss services in Manassas. If this article matches
               what you are dealing with, our team can help you choose the right service.
             </p>
-            <a href={buildBookingUrl("blog_post_topic_cta", post.slug)} className="btn-primary mt-5">
+            <a href={buildBookingUrl("blog_post_topic_cta", post.slug)} className="btn-accent mt-5">
               Book Appointment
             </a>
           </div>
@@ -151,7 +151,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
             </p>
             <a
               href={buildBookingUrl("blog_post", post.slug)}
-              className="btn-primary mt-5"
+              className="btn-accent mt-5"
             >
               Book Appointment
             </a>

@@ -99,7 +99,7 @@ export default function TelehealthPage() {
               refill discussions when an in-person exam is not required.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <Link href={buildBookingUrl("telehealth", "book-appointment") as Route} className="btn-primary">
+              <Link href={buildBookingUrl("telehealth", "book-appointment") as Route} className="btn-accent">
                 Book Telehealth Visit
               </Link>
               <a href="#telehealth-consent" className="btn-outline-dark">

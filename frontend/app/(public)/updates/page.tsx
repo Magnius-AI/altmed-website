@@ -62,7 +62,7 @@ export default async function UpdatesPage() {
         </p>
         <a
           href={buildBookingUrl("announcements_page", "cta")}
-          className="mt-5 inline-flex rounded-full bg-white px-5 py-3 font-semibold text-primary"
+          className="btn-accent mt-5"
         >
           Book Appointment
         </a>

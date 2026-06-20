@@ -95,7 +95,7 @@ export default async function PlansPage() {
                 <div className="text-xl font-semibold text-neutral-900">{formatMoney(plan.priceCents, plan.currency)}</div>
                 <div className="text-sm text-neutral-500">{plan.durationLabel ?? `${plan.durationDays ?? 0} days`}</div>
               </div>
-              <Link href={`/plans/${plan.slug}` as Route} className="btn btn-primary">
+              <Link href={`/plans/${plan.slug}` as Route} className="btn-accent">
                 Enroll Now
               </Link>
             </div>

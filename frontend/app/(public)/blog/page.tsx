@@ -57,7 +57,7 @@ export default async function BlogPage() {
               </Link>
               <a
                 href={buildBookingUrl("blog_index", "featured_cta")}
-                className="btn-primary"
+                className="btn-accent"
               >
                 Book Appointment
               </a>

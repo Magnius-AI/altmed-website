@@ -221,7 +221,7 @@ export default async function AppointmentPage({ searchParams }: AppointmentPageP
               welcome during clinic hours.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <Link href={"#schedule" as Route} className="btn-primary">
+              <Link href={"#schedule" as Route} className="btn-accent">
                 Book Online
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -394,7 +394,7 @@ export default async function AppointmentPage({ searchParams }: AppointmentPageP
                           href={href}
                           target={isExternal ? "_blank" : undefined}
                           rel={isExternal ? "noreferrer" : undefined}
-                          className="btn-primary justify-center"
+                          className="btn-accent justify-center"
                         >
                           <CalendarCheck2 className="h-4 w-4" />
                           Schedule
