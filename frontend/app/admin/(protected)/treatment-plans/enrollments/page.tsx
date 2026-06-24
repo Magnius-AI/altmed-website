@@ -1,10 +1,11 @@
 import type { Route } from "next";
 import Link from "next/link";
 import { AlertCircle, Banknote, CalendarDays, ChevronDown, ChevronLeft, ChevronRight, ClipboardCheck, Search, Users } from "lucide-react";
+import { AdminConfirmDeleteButton } from "@/components/admin/AdminConfirmDeleteButton";
 import { AdminSubmitButton } from "@/components/admin/AdminSubmitButton";
 import { AdminToast } from "@/components/admin/AdminToast";
 import { getAdminPlanEnrollments, getAdminTreatmentPlans, type PlanEnrollment, type TreatmentPlan } from "@/lib/api";
-import { createEnrollmentAction, updateEnrollmentAction } from "../actions";
+import { createEnrollmentAction, deleteEnrollmentAction, updateEnrollmentAction } from "../actions";
 
 const PAID_STATUSES = new Set(["paid", "active", "completed"]);
 const UNPAID_STATUSES = new Set(["pending", "failed"]);
@@ -79,6 +80,12 @@ function matchesSearch(enrollment: PlanEnrollment, query: string) {
 function savedMessage(saved?: string) {
   if (saved === "created") {
     return "Patient enrollment added. Welcome/admin emails are sent when the enrollment is paid or active.";
+  }
+  if (saved === "updated") {
+    return "Enrollment updated.";
+  }
+  if (saved === "deleted") {
+    return "Enrollment deleted.";
   }
   return null;
 }
@@ -446,6 +453,11 @@ export default async function PlanEnrollmentsPage({
                     </AdminSubmitButton>
                   </form>
                 </details>
+                <AdminConfirmDeleteButton
+                  action={deleteEnrollmentAction.bind(null, enrollment.id)}
+                  title="Delete this enrollment?"
+                  description={`This removes enrollment ${code} for ${enrollment.patientName ?? enrollment.patientEmail}, along with their attendance history. This cannot be undone.`}
+                />
               </div>
             </article>
           );

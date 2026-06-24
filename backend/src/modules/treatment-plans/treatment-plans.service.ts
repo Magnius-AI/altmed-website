@@ -234,6 +234,16 @@ export class TreatmentPlansService {
     return saved;
   }
 
+  async removeEnrollment(id: string) {
+    const enrollment = await this.enrollments.findOne({ where: { id } });
+    if (!enrollment) {
+      throw new NotFoundException("Enrollment not found");
+    }
+    await this.attendance.delete({ enrollmentId: id });
+    await this.enrollments.delete({ id });
+    return { success: true };
+  }
+
   async findAttendance(filters: { code?: string } = {}) {
     const where: Record<string, unknown> = {};
     const code = this.normalizeEnrollmentCode(filters.code);
@@ -558,23 +568,23 @@ export class TreatmentPlansService {
     if (!mailer) {
       return;
     }
-    const amount = new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: plan.currency.toUpperCase()
-    }).format((enrollment.amountPaidCents ?? plan.priceCents) / 100);
-    const dateFormatter = new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric" });
-    const enrolledDate = enrollment.enrolledAt ? dateFormatter.format(enrollment.enrolledAt) : dateFormatter.format(new Date());
-    const endDate = enrollment.endsAt ? dateFormatter.format(enrollment.endsAt) : null;
-    const baseUrl = this.configService.get<string>("payments.baseUrl") ?? "https://altmedfirst.com";
-    const enrollmentCode = enrollment.enrollmentCode ?? enrollment.id;
-    const patientName = enrollment.patientName ?? "there";
-    const paymentStatus = PAID_STATUSES.includes(enrollment.status) ? "Paid/active" : enrollment.status;
-    const adminSubject =
-      source === "stripe"
-        ? `Paid treatment plan enrollment: ${enrollmentCode}`
-        : `Treatment plan enrollment added: ${enrollmentCode}`;
-
     try {
+      const amount = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: (plan.currency || "usd").toUpperCase()
+      }).format((enrollment.amountPaidCents ?? plan.priceCents) / 100);
+      const dateFormatter = new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric" });
+      const enrolledDate = enrollment.enrolledAt ? dateFormatter.format(enrollment.enrolledAt) : dateFormatter.format(new Date());
+      const endDate = enrollment.endsAt ? dateFormatter.format(enrollment.endsAt) : null;
+      const baseUrl = this.configService.get<string>("payments.baseUrl") ?? "https://altmedfirst.com";
+      const enrollmentCode = enrollment.enrollmentCode ?? enrollment.id;
+      const patientName = enrollment.patientName ?? "there";
+      const paymentStatus = PAID_STATUSES.includes(enrollment.status) ? "Paid/active" : enrollment.status;
+      const adminSubject =
+        source === "stripe"
+          ? `Paid treatment plan enrollment: ${enrollmentCode}`
+          : `Treatment plan enrollment added: ${enrollmentCode}`;
+
       await mailer.transport.sendMail({
         from: mailer.from,
         to: enrollment.patientEmail,
