@@ -98,23 +98,43 @@ export async function createEnrollmentAction(formData: FormData) {
 }
 
 export async function updateEnrollmentAction(id: string, formData: FormData) {
-  await adminJsonRequest(`/api/treatment-plans/admin/enrollments/${id}`, "PATCH", {
-    status: String(formData.get("status") ?? "").trim(),
-    patientName: toOptionalString(formData.get("patientName")),
-    patientPhone: toOptionalString(formData.get("patientPhone")),
-    amountPaidCents: toOptionalCents(formData.get("amountPaid")),
-    paymentMethod: toOptionalString(formData.get("paymentMethod")),
-    startsAt: toOptionalString(formData.get("startsAt")),
-    endsAt: toOptionalString(formData.get("endsAt")),
-    visitCount: toOptionalNumber(formData.get("visitCount")),
-    lastVisitAt: toOptionalString(formData.get("lastVisitAt")),
-    nextVisitAt: toOptionalString(formData.get("nextVisitAt")),
-    notes: toOptionalString(formData.get("notes"))
-  });
+  try {
+    await adminJsonRequest(`/api/treatment-plans/admin/enrollments/${id}`, "PATCH", {
+      status: String(formData.get("status") ?? "").trim(),
+      patientName: toOptionalString(formData.get("patientName")),
+      patientPhone: toOptionalString(formData.get("patientPhone")),
+      amountPaidCents: toOptionalCents(formData.get("amountPaid")),
+      paymentMethod: toOptionalString(formData.get("paymentMethod")),
+      startsAt: toOptionalString(formData.get("startsAt")),
+      endsAt: toOptionalString(formData.get("endsAt")),
+      visitCount: toOptionalNumber(formData.get("visitCount")),
+      lastVisitAt: toOptionalString(formData.get("lastVisitAt")),
+      nextVisitAt: toOptionalString(formData.get("nextVisitAt")),
+      notes: toOptionalString(formData.get("notes"))
+    });
+  } catch (error) {
+    const message = actionErrorMessage(error, "Could not update this enrollment");
+    redirect(`/admin/treatment-plans/enrollments?error=${encodeURIComponent(message)}`);
+  }
   revalidatePath("/admin/treatment-plans/enrollments");
   revalidatePath("/admin/treatment-plans/attendance");
   revalidatePath("/admin/treatment-plans/cash-inflow");
   revalidatePath("/admin/dashboard");
+  redirect("/admin/treatment-plans/enrollments?saved=updated");
+}
+
+export async function deleteEnrollmentAction(id: string) {
+  try {
+    await adminJsonRequest(`/api/treatment-plans/admin/enrollments/${id}`, "DELETE");
+  } catch (error) {
+    const message = actionErrorMessage(error, "Could not delete this enrollment");
+    redirect(`/admin/treatment-plans/enrollments?error=${encodeURIComponent(message)}`);
+  }
+  revalidatePath("/admin/treatment-plans/enrollments");
+  revalidatePath("/admin/treatment-plans/attendance");
+  revalidatePath("/admin/treatment-plans/cash-inflow");
+  revalidatePath("/admin/dashboard");
+  redirect("/admin/treatment-plans/enrollments?saved=deleted");
 }
 
 export async function recordAttendanceAction(formData: FormData) {

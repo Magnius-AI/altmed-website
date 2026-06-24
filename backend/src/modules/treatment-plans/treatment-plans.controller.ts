@@ -98,6 +98,13 @@ export class TreatmentPlansController {
     return this.treatmentPlansService.updateEnrollment(id, dto);
   }
 
+  @Delete("admin/enrollments/:id")
+  @UseGuards(JwtAuthGuard)
+  @Roles("admin")
+  removeEnrollment(@Param("id") id: string) {
+    return this.treatmentPlansService.removeEnrollment(id);
+  }
+
   @Patch(":id")
   @UseGuards(JwtAuthGuard)
   @Roles("admin")
