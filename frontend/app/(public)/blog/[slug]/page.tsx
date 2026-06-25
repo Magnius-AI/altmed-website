@@ -144,7 +144,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
             </div>
           ) : null}
           <div className="rounded-lg bg-[var(--color-primary)] px-6 py-6 text-white">
-            <h2 className="text-2xl font-semibold">Need care now?</h2>
+            <h2 className="text-2xl font-semibold text-gray-100">Need Care Now?</h2>
             <p className="mt-3 text-sm leading-7 text-white/82">
               If this article matches what you&apos;re dealing with, our Manassas team can help you
               choose the right next step.
