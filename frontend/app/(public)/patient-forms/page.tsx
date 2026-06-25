@@ -149,7 +149,7 @@ export default function PatientFormsPage() {
         </div>
       </section>
 
-      <section className="container-shell pb-14 md:pb-16">
+      {/* <section className="container-shell pb-14 md:pb-16">
         <div className="rounded-[20px] border border-slate-200 bg-white p-6 md:p-8">
           <div className="max-w-3xl reading-flow">
             <div className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
@@ -181,7 +181,7 @@ export default function PatientFormsPage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       <section className="container-shell pb-20">
         <div className="rounded-[20px] border border-slate-200 bg-[var(--color-footer-bg)] p-7 text-white md:p-9">
