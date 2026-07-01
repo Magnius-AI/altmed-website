@@ -10,6 +10,7 @@ type Props = {
   };
   searchParams?: {
     saved?: string;
+    toast?: string;
   };
 };
 
@@ -38,7 +39,10 @@ export default async function AdminBlogEditPage({ params, searchParams }: Props)
 
   return (
     <>
-      <AdminToast message={noticeMessage(searchParams?.saved)} />
+      <AdminToast
+        key={`${searchParams?.saved ?? ""}-${searchParams?.toast ?? ""}`}
+        message={noticeMessage(searchParams?.saved)}
+      />
       <BlogEditorForm
         title="Edit blog post"
         description="Update content, publication status, SEO metadata, and the featured image for this article."

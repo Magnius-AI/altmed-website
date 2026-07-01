@@ -147,6 +147,7 @@ export function BlogEditorForm({
             </label>
           </div>
           <input type="hidden" name="existingFeaturedImage" value={post?.featuredImage ?? ""} />
+          <input type="hidden" name="existingSlug" value={post?.slug ?? ""} />
         </section>
 
         <section className="admin-card p-5">

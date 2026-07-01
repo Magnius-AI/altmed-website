@@ -11,6 +11,7 @@ type Props = {
     category?: string;
     search?: string;
     saved?: string;
+    toast?: string;
   };
 };
 
@@ -54,7 +55,10 @@ export default async function AdminBlogPage({ searchParams }: Props) {
 
   return (
     <div className="space-y-6">
-      <AdminToast message={searchParams?.saved === "deleted" ? "Blog post deleted successfully." : null} />
+      <AdminToast
+        key={`${searchParams?.saved ?? ""}-${searchParams?.toast ?? ""}`}
+        message={searchParams?.saved === "deleted" ? "Blog post deleted successfully." : null}
+      />
       <section className="admin-card p-6">
         <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
           <div>

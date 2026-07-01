@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { adminJsonRequest, uploadAdminImage } from "@/lib/admin-api";
 
@@ -77,37 +77,51 @@ function buildBlogPayload(formData: FormData, featuredImage?: string) {
   };
 }
 
+function revalidateBlogContent(slug?: string, previousSlug?: string) {
+  const slugs = [slug, previousSlug].filter((value): value is string => Boolean(value));
+
+  revalidateTag("blog-posts");
+  revalidatePath("/");
+  revalidatePath("/admin/blog");
+  revalidatePath("/blog");
+  revalidatePath("/health-blogs");
+
+  Array.from(new Set(slugs)).forEach((value) => {
+    revalidatePath(`/blog/${value}`);
+    revalidatePath(`/health-blogs/${value}`);
+  });
+}
+
+function savedRedirect(path: string, saved: string): never {
+  redirect(`${path}?saved=${saved}&toast=${Date.now()}`);
+}
+
 export async function createBlogPostAction(formData: FormData) {
   const featuredImage = await resolveImageUrl(formData);
-  const post = await adminJsonRequest<{ id: string }>(
-    "/api/blog",
-    "POST",
-    buildBlogPayload(formData, featuredImage)
-  );
+  const payload = buildBlogPayload(formData, featuredImage);
+  const post = await adminJsonRequest<{ id: string; slug?: string }>("/api/blog", "POST", payload);
 
-  revalidatePath("/admin/blog");
-  revalidatePath("/health-blogs");
-  revalidatePath("/");
-  redirect(`/admin/blog/${post.id}/edit?saved=created`);
+  revalidateBlogContent(post.slug ?? payload.slug);
+  savedRedirect(`/admin/blog/${post.id}/edit`, "created");
 }
 
 export async function updateBlogPostAction(id: string, formData: FormData) {
   const existingImage = String(formData.get("existingFeaturedImage") ?? "").trim() || undefined;
   const featuredImage = (await resolveImageUrl(formData)) ?? existingImage;
+  const previousSlug = String(formData.get("existingSlug") ?? "").trim() || undefined;
+  const payload = buildBlogPayload(formData, featuredImage);
 
-  await adminJsonRequest(`/api/blog/${id}`, "PATCH", buildBlogPayload(formData, featuredImage));
+  await adminJsonRequest(`/api/blog/${id}`, "PATCH", payload);
 
-  revalidatePath("/admin/blog");
+  revalidateBlogContent(payload.slug, previousSlug);
   revalidatePath(`/admin/blog/${id}/edit`);
-  revalidatePath("/health-blogs");
-  redirect(`/admin/blog/${id}/edit?saved=updated`);
+  savedRedirect(`/admin/blog/${id}/edit`, "updated");
 }
 
 export async function deleteBlogPostAction(id: string) {
   await adminJsonRequest(`/api/blog/${id}`, "DELETE");
-  revalidatePath("/admin/blog");
-  revalidatePath("/health-blogs");
-  redirect("/admin/blog?saved=deleted");
+  revalidateBlogContent();
+  savedRedirect("/admin/blog", "deleted");
 }
 
 function buildTaxonomyPayload(formData: FormData) {
