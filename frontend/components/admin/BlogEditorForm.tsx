@@ -38,7 +38,7 @@ export function BlogEditorForm({
 }: Props) {
   return (
     <form action={action} className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
-      <div className="space-y-5">
+      <div className="min-w-0 space-y-5">
         <section className="admin-card p-5">
           <div className="admin-label">Blog Editor</div>
           <h2 className="mt-2 text-2xl font-semibold text-neutral-900">{title}</h2>

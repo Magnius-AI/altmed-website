@@ -56,17 +56,17 @@ export function ImageUpload({
   };
 
   return (
-    <div className="rounded-[14px] border border-slate-200 bg-white p-5">
+    <div className="min-w-0 max-w-full overflow-hidden rounded-[14px] border border-slate-200 bg-white p-5">
       <div className="text-sm font-semibold text-neutral-900">{label}</div>
-      <p className="mt-1 text-sm text-neutral-500">
+      <p className="mt-1 text-sm text-neutral-500 [overflow-wrap:anywhere]">
         Upload an image file or keep a hosted image URL. In production, uploads use S3 when the backend has AWS_S3_BUCKET and AWS_REGION set; otherwise they save to /uploads locally.
       </p>
-      <div className="mt-4 grid gap-4">
+      <div className="mt-4 grid min-w-0 gap-4">
         {previewUrl ? (
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-            <div className="relative h-32 overflow-hidden rounded-md border border-slate-200 bg-white">
+          <div className="min-w-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 p-3">
+            <div className="relative h-32 min-w-0 overflow-hidden rounded-md border border-slate-200 bg-white">
               <div
-                className="h-full w-full bg-cover bg-center"
+                className="absolute inset-0 bg-cover bg-center"
                 style={{ backgroundImage: `url(${previewUrl})` }}
                 aria-label="Featured image preview"
                 role="img"
@@ -74,17 +74,19 @@ export function ImageUpload({
               <button
                 type="button"
                 onClick={clearImage}
-                className="focus-ring absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-md bg-white/95 text-rose-700 shadow-sm hover:bg-rose-50"
+                className="focus-ring absolute right-2 top-2 z-10 inline-flex h-8 w-8 items-center justify-center rounded-md border border-rose-100 bg-white text-rose-700 shadow-sm hover:bg-rose-50"
                 aria-label="Remove featured image"
                 title="Remove featured image"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <div className="mt-2 truncate font-mono text-xs text-neutral-500">{url || "New upload selected"}</div>
+            <div className="mt-2 max-w-full break-all font-mono text-xs leading-5 text-neutral-500">
+              {url || "New upload selected"}
+            </div>
           </div>
         ) : null}
-        <label className="block">
+        <label className="block min-w-0">
           <span className="mb-2 block text-sm font-medium text-neutral-700">
             {previewUrl ? "Replace with upload" : "Upload file"}
           </span>
@@ -93,7 +95,7 @@ export function ImageUpload({
             type="file"
             name={fileInputName}
             accept="image/png,image/jpeg,image/webp,image/gif"
-            className="focus-ring block w-full rounded-lg border border-dashed border-slate-300 bg-slate-50 p-3 text-sm text-neutral-600"
+            className="focus-ring block w-full min-w-0 rounded-lg border border-dashed border-slate-300 bg-slate-50 p-3 text-sm text-neutral-600"
             onChange={(event) => {
               const file = event.target.files?.[0];
               if (!file) {
@@ -108,7 +110,7 @@ export function ImageUpload({
             }}
           />
         </label>
-        <label className="block">
+        <label className="block min-w-0">
           <span className="mb-2 block text-sm font-medium text-neutral-700">Image URL</span>
           <input
             type="text"
@@ -123,18 +125,18 @@ export function ImageUpload({
                 fileInputRef.current.value = "";
               }
             }}
-            className="focus-ring w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-neutral-700"
+            className="focus-ring w-full min-w-0 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-neutral-700"
             placeholder="/uploads/example.webp"
           />
         </label>
-        <label className="block">
+        <label className="block min-w-0">
           <span className="mb-2 block text-sm font-medium text-neutral-700">Alt text</span>
           <input
             type="text"
             name={altInputName}
             value={alt}
             onChange={(event) => setAlt(event.target.value)}
-            className="focus-ring w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-neutral-700"
+            className="focus-ring w-full min-w-0 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-neutral-700"
             placeholder="Describe the image for accessibility and SEO"
           />
         </label>
