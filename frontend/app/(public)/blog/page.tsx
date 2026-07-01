@@ -41,12 +41,7 @@ function normalize(value?: string | null) {
 function postText(post: BlogPost) {
   return [
     post.title,
-    post.slug,
-    post.excerpt,
-    post.category,
-    post.author,
-    ...(post.tags ?? []),
-    post.body?.replace(/<[^>]+>/g, " ").replace(/&nbsp;|&amp;/g, " ")
+    post.excerpt
   ]
     .filter(Boolean)
     .join(" ")
@@ -193,12 +188,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                 </a>
               </div>
             </div>
-            <div className="relative min-h-[320px] overflow-hidden rounded-lg border border-[var(--color-border)] bg-white lg:min-h-[360px]">
+            <div className="relative min-h-[320px] overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] lg:min-h-[360px]">
               <Image
                 src={featured.featuredImage ?? aiAssets.primaryCareConsultation}
                 alt={featured.featuredImageAlt ?? `${featured.title} from Altmed Medical Center`}
                 fill
-                className="object-contain"
+                className="site-photo object-cover object-top"
                 sizes="(min-width: 1024px) 45vw, 100vw"
                 priority
               />
@@ -207,82 +202,54 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         ) : null}
 
         <section id="articles" className="mt-10 scroll-mt-28 rounded-lg border border-[var(--color-border)] bg-white p-5">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
             <div>
               <div className="section-label">Browse Articles</div>
               <h2 className="mt-2 text-2xl font-semibold leading-tight text-[var(--color-text-primary)]">Find the right topic faster.</h2>
               <p className="mt-2 text-sm leading-6 text-[var(--color-text-secondary)]">
-                Categories and tags are pulled from published blog posts.
+                Filter by category, or search article titles and summaries.
               </p>
             </div>
-            {activeFilters ? (
-              <Link
-                href={"/health-blogs#articles" as Route}
-                className="focus-ring inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-4 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
-              >
-                <X className="h-4 w-4" />
-                Clear filters
-              </Link>
-            ) : null}
-          </div>
-
-          <form action="/health-blogs#articles" className="mt-5 grid gap-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(180px,0.65fr)_minmax(180px,0.65fr)_auto]">
-            <label className="block">
-              <span className="mb-2 block text-sm font-semibold text-[var(--color-text-primary)]">Search</span>
-              <input
-                type="search"
-                name="search"
-                defaultValue={search}
-                placeholder="Search articles, services, or tags"
-                className="focus-ring min-h-12 w-full rounded-md border border-[var(--color-border)] bg-white px-4 text-base text-[var(--color-text-primary)]"
-              />
-            </label>
-            <label className="block">
-              <span className="mb-2 block text-sm font-semibold text-[var(--color-text-primary)]">Category</span>
-              <select
-                name="category"
-                defaultValue={selectedCategory}
-                className="focus-ring min-h-12 w-full rounded-md border border-[var(--color-border)] bg-white px-4 text-base text-[var(--color-text-primary)]"
-              >
-                <option value="">All categories</option>
-                {categoryEntries.map(([category, count]) => (
-                  <option key={category} value={category}>
-                    {category} ({count})
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="block">
-              <span className="mb-2 block text-sm font-semibold text-[var(--color-text-primary)]">Tag</span>
-              <select
-                name="tag"
-                defaultValue={selectedTag}
-                className="focus-ring min-h-12 w-full rounded-md border border-[var(--color-border)] bg-white px-4 text-base text-[var(--color-text-primary)]"
-              >
-                <option value="">All tags</option>
-                {tagEntries.map(([tag, count]) => (
-                  <option key={tag} value={tag}>
-                    {tag} ({count})
-                  </option>
-                ))}
-              </select>
-            </label>
-            <div className="flex items-end">
-              <button type="submit" className="btn-accent min-h-12 w-full justify-center px-5 lg:w-auto">
-                <Search className="h-4 w-4" />
-                Search
-              </button>
+            <div className="flex w-full flex-col gap-3 lg:w-[min(100%,440px)] lg:items-end">
+              <form action="/health-blogs#articles" className="flex w-full gap-2">
+                {selectedCategory ? <input type="hidden" name="category" value={selectedCategory} /> : null}
+                {selectedTag ? <input type="hidden" name="tag" value={selectedTag} /> : null}
+                <label className="sr-only" htmlFor="blog-search">
+                  Search articles
+                </label>
+                <input
+                  id="blog-search"
+                  type="search"
+                  name="search"
+                  defaultValue={search}
+                  placeholder="Search title or excerpt"
+                  className="focus-ring min-h-11 min-w-0 flex-1 rounded-md border border-[var(--color-border)] bg-white px-4 text-sm text-[var(--color-text-primary)]"
+                />
+                <button type="submit" className="btn-accent min-h-11 px-4">
+                  <Search className="h-4 w-4" />
+                  Search
+                </button>
+              </form>
+              {activeFilters ? (
+                <Link
+                  href={"/health-blogs#articles" as Route}
+                  className="focus-ring inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-text-primary)] transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+                >
+                  <X className="h-4 w-4" />
+                  Clear filters
+                </Link>
+              ) : null}
             </div>
-          </form>
+          </div>
 
           <div aria-label="Article categories" className="mt-5 flex flex-wrap gap-3">
             <Link
-              href={buildBlogHref(currentQuery, { category: "", page: 1 }) as Route}
+              href={buildBlogHref(currentQuery, { category: "", tag: "", page: 1 }) as Route}
               aria-current={!selectedCategory ? "page" : undefined}
               className={
                 !selectedCategory
-                  ? "focus-ring inline-flex rounded-md border border-[var(--color-primary)] bg-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-white"
-                  : "pill-tag px-4 py-2"
+                  ? "focus-ring inline-flex rounded-md border border-[var(--color-accent)] bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(183,90,29,0.16)]"
+                  : "focus-ring inline-flex rounded-md border border-[rgba(183,90,29,0.16)] bg-[rgba(183,90,29,0.08)] px-4 py-2 text-sm font-semibold text-[var(--color-accent)] transition hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)] hover:text-white"
               }
             >
               All
@@ -290,37 +257,18 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             {categoryEntries.map(([category, count]) => (
               <Link
                 key={category}
-                href={buildBlogHref(currentQuery, { category, page: 1 }) as Route}
+                href={buildBlogHref(currentQuery, { category, tag: "", page: 1 }) as Route}
                 aria-current={selectedCategory === category ? "page" : undefined}
                 className={
                   selectedCategory === category
-                    ? "focus-ring inline-flex rounded-md border border-[var(--color-primary)] bg-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-white"
-                    : "pill-tag px-4 py-2"
+                    ? "focus-ring inline-flex rounded-md border border-[var(--color-accent)] bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(183,90,29,0.16)]"
+                    : "focus-ring inline-flex rounded-md border border-[rgba(183,90,29,0.16)] bg-[rgba(183,90,29,0.08)] px-4 py-2 text-sm font-semibold text-[var(--color-accent)] transition hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)] hover:text-white"
                 }
               >
                 {category} <span className="ml-1 text-xs opacity-75">{count}</span>
               </Link>
             ))}
           </div>
-
-          {tagEntries.length ? (
-            <div className="mt-4 flex flex-wrap gap-2">
-              {tagEntries.slice(0, 12).map(([tag, count]) => (
-                <Link
-                  key={tag}
-                  href={buildBlogHref(currentQuery, { tag, page: 1 }) as Route}
-                  aria-current={selectedTag === tag ? "page" : undefined}
-                  className={`focus-ring inline-flex min-h-9 items-center rounded-full border px-3 text-sm font-semibold transition ${
-                    selectedTag === tag
-                      ? "border-[var(--color-primary)] bg-primary-light text-[var(--color-primary)]"
-                      : "border-[var(--color-border)] bg-[var(--color-surface-alt)] text-[var(--color-text-secondary)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
-                  }`}
-                >
-                  #{tag} <span className="ml-1 text-xs opacity-70">{count}</span>
-                </Link>
-              ))}
-            </div>
-          ) : null}
         </section>
 
         <div className="mt-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
