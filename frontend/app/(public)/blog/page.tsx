@@ -201,16 +201,36 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           </section>
         ) : null}
 
-        <section id="articles" className="mt-10 scroll-mt-28 rounded-lg border border-[var(--color-border)] bg-white p-5">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-              <div className="section-label">Browse Articles</div>
-              <h2 className="mt-2 text-2xl font-semibold leading-tight text-[var(--color-text-primary)]">Find the right topic faster.</h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--color-text-secondary)]">
-                Filter by category, or search article titles and summaries.
-              </p>
+        <section id="articles" className="mt-12 scroll-mt-28">
+          <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+            <div aria-label="Article categories" className="flex flex-wrap justify-center gap-4 xl:justify-start">
+            <Link
+              href={buildBlogHref(currentQuery, { category: "", tag: "", page: 1 }) as Route}
+              aria-current={!selectedCategory ? "page" : undefined}
+              className={
+                !selectedCategory
+                  ? "focus-ring inline-flex min-h-14 items-center rounded-lg bg-[var(--color-primary)] px-7 text-lg font-semibold text-white shadow-[0_12px_24px_rgba(18,93,75,0.18)]"
+                  : "focus-ring inline-flex min-h-14 items-center rounded-lg bg-[rgba(18,93,75,0.06)] px-7 text-lg font-semibold text-[var(--color-primary)] transition hover:bg-[var(--color-primary)] hover:text-white"
+              }
+            >
+              All
+            </Link>
+            {categoryEntries.map(([category]) => (
+              <Link
+                key={category}
+                href={buildBlogHref(currentQuery, { category, tag: "", page: 1 }) as Route}
+                aria-current={selectedCategory === category ? "page" : undefined}
+                className={
+                  selectedCategory === category
+                    ? "focus-ring inline-flex min-h-14 items-center rounded-lg bg-[var(--color-primary)] px-7 text-lg font-semibold text-white shadow-[0_12px_24px_rgba(18,93,75,0.18)]"
+                    : "focus-ring inline-flex min-h-14 items-center rounded-lg bg-[rgba(18,93,75,0.06)] px-7 text-lg font-semibold text-[var(--color-primary)] transition hover:bg-[var(--color-primary)] hover:text-white"
+                }
+              >
+                {category}
+              </Link>
+            ))}
             </div>
-            <div className="flex w-full flex-col gap-3 lg:w-[min(100%,440px)] lg:items-end">
+            <div className="flex w-full max-w-sm flex-col gap-2 self-center xl:self-auto">
               <form action="/health-blogs#articles" className="flex w-full gap-2">
                 {selectedCategory ? <input type="hidden" name="category" value={selectedCategory} /> : null}
                 {selectedTag ? <input type="hidden" name="tag" value={selectedTag} /> : null}
@@ -223,51 +243,26 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                   name="search"
                   defaultValue={search}
                   placeholder="Search title or excerpt"
-                  className="focus-ring min-h-11 min-w-0 flex-1 rounded-md border border-[var(--color-border)] bg-white px-4 text-sm text-[var(--color-text-primary)]"
+                  className="focus-ring h-12 min-w-0 flex-1 rounded-lg border border-[var(--color-border)] bg-white px-4 text-sm text-[var(--color-text-primary)] shadow-sm"
                 />
-                <button type="submit" className="btn-accent min-h-11 px-4">
-                  <Search className="h-4 w-4" />
-                  Search
+                <button
+                  type="submit"
+                  className="focus-ring inline-flex h-12 w-12 items-center justify-center rounded-lg bg-[var(--color-primary)] text-white shadow-[0_10px_20px_rgba(18,93,75,0.16)] transition hover:bg-[var(--color-text-primary)]"
+                >
+                  <Search className="h-5 w-5" />
+                  <span className="sr-only">Search</span>
                 </button>
               </form>
               {activeFilters ? (
                 <Link
                   href={"/health-blogs#articles" as Route}
-                  className="focus-ring inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-text-primary)] transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+                  className="focus-ring inline-flex w-fit items-center gap-2 self-end rounded-md px-2 py-1 text-sm font-semibold text-[var(--color-primary)] underline-offset-4 transition hover:underline"
                 >
                   <X className="h-4 w-4" />
                   Clear filters
                 </Link>
               ) : null}
             </div>
-          </div>
-
-          <div aria-label="Article categories" className="mt-5 flex flex-wrap gap-3">
-            <Link
-              href={buildBlogHref(currentQuery, { category: "", tag: "", page: 1 }) as Route}
-              aria-current={!selectedCategory ? "page" : undefined}
-              className={
-                !selectedCategory
-                  ? "focus-ring inline-flex rounded-md border border-[var(--color-accent)] bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(183,90,29,0.16)]"
-                  : "focus-ring inline-flex rounded-md border border-[rgba(183,90,29,0.16)] bg-[rgba(183,90,29,0.08)] px-4 py-2 text-sm font-semibold text-[var(--color-accent)] transition hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)] hover:text-white"
-              }
-            >
-              All
-            </Link>
-            {categoryEntries.map(([category, count]) => (
-              <Link
-                key={category}
-                href={buildBlogHref(currentQuery, { category, tag: "", page: 1 }) as Route}
-                aria-current={selectedCategory === category ? "page" : undefined}
-                className={
-                  selectedCategory === category
-                    ? "focus-ring inline-flex rounded-md border border-[var(--color-accent)] bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(183,90,29,0.16)]"
-                    : "focus-ring inline-flex rounded-md border border-[rgba(183,90,29,0.16)] bg-[rgba(183,90,29,0.08)] px-4 py-2 text-sm font-semibold text-[var(--color-accent)] transition hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)] hover:text-white"
-                }
-              >
-                {category} <span className="ml-1 text-xs opacity-75">{count}</span>
-              </Link>
-            ))}
           </div>
         </section>
 
@@ -286,7 +281,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         </div>
 
         {visiblePosts.length ? (
-          <div className="mt-5 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-7 grid gap-8 lg:grid-cols-2">
             {visiblePosts.map((post: BlogPost) => (
               <BlogCard key={post.slug} post={post} />
             ))}

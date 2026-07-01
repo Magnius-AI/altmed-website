@@ -26,8 +26,8 @@ export function BlogCard({ post }: Props) {
   const tags = (post.tags ?? []).slice(0, 3);
 
   return (
-    <article className="overflow-hidden rounded-lg border border-[var(--color-border)] bg-white transition hover:-translate-y-1">
-      <div className="relative h-48 bg-[var(--color-surface-alt)]">
+    <article className="flex h-full flex-col overflow-hidden rounded-lg border border-[var(--color-border)] bg-white transition hover:-translate-y-1">
+      <div className="relative h-64 bg-white md:h-80 xl:h-[360px]">
         <Image
           src={post.featuredImage ?? aiAssets.primaryCareConsultation}
           alt={`${post.title} from Altmed Medical Center in Manassas VA`}
@@ -36,22 +36,22 @@ export function BlogCard({ post }: Props) {
         />
         <div className="absolute inset-x-0 top-0 flex items-center justify-between gap-3 p-4">
           {post.category ? (
-            <span className="rounded-md bg-[var(--color-accent)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white shadow-[0_8px_18px_rgba(183,90,29,0.24)]">
+            <span className="rounded-md border border-white/80 bg-white/90 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)] shadow-[0_8px_18px_rgba(18,48,40,0.12)] backdrop-blur-sm">
               {post.category}
             </span>
           ) : (
             <span />
           )}
           {("featured" in post && (post as { featured?: boolean }).featured) ? (
-            <span className="rounded-md bg-[var(--color-accent)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white shadow-[0_8px_18px_rgba(183,90,29,0.24)]">
+            <span className="rounded-md border border-white/80 bg-white/90 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-accent)] shadow-[0_8px_18px_rgba(18,48,40,0.12)] backdrop-blur-sm">
               Featured
             </span>
           ) : null}
         </div>
       </div>
-      <div className="p-7">
-        <h3 className="mt-3 text-[1.55rem] font-semibold leading-[1.18] text-[var(--color-text-dark)]">{post.title}</h3>
-        <p className="mt-4 text-base leading-7 text-[var(--color-text-muted)]">{post.excerpt}</p>
+      <div className="flex flex-1 flex-col p-7 md:p-9">
+        <h3 className="mt-3 text-[1.8rem] font-semibold leading-[1.16] text-[var(--color-text-dark)] md:text-[2.15rem]">{post.title}</h3>
+        <p className="mt-5 text-lg leading-8 text-[var(--color-text-muted)]">{post.excerpt}</p>
         <div className="mt-5 text-xs uppercase tracking-[0.14em] text-[rgba(82,102,121,0.75)]">
           {post.author ? `${post.author} • ` : ""}
           {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString("en-US", {
@@ -67,7 +67,7 @@ export function BlogCard({ post }: Props) {
               <Link
                 key={tag}
                 href={tagHref(tag) as Route}
-                className="focus-ring -mb-1 rounded-full border border-[rgba(183,90,29,0.18)] bg-[rgba(183,90,29,0.08)] px-3 py-1 text-xs font-semibold text-[var(--color-accent)] shadow-[0_5px_14px_rgba(183,90,29,0.08)] transition hover:bg-[var(--color-accent)] hover:text-white"
+                className="focus-ring -mb-1 rounded-full border border-[rgba(18,93,75,0.16)] bg-[rgba(18,93,75,0.06)] px-3 py-1 text-xs font-semibold text-[var(--color-primary)] shadow-[0_5px_14px_rgba(18,93,75,0.08)] transition hover:bg-[var(--color-primary)] hover:text-white"
               >
                 #{tag}
               </Link>
@@ -77,7 +77,7 @@ export function BlogCard({ post }: Props) {
       </div>
       <Link
         href={publicRoutes.blogPost(post.slug) as Route}
-        className="mx-7 mb-7 inline-flex font-semibold text-[var(--color-primary)] underline-offset-4 hover:underline"
+        className="mx-7 mb-7 inline-flex font-semibold text-[var(--color-primary)] underline-offset-4 hover:underline md:mx-9 md:mb-9"
       >
         Read article
       </Link>
