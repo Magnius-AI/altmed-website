@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AdminSubmitButton } from "@/components/admin/AdminSubmitButton";
 import { BlogFaqEditor } from "@/components/admin/BlogFaqEditor";
+import { BlogCategoryPicker, BlogTagPicker } from "@/components/admin/BlogTaxonomyPickers";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { SEOFieldset } from "@/components/admin/SEOFieldset";
@@ -64,24 +65,7 @@ export function BlogEditorForm({
                 className="focus-ring w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-neutral-700"
               />
             </label>
-            <label className="block">
-              <span className="mb-2 block text-sm font-medium text-neutral-700">Category</span>
-              <select
-                name="category"
-                defaultValue={post?.category ?? ""}
-                className="focus-ring w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-neutral-700"
-              >
-                <option value="">Select a category</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.name}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-              <Link href="/admin/blog/categories" className="mt-2 inline-block text-xs font-semibold text-primary">
-                Manage categories
-              </Link>
-            </label>
+            <BlogCategoryPicker categories={categories} defaultValue={post?.category} />
             <label className="block">
               <span className="mb-2 block text-sm font-medium text-neutral-700">Author</span>
               <input
@@ -102,28 +86,7 @@ export function BlogEditorForm({
                 className="focus-ring w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-neutral-700"
               />
             </label>
-            <label className="block">
-              <span className="mb-2 block text-sm font-medium text-neutral-700">Tags</span>
-              <select
-                name="tags"
-                multiple
-                defaultValue={post?.tags ?? []}
-                className="focus-ring min-h-[120px] w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-neutral-700"
-              >
-                {tags.map((tag) => (
-                  <option key={tag.id} value={tag.name}>
-                    {tag.name}
-                  </option>
-                ))}
-              </select>
-              <input type="hidden" name="tagsCsv" value={post?.tags?.join(", ") ?? ""} />
-              <p className="mt-2 text-xs text-neutral-500">
-                Hold Command/Ctrl to select multiple tags.
-              </p>
-              <Link href="/admin/blog/tags" className="mt-2 inline-block text-xs font-semibold text-primary">
-                Manage tags
-              </Link>
-            </label>
+            <BlogTagPicker tags={tags} defaultValues={post?.tags} />
           </div>
           <div className="mt-4 grid gap-4 md:grid-cols-2">
             <label className="flex items-center gap-3 rounded-lg border border-slate-200 px-3 py-2.5">
