@@ -531,6 +531,19 @@ summary::-webkit-details-marker {
   text-decoration: underline;
 }
 
+.blog-prose a {
+  color: var(--color-accent);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: rgba(183, 90, 29, 0.34);
+  text-underline-offset: 0.18em;
+}
+
+.blog-prose a:hover {
+  color: var(--color-accent-dark);
+  text-decoration-color: currentColor;
+}
+
 .prose-lite img {
   @apply my-8 max-w-full rounded-xl border border-slate-200;
 }

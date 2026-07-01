@@ -116,7 +116,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         </div>
       </section>
       <section className="mt-10 grid gap-8 lg:grid-cols-[1fr_300px]">
-        <article className="prose-lite rounded-lg border border-[var(--color-border)] bg-white p-8">
+        <article className="prose-lite blog-prose rounded-lg border border-[var(--color-border)] bg-white p-8">
           <div dangerouslySetInnerHTML={{ __html: post.body }} />
           <div className="mt-10 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-5">
             <h2 className="text-2xl">Care connected to this topic</h2>

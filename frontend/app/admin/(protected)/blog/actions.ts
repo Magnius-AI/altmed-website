@@ -52,7 +52,11 @@ async function resolveImageUrl(formData: FormData) {
   return uploaded?.url ?? (String(formData.get("featuredImage") ?? "").trim() || undefined);
 }
 
-function buildBlogPayload(formData: FormData, featuredImage?: string) {
+function buildBlogPayload(
+  formData: FormData,
+  featuredImage?: string | null,
+  options: { clearFeaturedImage?: boolean } = {}
+) {
   const published = toBoolean(formData.get("published"));
   const publishedAtValue = String(formData.get("publishedAt") ?? "").trim();
 
@@ -64,7 +68,9 @@ function buildBlogPayload(formData: FormData, featuredImage?: string) {
     author: String(formData.get("author") ?? "").trim() || undefined,
     body: String(formData.get("body") ?? "").trim(),
     featuredImage,
-    featuredImageAlt: String(formData.get("featuredImageAlt") ?? "").trim() || undefined,
+    featuredImageAlt: options.clearFeaturedImage
+      ? null
+      : String(formData.get("featuredImageAlt") ?? "").trim() || undefined,
     metaTitle: String(formData.get("metaTitle") ?? "").trim() || undefined,
     metaDescription: String(formData.get("metaDescription") ?? "").trim() || undefined,
     metaKeywords: String(formData.get("metaKeywords") ?? "").trim() || undefined,
@@ -107,9 +113,13 @@ export async function createBlogPostAction(formData: FormData) {
 
 export async function updateBlogPostAction(id: string, formData: FormData) {
   const existingImage = String(formData.get("existingFeaturedImage") ?? "").trim() || undefined;
-  const featuredImage = (await resolveImageUrl(formData)) ?? existingImage;
+  const removeFeaturedImage = toBoolean(formData.get("removeFeaturedImage"));
+  const resolvedImage = await resolveImageUrl(formData);
+  const featuredImage = resolvedImage ?? (removeFeaturedImage ? null : existingImage);
   const previousSlug = String(formData.get("existingSlug") ?? "").trim() || undefined;
-  const payload = buildBlogPayload(formData, featuredImage);
+  const payload = buildBlogPayload(formData, featuredImage, {
+    clearFeaturedImage: featuredImage === null
+  });
 
   await adminJsonRequest(`/api/blog/${id}`, "PATCH", payload);
 

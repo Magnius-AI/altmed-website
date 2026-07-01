@@ -23,11 +23,11 @@ export class CreateBlogPostDto {
 
   @IsOptional()
   @IsString()
-  featuredImage?: string;
+  featuredImage?: string | null;
 
   @IsOptional()
   @IsString()
-  featuredImageAlt?: string;
+  featuredImageAlt?: string | null;
 
   @IsOptional()
   @IsString()
