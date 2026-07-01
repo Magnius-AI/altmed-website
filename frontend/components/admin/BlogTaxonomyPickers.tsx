@@ -53,32 +53,34 @@ export function BlogCategoryPicker({ categories, defaultValue }: CategoryPickerP
       </div>
       <input type="hidden" name="category" value={query.trim()} />
       <div className="relative">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-        <input
-          type="search"
-          value={query}
-          onChange={(event) => {
-            setQuery(event.target.value);
-            setOpen(true);
-          }}
-          onFocus={() => setOpen(true)}
-          onBlur={() => window.setTimeout(() => setOpen(false), 120)}
-          placeholder="Search or type category"
-          className="focus-ring w-full rounded-lg border border-slate-200 py-2.5 pl-9 pr-9 text-sm text-neutral-700"
-        />
-        {query ? (
-          <button
-            type="button"
-            onClick={() => {
-              setQuery("");
-              setOpen(false);
+        <div className="focus-within:ring-2 focus-within:ring-[var(--color-primary)] focus-within:ring-offset-2 flex h-11 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3">
+          <Search className="h-4 w-4 flex-none text-neutral-400" />
+          <input
+            type="text"
+            value={query}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setOpen(true);
             }}
-            className="focus-ring absolute right-2 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-neutral-500 hover:bg-slate-100"
-            aria-label="Clear category"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        ) : null}
+            onFocus={() => setOpen(true)}
+            onBlur={() => window.setTimeout(() => setOpen(false), 120)}
+            placeholder="Search or type category"
+            className="!min-h-0 min-w-0 flex-1 !rounded-none !border-0 !bg-transparent !p-0 text-sm text-neutral-700 !shadow-none outline-none"
+          />
+          {query ? (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery("");
+                setOpen(false);
+              }}
+              className="focus-ring inline-flex h-7 w-7 flex-none items-center justify-center rounded-md text-neutral-500 hover:bg-slate-100"
+              aria-label="Clear category"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          ) : null}
+        </div>
         {open && filteredCategories.length ? (
           <div className="absolute z-30 mt-2 max-h-60 w-full overflow-auto rounded-lg border border-slate-200 bg-white p-1 shadow-lg">
             {filteredCategories.map((category) => (
@@ -169,7 +171,7 @@ export function BlogTagPicker({ tags, defaultValues = [] }: TagPickerProps) {
           <div className="flex items-center gap-2 border-t border-slate-100 pt-3">
             <Search className="h-4 w-4 flex-none text-neutral-400" />
             <input
-              type="search"
+              type="text"
               value={query}
               onChange={(event) => {
                 setQuery(event.target.value);
@@ -184,7 +186,7 @@ export function BlogTagPicker({ tags, defaultValues = [] }: TagPickerProps) {
                 }
               }}
               placeholder="Search tags or type a new one"
-              className="min-w-0 flex-1 border-0 bg-transparent text-sm text-neutral-700 outline-none"
+              className="!min-h-0 min-w-0 flex-1 !rounded-none !border-0 !bg-transparent !p-0 text-sm text-neutral-700 !shadow-none outline-none"
             />
             {query ? (
               <button
