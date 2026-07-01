@@ -27,7 +27,7 @@ export function BlogCard({ post }: Props) {
 
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-lg border border-[var(--color-border)] bg-white transition hover:-translate-y-1">
-      <div className="relative h-64 bg-white md:h-80 xl:h-[360px]">
+      <div className="relative h-48 bg-white md:h-52 xl:h-56">
         <Image
           src={post.featuredImage ?? aiAssets.primaryCareConsultation}
           alt={`${post.title} from Altmed Medical Center in Manassas VA`}
@@ -49,9 +49,9 @@ export function BlogCard({ post }: Props) {
           ) : null}
         </div>
       </div>
-      <div className="flex flex-1 flex-col p-7 md:p-9">
-        <h3 className="mt-3 text-[1.8rem] font-semibold leading-[1.16] text-[var(--color-text-dark)] md:text-[2.15rem]">{post.title}</h3>
-        <p className="mt-5 text-lg leading-8 text-[var(--color-text-muted)]">{post.excerpt}</p>
+      <div className="flex flex-1 flex-col p-7">
+        <h3 className="mt-3 text-[1.55rem] font-semibold leading-[1.18] text-[var(--color-text-dark)] md:text-[1.65rem]">{post.title}</h3>
+        <p className="mt-4 text-base leading-7 text-[var(--color-text-muted)]">{post.excerpt}</p>
         <div className="mt-5 text-xs uppercase tracking-[0.14em] text-[rgba(82,102,121,0.75)]">
           {post.author ? `${post.author} • ` : ""}
           {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString("en-US", {
@@ -77,7 +77,7 @@ export function BlogCard({ post }: Props) {
       </div>
       <Link
         href={publicRoutes.blogPost(post.slug) as Route}
-        className="mx-7 mb-7 inline-flex font-semibold text-[var(--color-primary)] underline-offset-4 hover:underline md:mx-9 md:mb-9"
+        className="mx-7 mb-7 inline-flex font-semibold text-[var(--color-primary)] underline-offset-4 hover:underline"
       >
         Read article
       </Link>
