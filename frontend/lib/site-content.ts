@@ -24,7 +24,7 @@ export const seoPriorityKeywords = [
   "dot physical manassas va",
   "drug and alcohol testing Manassas",
   "medical weight loss Manassas",
-  "functional medicine Manassas",
+  // "functional medicine Manassas",
   "suboxone treatment Manassas"
 ] as const;
 
@@ -218,13 +218,13 @@ export const serviceCards = [
     image: aiAssets.medicalWeightLossConsult,
     shortDescription: "GLP-1 medication consultations."
   },
-  {
-    slug: "functional-medicine-manassas",
-    title: "Functional Medicine",
-    description: "Root-cause evaluation for chronic symptoms, lifestyle factors, and personalized health planning.",
-    image: aiAssets.functionalMedicineConsult,
-    shortDescription: "Holistic root-cause care."
-  },
+  // {
+  //   slug: "functional-medicine-manassas",
+  //   title: "Functional Medicine",
+  //   description: "Root-cause evaluation for chronic symptoms, lifestyle factors, and personalized health planning.",
+  //   image: aiAssets.functionalMedicineConsult,
+  //   shortDescription: "Holistic root-cause care."
+  // },
   {
     slug: "suboxone-treatment-manassas",
     title: "Addiction Management",
@@ -1525,7 +1525,7 @@ export const blogCategories = [
   "Primary Care",
   "Occupational Health",
   "Weight Loss & Nutrition",
-  "Functional Medicine",
+  // "Functional Medicine",
   "Telehealth",
   "Addiction Management"
 ];
@@ -1561,7 +1561,7 @@ export const departments = [
   { name: "Primary Care", head: "Dr. Gerald K. Lee", description: "Preventive medicine, chronic disease follow-up, and routine family care." },
   { name: "Occupational Health", head: "Employer Services Team", description: "DOT physicals, drug testing, workers' compensation, and employer programs." },
   { name: "Weight Management", head: "Dr. Gerald K. Lee", description: "Medical weight loss, injection programs, and nutrition-focused support." },
-  { name: "Functional Medicine", head: "Altmed Clinical Team", description: "Root-cause, patient-centered care for chronic symptoms and wellness planning." },
+  // { name: "Functional Medicine", head: "Altmed Clinical Team", description: "Root-cause, patient-centered care for chronic symptoms and wellness planning." },
   { name: "Telehealth", head: "Altmed Providers", description: "Virtual urgent care and primary care visits for flexible access." }
 ] as const;
 

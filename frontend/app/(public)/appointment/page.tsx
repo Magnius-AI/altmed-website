@@ -86,7 +86,8 @@ const appointmentOptions: AppointmentService[] = [
     value: "medical-visit",
     title: "Medical Visit",
     shortTitle: "Medical Visit",
-    description: "Primary care, urgent care, weight loss, functional medicine, labs, and vaccines.",
+    // description: "Primary care, urgent care, weight loss, functional medicine, labs, and vaccines.",
+    description: "Primary care, urgent care, weight loss, labs, and vaccines.",
     detail:
       "Use this for routine or same-day medical care. Urgent care walk-ins are welcome, but booking can help you plan your arrival.",
     image: "/images/occupational/occ-med-3.jpg",
