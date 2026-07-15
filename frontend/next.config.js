@@ -174,11 +174,11 @@ const nextConfig = {
         destination: "/services/medical-weight-loss-manassas",
         permanent: true
       },
-      // {
-      //   source: "/services/functional-medicine",
-      //   destination: "/services/functional-medicine-manassas",
-      //   permanent: true
-      // }
+      {
+        source: "/services/functional-medicine",
+        destination: "/services/functional-medicine-manassas",
+        permanent: true
+      }
     ];
   },
   async headers() {
