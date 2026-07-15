@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { ServicePageContent } from "@/components/public/ServicePageContent";
 import { getServicePage } from "@/lib/api";
 import { buildPageMetadata } from "@/lib/metadata";
+import { notFound } from "next/navigation";
+
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getServicePage("functional-medicine-manassas");
@@ -14,5 +16,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page() {
+
+  // Temporary: service disabled
+  notFound();
+
+  // later we re-enable this page when the service is available
   return <ServicePageContent page={await getServicePage("functional-medicine-manassas")} />;
 }

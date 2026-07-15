@@ -75,7 +75,7 @@ const serviceGroups = [
       "urgent-care-manassas-va",
       "primary-care-manassas-va",
       "medical-weight-loss-manassas",
-      // "functional-medicine-manassas",
+      "functional-medicine-manassas",
       "suboxone-treatment-manassas",
       "telehealth-manassas"
     ]
