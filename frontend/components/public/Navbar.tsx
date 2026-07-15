@@ -19,7 +19,7 @@ const patientServiceSlugs = new Set([
   "medical-weight-loss-manassas",
   "telehealth-manassas",
   "suboxone-treatment-manassas",
-  "functional-medicine-manassas"
+  // "functional-medicine-manassas"
 ]);
 
 const employerServiceSlugs = new Set([
